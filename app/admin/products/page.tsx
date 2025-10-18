@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useProducts } from '@/hooks/useProducts';
 import { deleteProduct, markProductSold, updateProduct } from '@/services/productService';
 import { Product } from '@/types';
+import { ERAS, CATEGORIES } from '@/lib/constants';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -178,12 +179,11 @@ export default function ProductsPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Eras</option>
-              <option value="1950s">1950s</option>
-              <option value="1960s">1960s</option>
-              <option value="1970s">1970s</option>
-              <option value="1980s">1980s</option>
-              <option value="1990s">1990s</option>
-              <option value="2000s">2000s</option>
+              {ERAS.map((era) => (
+                <option key={era} value={era}>
+                  {era}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -199,15 +199,11 @@ export default function ProductsPage() {
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Categories</option>
-              <option value="Jacket">Jacket</option>
-              <option value="Dress">Dress</option>
-              <option value="Jeans">Jeans</option>
-              <option value="Shirt">Shirt</option>
-              <option value="Pants">Pants</option>
-              <option value="Skirt">Skirt</option>
-              <option value="Sweater">Sweater</option>
-              <option value="Coat">Coat</option>
-              <option value="Accessories">Accessories</option>
+              {CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
 

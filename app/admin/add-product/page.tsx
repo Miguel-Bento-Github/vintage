@@ -3,6 +3,7 @@
 import { useState, FormEvent, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { addProduct } from '@/services/productService';
+import { ERAS, CATEGORIES, CONDITIONS } from '@/lib/constants';
 import Image from 'next/image';
 
 interface ProductFormData {
@@ -48,20 +49,6 @@ const INITIAL_FORM_DATA: ProductFormData = {
   tags: '',
   featured: false,
 };
-
-const ERAS = ['1950s', '1960s', '1970s', '1980s', '1990s', '2000s'];
-const CATEGORIES = [
-  'Jacket',
-  'Dress',
-  'Jeans',
-  'Shirt',
-  'Pants',
-  'Skirt',
-  'Sweater',
-  'Coat',
-  'Accessories',
-];
-const CONDITIONS = ['Excellent', 'Good', 'Fair', 'As-Is'];
 
 export default function AddProductPage() {
   const router = useRouter();
