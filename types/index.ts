@@ -247,25 +247,8 @@ export const PRICE_RANGES = [
   { label: '$200+', min: 200, max: Infinity },
 ] as const;
 
-// ============================================================================
-// VALIDATION CONSTANTS
-// ============================================================================
-
-export const VALID_ERAS: Era[] = ['1950s', '1960s', '1970s', '1980s', '1990s', '2000s'];
-
-export const VALID_CATEGORIES: Category[] = [
-  'Jacket',
-  'Dress',
-  'Jeans',
-  'Shirt',
-  'Pants',
-  'Skirt',
-  'Sweater',
-  'Coat',
-  'Accessories',
-];
-
-export const VALID_CONDITIONS: Condition[] = ['Excellent', 'Good', 'Fair', 'As-Is'];
+// Note: Era, Category, and Condition constants are defined in /lib/constants.ts
+// to avoid duplication. Import from there when needed for validation.
 
 export const VALID_ORDER_STATUSES: OrderStatus[] = [
   'pending',
