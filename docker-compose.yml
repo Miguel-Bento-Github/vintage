@@ -1,0 +1,18 @@
+services:
+  firebase-emulators:
+    image: andreysenov/firebase-tools:latest
+    ports:
+      - "4000:4000"   # Emulator UI
+      - "9099:9099"   # Auth
+      - "8080:8080"   # Firestore
+      - "9199:9199"   # Storage
+    volumes:
+      - ./:/home/node
+      - firebase-data:/home/node/.firebase
+    working_dir: /home/node
+    command: firebase emulators:start --only auth,firestore,storage --project vintage-c534e --import=/home/node/.firebase --export-on-exit=/home/node/.firebase
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xmx2g
+
+volumes:
+  firebase-data:
