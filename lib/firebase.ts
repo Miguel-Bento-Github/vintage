@@ -61,16 +61,20 @@ export const db: Firestore = getFirestore(app);
 export const storage: FirebaseStorage = getStorage(app);
 export const auth: Auth = getAuth(app);
 
-// Connect to emulators in development
-if (process.env.NODE_ENV === 'development') {
-  try {
-    connectFirestoreEmulator(db, 'localhost', 8080);
-    connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-    connectStorageEmulator(storage, 'localhost', 9199);
-    console.log('🔧 Connected to Firebase emulators');
-  } catch (error) {
-    // Emulators already connected (hot reload in dev)
-    console.log('⚠️ Emulators already initialized');
+// Connect to emulators only when explicitly enabled
+// Set NEXT_PUBLIC_USE_FIREBASE_EMULATORS=true in .env.local to enable
+if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === 'true') {
+  if (typeof window !== 'undefined') {
+    // Client-side only - prevent double initialization
+    try {
+      connectFirestoreEmulator(db, 'localhost', 3476);
+      connectAuthEmulator(auth, 'http://localhost:3477', { disableWarnings: true });
+      connectStorageEmulator(storage, 'localhost', 3478);
+      console.log('🔧 Connected to Firebase emulators (Firestore: 3476, Auth: 3477, Storage: 3478)');
+    } catch (error) {
+      // Emulators already connected (hot reload in dev)
+      console.log('⚠️ Emulators already initialized');
+    }
   }
 }
 

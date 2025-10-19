@@ -10,7 +10,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
   const q = query(
     productsRef,
     where('featured', '==', true),
-    where('sold', '==', false),
+    where('inStock', '==', true),
     limit(8)
   );
 

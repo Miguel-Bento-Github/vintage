@@ -2,10 +2,10 @@ services:
   firebase-emulators:
     image: andreysenov/firebase-tools:latest
     ports:
-      - "4000:4000"   # Emulator UI
-      - "9099:9099"   # Auth
-      - "8080:8080"   # Firestore
-      - "9199:9199"   # Storage
+      - "3479:3479"   # Emulator UI
+      - "3477:3477"   # Auth
+      - "3476:3476"   # Firestore
+      - "3478:3478"   # Storage
     volumes:
       - ./:/home/node
       - firebase-data:/home/node/.firebase

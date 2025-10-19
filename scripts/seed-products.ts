@@ -22,8 +22,8 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // Connect to emulators
-connectFirestoreEmulator(db, 'localhost', 8080);
-connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+connectFirestoreEmulator(db, 'localhost', 3476);
+connectAuthEmulator(auth, 'http://localhost:3477', { disableWarnings: true });
 
 async function promptAdminCredentials(): Promise<{ email: string; password: string }> {
   const rl = readline.createInterface({
@@ -425,7 +425,7 @@ const sampleProducts = [
     },
     tags: ['military', 'navy', 'wool', 'peacoat'],
     images: [
-      'https://images.unsplash.com/photo-1520367935095-76c8ed2d6f0e?w=800',
+      'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800',
     ],
     inStock: true,
     featured: true,
@@ -523,7 +523,7 @@ const sampleProducts = [
     measurements: {},
     tags: ['belt', 'leather', 'brass', 'western'],
     images: [
-      'https://images.unsplash.com/photo-1624222247344-550fb60583bb?w=800',
+      'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800',
     ],
     inStock: true,
     featured: false,
