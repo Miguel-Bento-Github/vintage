@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
 import Stripe from 'stripe';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, updateDoc, doc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();

@@ -2,14 +2,15 @@
 
 import { useState } from 'react';
 import { useCart } from '@/hooks/useCart';
+import { Era, Category } from '@/types';
 
 interface AddToCartButtonProps {
   product: {
     id: string;
     title: string;
     brand: string;
-    era: string;
-    category: string;
+    era: Era;
+    category: Category;
     size: string;
     price: number;
     imageUrl: string;

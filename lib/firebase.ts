@@ -61,19 +61,26 @@ export const db: Firestore = getFirestore(app);
 export const storage: FirebaseStorage = getStorage(app);
 export const auth: Auth = getAuth(app);
 
+// Track if emulators have been connected (prevents double-initialization)
+let emulatorsConnected = false;
+
 // Connect to emulators only when explicitly enabled
 // Set NEXT_PUBLIC_USE_FIREBASE_EMULATORS=true in .env.local to enable
 if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === 'true') {
-  if (typeof window !== 'undefined') {
-    // Client-side only - prevent double initialization
+  // Connect on both server and client side for full SSR support
+  if (!emulatorsConnected) {
     try {
       connectFirestoreEmulator(db, 'localhost', 3476);
       connectAuthEmulator(auth, 'http://localhost:3477', { disableWarnings: true });
       connectStorageEmulator(storage, 'localhost', 3478);
-      console.log('🔧 Connected to Firebase emulators (Firestore: 3476, Auth: 3477, Storage: 3478)');
+      emulatorsConnected = true;
+      const env = typeof window !== 'undefined' ? 'Client' : 'Server';
+      console.log(`🔧 [${env}] Connected to Firebase emulators (Firestore: 3476, Auth: 3477, Storage: 3478)`);
     } catch (error) {
-      // Emulators already connected (hot reload in dev)
-      console.log('⚠️ Emulators already initialized');
+      // Emulators already connected (hot reload in dev) - this is fine
+      if (!emulatorsConnected) {
+        emulatorsConnected = true;
+      }
     }
   }
 }

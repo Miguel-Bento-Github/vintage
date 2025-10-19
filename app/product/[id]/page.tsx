@@ -198,7 +198,7 @@ export default async function ProductPage({ params }: PageProps) {
                           <tr key={key}>
                             <td className="py-2 text-gray-600 capitalize">{key}</td>
                             <td className="py-2 text-gray-900 font-medium text-right">
-                              {value}"
+                              {value}&quot;
                             </td>
                           </tr>
                         ))}

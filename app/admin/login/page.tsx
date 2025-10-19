@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function AdminLoginPage() {
@@ -125,12 +126,12 @@ export default function AdminLoginPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <a
+          <Link
             href="/"
             className="text-sm text-gray-700 hover:text-gray-900 font-medium"
           >
             ← Back to store
-          </a>
+          </Link>
         </div>
       </div>
     </div>

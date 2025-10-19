@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { collection, getDocs, query, where, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Product } from '@/types';
-import { CATEGORIES } from '@/lib/constants';
 
 async function getFeaturedProducts(): Promise<Product[]> {
   const productsRef = collection(db, 'products');

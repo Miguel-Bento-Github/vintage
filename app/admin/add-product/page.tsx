@@ -4,14 +4,15 @@ import { useState, FormEvent, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { addProduct } from '@/services/productService';
 import { ERAS, CATEGORIES, CONDITIONS } from '@/lib/constants';
+import { Era, Category, Condition } from '@/types';
 import Image from 'next/image';
 
 interface ProductFormData {
   title: string;
   description: string;
   brand: string;
-  era: string;
-  category: string;
+  era: Era | '';
+  category: Category | '';
   sizeLabel: string;
   measurements: {
     chest: string;
@@ -21,7 +22,7 @@ interface ProductFormData {
     shoulders: string;
     sleeves: string;
   };
-  condition: string;
+  condition: Condition | '';
   conditionNotes: string;
   price: string;
   tags: string;
@@ -163,6 +164,12 @@ export default function AddProductPage() {
       return;
     }
 
+    // Validate required dropdown fields
+    if (!formData.era || !formData.category || !formData.condition) {
+      setError('Please select era, category, and condition');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -187,18 +194,23 @@ export default function AddProductPage() {
         measurements.sleeves = parseFloat(formData.measurements.sleeves);
       }
 
+      // TypeScript now knows these are not empty strings due to the check above
+      const era: Era = formData.era;
+      const category: Category = formData.category;
+      const condition: Condition = formData.condition;
+
       // Prepare product data
       const productData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
         brand: formData.brand.trim(),
-        era: formData.era,
-        category: formData.category,
+        era,
+        category,
         size: {
           label: formData.sizeLabel.trim(),
           measurements,
         },
-        condition: formData.condition,
+        condition,
         conditionNotes: formData.conditionNotes.trim(),
         price: parseFloat(formData.price),
         tags: formData.tags

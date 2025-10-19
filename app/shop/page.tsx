@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useProducts } from '@/hooks/useProducts';
-import { Product } from '@/types';
 import { ERAS, CATEGORIES, CONDITIONS } from '@/lib/constants';
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
@@ -20,7 +19,7 @@ const PRICE_RANGES: { value: PriceRange; label: string; min: number; max: number
   { value: '200-plus', label: '$200+', min: 200, max: Infinity },
 ];
 
-export default function ShopPage() {
+function ShopContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category') || '';
 
@@ -562,5 +561,20 @@ export default function ShopPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ShopPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-700"></div>
+          <p className="mt-4 text-gray-600">Loading shop...</p>
+        </div>
+      </div>
+    }>
+      <ShopContent />
+    </Suspense>
   );
 }

@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Allow access from local network for mobile testing
+  allowedDevOrigins: [
+    'http://192.168.1.53:5577',
+    'http://192.168.1.53:3000',
+  ],
 };
 
 export default nextConfig;
