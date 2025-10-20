@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCart } from '@/hooks/useCart';
 import { Era, Category } from '@/types';
+import { trackAddToCart } from '@/services/analyticsService';
 
 interface AddToCartButtonProps {
   product: {
@@ -40,6 +41,9 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       imageUrl: product.imageUrl,
       inStock: product.inStock,
     });
+
+    // Track analytics
+    trackAddToCart(product.id, product.title, product.price, product.brand);
 
     setShowAdded(true);
     setTimeout(() => setShowAdded(false), 2000);

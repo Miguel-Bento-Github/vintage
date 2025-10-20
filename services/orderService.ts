@@ -439,6 +439,51 @@ export async function getOrderByOrderNumber(
 }
 
 /**
+ * Get order by payment intent ID
+ * @param paymentIntentId - Stripe payment intent ID
+ * @returns Order or null if not found
+ */
+export async function getOrderByPaymentIntentId(
+  paymentIntentId: string
+): Promise<FirebaseServiceResponse<Order | null>> {
+  try {
+    const ordersRef = collection(db, 'orders');
+    const q = query(
+      ordersRef,
+      where('paymentIntentId', '==', paymentIntentId)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      return {
+        success: true,
+        data: null,
+      };
+    }
+
+    // Should only be one order with this payment intent
+    const doc = querySnapshot.docs[0];
+    const order: Order = {
+      id: doc.id,
+      ...doc.data(),
+    } as Order;
+
+    return {
+      success: true,
+      data: order,
+    };
+  } catch (error) {
+    console.error('Error getting order by payment intent:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to get order',
+      code: (error as { code?: string }).code,
+    };
+  }
+}
+
+/**
  * Get orders count by status (for admin dashboard)
  * @returns Count of orders by each status
  */

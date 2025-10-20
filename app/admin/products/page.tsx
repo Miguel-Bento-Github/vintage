@@ -270,6 +270,8 @@ export default function ProductsPage() {
                               src={product.images[0]}
                               alt={product.title}
                               fill
+                              sizes="64px"
+                              loading="lazy"
                               className="object-cover rounded"
                             />
                           ) : (

@@ -1,8 +1,46 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { collection, getDocs, query, where, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Product } from '@/types';
+
+export const metadata: Metadata = {
+  title: 'Vintage Clothing Store | Authentic 1950s-2000s Fashion | Curated Vintage',
+  description: 'Shop authentic vintage clothing from the 1950s to 2000s. Hand-picked vintage jackets, jeans, dresses, and accessories. Each piece is one-of-a-kind. Free shipping over €100.',
+  keywords: [
+    'vintage clothing',
+    'vintage fashion',
+    'retro clothing',
+    'vintage jackets',
+    'vintage jeans',
+    'vintage dresses',
+    '1950s fashion',
+    '1960s fashion',
+    '1970s fashion',
+    '1980s fashion',
+    '1990s fashion',
+    'authentic vintage',
+    'vintage levi\'s',
+    'vintage band tees',
+    'retro accessories',
+  ],
+  openGraph: {
+    title: 'Vintage Clothing Store - Authentic Fashion from 1950s-2000s',
+    description: 'Discover hand-selected vintage clothing. Each piece tells a story. Shop one-of-a-kind jackets, jeans, dresses & more.',
+    type: 'website',
+    locale: 'en_US',
+    siteName: 'Vintage Store',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Vintage Clothing Store - Authentic Fashion',
+    description: 'Shop hand-picked vintage clothing from the 1950s to 2000s. One-of-a-kind pieces.',
+  },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://vintage-store.vercel.app',
+  },
+};
 
 async function getFeaturedProducts(): Promise<Product[]> {
   const productsRef = collection(db, 'products');
@@ -81,8 +119,10 @@ export default async function HomePage() {
                   <div className="relative aspect-[3/4] bg-gray-100">
                     <Image
                       src={product.images[0]}
-                      alt={product.title}
+                      alt={`${product.brand} ${product.title} - ${product.era} vintage ${product.category}`}
                       fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      loading="eager"
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
@@ -135,8 +175,10 @@ export default async function HomePage() {
               >
                 <Image
                   src={imageUrl}
-                  alt={category}
+                  alt={`Shop vintage ${category.toLowerCase()}`}
                   fill
+                  sizes="(max-width: 768px) 50vw, 33vw"
+                  loading="lazy"
                   className="object-cover group-hover:scale-110 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 group-hover:from-black/70 transition-colors" />

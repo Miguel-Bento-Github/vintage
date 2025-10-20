@@ -56,14 +56,42 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  // SEO-optimized title with long-tail keywords
+  const seoTitle = `${product.brand} ${product.title} ${product.era} - Vintage ${product.category} | Vintage Store`;
+
+  // Rich description with keywords
+  const seoDescription = `${product.condition} condition ${product.era} ${product.brand} ${product.title}. ${product.description.slice(0, 120)}... Authentic vintage ${product.category.toLowerCase()}. ${product.inStock ? 'In stock and ready to ship.' : 'Sold out.'}`;
+
+  const imageUrl = product.images && product.images.length > 0 ? product.images[0] : '';
+
   return {
-    title: `${product.title} - ${product.brand} | Vintage Store`,
-    description: product.description,
+    title: seoTitle,
+    description: seoDescription,
+    keywords: [
+      `vintage ${product.brand.toLowerCase()}`,
+      `${product.era} ${product.category.toLowerCase()}`,
+      `vintage ${product.category.toLowerCase()}`,
+      product.title.toLowerCase(),
+      `${product.brand.toLowerCase()} ${product.title.toLowerCase()}`,
+      'authentic vintage',
+      'vintage fashion',
+      product.era,
+    ],
     openGraph: {
-      title: product.title,
+      title: `${product.brand} ${product.title}`,
       description: product.description,
-      images: product.images,
+      images: imageUrl ? [{ url: imageUrl, alt: `${product.brand} ${product.title}` }] : [],
       siteName: 'Vintage Store',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.brand} ${product.title}`,
+      description: product.description.slice(0, 160),
+      images: imageUrl ? [imageUrl] : [],
+    },
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://vintage-store.vercel.app'}/product/${id}`,
     },
   };
 }
@@ -78,11 +106,13 @@ export default async function ProductPage({ params }: PageProps) {
 
   const similarProducts = await getSimilarProducts(product);
 
-  // Schema.org structured data
+  // Schema.org Product structured data with enhanced details
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vintage-store.vercel.app';
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.title,
+    name: `${product.brand} ${product.title}`,
     description: product.description,
     sku: product.id,
     brand: {
@@ -90,15 +120,34 @@ export default async function ProductPage({ params }: PageProps) {
       name: product.brand,
     },
     image: product.images,
+    category: product.category,
+    additionalProperty: [
+      {
+        '@type': 'PropertyValue',
+        name: 'Era',
+        value: product.era,
+      },
+      {
+        '@type': 'PropertyValue',
+        name: 'Size',
+        value: product.size.label,
+      },
+      {
+        '@type': 'PropertyValue',
+        name: 'Condition',
+        value: product.condition,
+      },
+    ],
     offers: {
       '@type': 'Offer',
-      url: `https://vintagestore.com/product/${id}`,
+      url: `${baseUrl}/product/${id}`,
       price: product.price.toFixed(2),
-      priceCurrency: 'USD',
+      priceCurrency: 'EUR',
       availability: product.inStock
         ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
+        : 'https://schema.org/SoldOut',
       itemCondition: 'https://schema.org/UsedCondition',
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       seller: {
         '@type': 'Organization',
         name: 'Vintage Store',
@@ -106,12 +155,49 @@ export default async function ProductPage({ params }: PageProps) {
     },
   };
 
+  // Breadcrumb structured data
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Shop',
+        item: `${baseUrl}/shop`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: product.category,
+        item: `${baseUrl}/shop?category=${encodeURIComponent(product.category)}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 4,
+        name: `${product.brand} ${product.title}`,
+        item: `${baseUrl}/product/${id}`,
+      },
+    ],
+  };
+
   return (
     <>
-      {/* Schema.org JSON-LD */}
+      {/* Schema.org JSON-LD for Product */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      {/* Schema.org JSON-LD for Breadcrumbs */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
       <div className="min-h-screen bg-white">

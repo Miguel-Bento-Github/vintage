@@ -27,8 +27,9 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
           src={images[selectedImage]}
           alt={`${title} - Image ${selectedImage + 1}`}
           fill
-          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 50vw"
           priority
+          className="object-cover"
         />
       </div>
 
@@ -49,6 +50,8 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
                 src={image}
                 alt={`${title} thumbnail ${index + 1}`}
                 fill
+                sizes="(max-width: 768px) 25vw, 12vw"
+                loading="lazy"
                 className="object-cover"
               />
             </button>

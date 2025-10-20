@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import { CartItem } from '@/types';
 
 interface CartContextType {
@@ -44,45 +44,47 @@ export function CartProvider({ children }: CartProviderProps) {
     }
   }, [items, isHydrated]);
 
-  const addToCart = (item: CartItem) => {
+  const addToCart = useCallback((item: CartItem) => {
     // Prevent adding sold items
     if (!item.inStock) {
       console.warn('Cannot add sold item to cart:', item.productId);
       return;
     }
 
-    // Prevent duplicates - vintage items are one-of-a-kind
-    const existingItem = items.find((i) => i.productId === item.productId);
-    if (existingItem) {
-      console.warn('Item already in cart:', item.productId);
-      return;
-    }
+    setItems((prev) => {
+      // Prevent duplicates - vintage items are one-of-a-kind
+      const existingItem = prev.find((i) => i.productId === item.productId);
+      if (existingItem) {
+        console.warn('Item already in cart:', item.productId);
+        return prev;
+      }
+      return [...prev, item];
+    });
+  }, []);
 
-    setItems((prev) => [...prev, item]);
-  };
-
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = useCallback((productId: string) => {
     setItems((prev) => prev.filter((item) => item.productId !== productId));
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setItems([]);
-  };
+    localStorage.removeItem(CART_STORAGE_KEY);
+  }, []);
 
-  const getCartTotal = () => {
+  const getCartTotal = useCallback(() => {
     return items.reduce((total, item) => total + item.price, 0);
-  };
+  }, [items]);
 
   const itemCount = items.length;
 
-  const value = {
+  const value = useMemo(() => ({
     items,
     addToCart,
     removeFromCart,
     clearCart,
     getCartTotal,
     itemCount,
-  };
+  }), [items, addToCart, removeFromCart, clearCart, getCartTotal, itemCount]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

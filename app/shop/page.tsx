@@ -514,8 +514,10 @@ function ShopContent() {
                       ) : product.images && product.images.length > 0 && product.images[0] ? (
                         <Image
                           src={product.images[0]}
-                          alt={product.title}
+                          alt={`${product.brand} ${product.title} - ${product.era} vintage ${product.category}`}
                           fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          loading="lazy"
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (

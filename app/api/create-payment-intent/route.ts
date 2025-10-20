@@ -14,32 +14,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate total
+    // Calculate subtotal and shipping (no tax - Stripe will calculate)
     const subtotal = items.reduce((sum, item) => sum + item.price, 0);
     const shipping = subtotal >= 100 ? 0 : 10; // Free shipping over $100
-    const taxRate = 0.08;
-    const tax = subtotal * taxRate;
-    const total = subtotal + shipping + tax;
+    const total = subtotal + shipping;
 
     // Convert to cents for Stripe
     const amount = Math.round(total * 100);
 
     // Create payment intent
+    // Store all order data in metadata so we can create the order later
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
-      currency: 'usd',
+      currency: 'eur',
       automatic_payment_methods: {
         enabled: true,
       },
       metadata: {
-        items: JSON.stringify(items.map(item => ({
-          productId: item.productId,
-          title: item.title,
-          price: item.price,
-        }))),
+        // Store full item details for order creation
+        items: JSON.stringify(items),
         subtotal: subtotal.toFixed(2),
         shipping: shipping.toFixed(2),
-        tax: tax.toFixed(2),
         total: total.toFixed(2),
       },
     });

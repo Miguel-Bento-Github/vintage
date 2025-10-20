@@ -2,16 +2,17 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 
 export default function CartPage() {
+  const router = useRouter();
   const { items, removeFromCart, getCartTotal, clearCart } = useCart();
 
   const subtotal = getCartTotal();
-  const shipping = subtotal > 0 ? (subtotal >= 100 ? 0 : 10) : 0; // Free shipping over $100
-  const taxRate = 0.08; // 8% tax
-  const tax = subtotal * taxRate;
-  const total = subtotal + shipping + tax;
+  const shipping = subtotal > 0 ? (subtotal >= 100 ? 0 : 10) : 0; // Free shipping over €100
+  // Tax/VAT calculated by Stripe at checkout based on customer location
+  const total = subtotal + shipping;
 
   if (items.length === 0) {
     return (
@@ -83,8 +84,10 @@ export default function CartPage() {
                             {item.imageUrl ? (
                               <Image
                                 src={item.imageUrl}
-                                alt={item.title}
+                                alt={`${item.brand} ${item.title}`}
                                 fill
+                                sizes="96px"
+                                loading="eager"
                                 className="object-cover"
                               />
                             ) : (
@@ -123,7 +126,7 @@ export default function CartPage() {
                         {/* Price and Remove */}
                         <div className="flex items-center justify-between mt-4">
                           <p className="text-xl font-bold text-gray-900">
-                            ${item.price.toFixed(2)}
+                            €{item.price.toFixed(2)}
                           </p>
                           <button
                             onClick={() => removeFromCart(item.productId)}
@@ -171,7 +174,7 @@ export default function CartPage() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-700">
                   <span>Subtotal</span>
-                  <span className="font-medium">${subtotal.toFixed(2)}</span>
+                  <span className="font-medium">€{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
                   <span>Shipping</span>
@@ -179,31 +182,36 @@ export default function CartPage() {
                     {shipping === 0 ? (
                       <span className="text-green-600">FREE</span>
                     ) : (
-                      `$${shipping.toFixed(2)}`
+                      `€${shipping.toFixed(2)}`
                     )}
                   </span>
                 </div>
                 {shipping > 0 && (
                   <p className="text-xs text-gray-500">
-                    Free shipping on orders over $100
+                    Free shipping on orders over €100
                   </p>
                 )}
                 <div className="flex justify-between text-gray-700">
-                  <span>Tax (estimated)</span>
-                  <span className="font-medium">${tax.toFixed(2)}</span>
+                  <span>Tax/VAT</span>
+                  <span className="font-medium text-sm">Calculated at checkout</span>
                 </div>
               </div>
 
               <div className="border-t border-gray-200 pt-4 mb-6">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-gray-900">Total</span>
+                  <span className="text-lg font-bold text-gray-900">Total (before tax)</span>
                   <span className="text-2xl font-bold text-gray-900">
-                    ${total.toFixed(2)}
+                    €{total.toFixed(2)}
                   </span>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Tax/VAT will be calculated based on your location at checkout
+                </p>
               </div>
 
               <button
+                type="button"
+                onClick={() => router.push('/checkout')}
                 disabled={items.some((item) => !item.inStock)}
                 className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-colors ${
                   items.some((item) => !item.inStock)
