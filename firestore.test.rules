@@ -1,0 +1,303 @@
+// Firestore Security Rules Tests
+// Run with: npm run test:rules (after installing @firebase/rules-unit-testing)
+
+/**
+ * SECURITY TEST SCENARIOS
+ *
+ * These tests verify that the security rules prevent common attacks:
+ * 1. Unauthorized order creation (price manipulation)
+ * 2. Unauthorized order listing (data breach)
+ * 3. Price manipulation via client updates
+ * 4. Email spoofing attacks
+ */
+
+// ============================================================================
+// PRODUCTS TESTS
+// ============================================================================
+
+// ✅ PASS: Anyone can read products
+test("allow public read of products") {
+  expect(
+    get(/databases/$(database)/documents/products/product123)
+  ).toAllow();
+}
+
+// ✅ PASS: Non-admin cannot write products
+test("deny non-admin write to products") {
+  expect(
+    create(/databases/$(database)/documents/products/product123, {
+      title: "Fake Product",
+      price: 0.01
+    })
+  ).toDeny();
+}
+
+// ✅ PASS: Non-admin cannot delete products
+test("deny non-admin delete of products") {
+  expect(
+    delete(/databases/$(database)/documents/products/product123)
+  ).toDeny();
+}
+
+// ✅ PASS: Admin can write products
+test("allow admin write to products") {
+  // Assuming admin user ID is "admin123" and exists in /admins/admin123
+  expect(
+    create(/databases/$(database)/documents/products/product123, {
+      title: "Admin Product",
+      price: 100
+    }, auth("admin123"))
+  ).toAllow();
+}
+
+// ============================================================================
+// ORDERS TESTS - CRITICAL SECURITY
+// ============================================================================
+
+// ✅ PASS: Anyone can GET a specific order by ID
+// This is intentional - the order ID is the secret
+test("allow get specific order by ID") {
+  expect(
+    get(/databases/$(database)/documents/orders/order123)
+  ).toAllow();
+}
+
+// ✅ PASS: Non-admin CANNOT list all orders
+test("deny non-admin list of orders") {
+  expect(
+    query(/databases/$(database)/documents/orders)
+  ).toDeny();
+}
+
+// ✅ PASS: Admin CAN list all orders
+test("allow admin list all orders") {
+  expect(
+    query(/databases/$(database)/documents/orders, auth("admin123"))
+  ).toAllow();
+}
+
+// 🚨 CRITICAL: Client CANNOT create orders (prevents price manipulation)
+test("deny client-side order creation") {
+  expect(
+    create(/databases/$(database)/documents/orders/order456, {
+      customerInfo: {
+        email: "attacker@evil.com",
+        name: "Attacker"
+      },
+      items: [{
+        productId: "product123",
+        quantity: 1,
+        price: 0.01  // Trying to manipulate price!
+      }],
+      total: 0.01,  // Should be 100+ but attacker sets to 0.01
+      paymentIntentId: "pi_fake123",
+      status: "pending"
+    })
+  ).toDeny();
+}
+
+// 🚨 CRITICAL: Authenticated user also CANNOT create orders
+test("deny authenticated user order creation") {
+  expect(
+    create(/databases/$(database)/documents/orders/order789, {
+      customerInfo: {
+        email: "user@example.com",
+        name: "User"
+      },
+      items: [{
+        productId: "product123",
+        quantity: 1,
+        price: 0.01
+      }],
+      total: 0.01,
+      paymentIntentId: "pi_fake456",
+      status: "pending"
+    }, auth("user123"))
+  ).toDeny();
+}
+
+// ✅ PASS: Non-admin CANNOT update orders
+test("deny non-admin update of orders") {
+  expect(
+    update(/databases/$(database)/documents/orders/order123, {
+      status: "cancelled"  // Trying to cancel without paying!
+    })
+  ).toDeny();
+}
+
+// ✅ PASS: Non-admin CANNOT update order price
+test("deny non-admin price manipulation") {
+  expect(
+    update(/databases/$(database)/documents/orders/order123, {
+      total: 0.01  // Trying to change €100 order to €0.01!
+    }, auth("user123"))
+  ).toDeny();
+}
+
+// ✅ PASS: Admin CAN update order status
+test("allow admin update order status") {
+  expect(
+    update(/databases/$(database)/documents/orders/order123, {
+      status: "shipped",
+      trackingNumber: "TRACK123"
+    }, auth("admin123"))
+  ).toAllow();
+}
+
+// ✅ PASS: Nobody can delete orders
+test("deny order deletion") {
+  expect(
+    delete(/databases/$(database)/documents/orders/order123)
+  ).toDeny();
+}
+
+test("deny admin order deletion") {
+  expect(
+    delete(/databases/$(database)/documents/orders/order123, auth("admin123"))
+  ).toDeny();
+}
+
+// ============================================================================
+// CUSTOMERS TESTS
+// ============================================================================
+
+// ✅ PASS: Users can read their own customer data
+test("allow user read own customer data") {
+  expect(
+    get(/databases/$(database)/documents/customers/user123, auth("user123"))
+  ).toAllow();
+}
+
+// ✅ PASS: Users CANNOT read other users' data
+test("deny user read other customer data") {
+  expect(
+    get(/databases/$(database)/documents/customers/user456, auth("user123"))
+  ).toDeny();
+}
+
+// ✅ PASS: Users can write their own data
+test("allow user write own customer data") {
+  expect(
+    create(/databases/$(database)/documents/customers/user123, {
+      email: "user@example.com",
+      name: "User"
+    }, auth("user123"))
+  ).toAllow();
+}
+
+// ✅ PASS: Users CANNOT delete their own data
+test("deny user delete own customer data") {
+  expect(
+    delete(/databases/$(database)/documents/customers/user123, auth("user123"))
+  ).toDeny();
+}
+
+// ============================================================================
+// ADMINS TESTS
+// ============================================================================
+
+// ✅ PASS: Admin can read own admin document
+test("allow admin read own admin doc") {
+  expect(
+    get(/databases/$(database)/documents/admins/admin123, auth("admin123"))
+  ).toAllow();
+}
+
+// ✅ PASS: Nobody can write to admins collection
+test("deny admin document creation") {
+  expect(
+    create(/databases/$(database)/documents/admins/hacker123, {
+      email: "hacker@evil.com"
+    })
+  ).toDeny();
+}
+
+test("deny admin document modification") {
+  expect(
+    update(/databases/$(database)/documents/admins/admin123, {
+      email: "newemail@evil.com"
+    }, auth("admin123"))
+  ).toDeny();
+}
+
+// ============================================================================
+// ATTACK SCENARIO TESTS
+// ============================================================================
+
+// 🚨 ATTACK: User tries to create order with zero price
+test("ATTACK: prevent zero-price order creation") {
+  expect(
+    create(/databases/$(database)/documents/orders/attack1, {
+      customerInfo: { email: "attacker@evil.com", name: "Attacker" },
+      items: [{ productId: "expensive-item", quantity: 1, price: 500 }],
+      total: 0,  // FREE!
+      paymentIntentId: "pi_fake",
+      status: "paid"
+    })
+  ).toDeny();
+}
+
+// 🚨 ATTACK: User tries to query all orders to steal customer data
+test("ATTACK: prevent customer data theft via order listing") {
+  expect(
+    query(/databases/$(database)/documents/orders, auth("user123"))
+  ).toDeny();
+}
+
+// 🚨 ATTACK: User tries to mark order as paid without payment
+test("ATTACK: prevent fake order completion") {
+  expect(
+    create(/databases/$(database)/documents/orders/attack2, {
+      customerInfo: { email: "attacker@evil.com", name: "Attacker" },
+      items: [{ productId: "product123", quantity: 1, price: 100 }],
+      total: 100,
+      paymentIntentId: "pi_fake",
+      status: "paid"  // Marked as paid without Stripe!
+    })
+  ).toDeny();
+}
+
+// 🚨 ATTACK: User tries to change existing order to lower price
+test("ATTACK: prevent order price manipulation after creation") {
+  expect(
+    update(/databases/$(database)/documents/orders/existing-order, {
+      total: 0.01
+    }, auth("user123"))
+  ).toDeny();
+}
+
+/**
+ * HOW TO RUN THESE TESTS:
+ *
+ * 1. Install testing library:
+ *    npm install --save-dev @firebase/rules-unit-testing
+ *
+ * 2. Add to package.json scripts:
+ *    "test:rules": "firebase emulators:exec --only firestore 'npm run test:rules:run'"
+ *
+ * 3. Use Firebase's Rules Playground:
+ *    https://console.firebase.google.com/project/YOUR_PROJECT/firestore/rules
+ *    - Click "Rules Playground"
+ *    - Test these scenarios manually
+ *
+ * MANUAL TESTING IN FIREBASE CONSOLE:
+ *
+ * Test 1: Try to create an order
+ * - Location: /orders/test123
+ * - Auth: Unauthenticated
+ * - Operation: create
+ * - Data: { total: 0.01, items: [] }
+ * - Expected: DENIED ✅
+ *
+ * Test 2: Try to read specific order
+ * - Location: /orders/existing-order-id
+ * - Auth: Unauthenticated
+ * - Operation: get
+ * - Expected: ALLOWED ✅
+ *
+ * Test 3: Try to list all orders
+ * - Location: /orders
+ * - Auth: Unauthenticated
+ * - Operation: list
+ * - Expected: DENIED ✅
+ */

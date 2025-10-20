@@ -11,36 +11,44 @@ service cloud.firestore {
     match /products/{productId} {
       allow read: if true;
       allow write: if isAdmin();
+      allow delete: if isAdmin();
     }
 
-    // Orders - guest checkout allowed, read with order ID or email match
+    // Orders - SECURE: Server-side only via Admin SDK
+    // Orders are created by Stripe webhook using Admin SDK (bypasses these rules)
+    // Users access orders via unique order ID after successful Stripe payment
+    // The order ID URL acts as the authentication token
     match /orders/{orderId} {
-      // Allow reading order if:
-      // 1. Admin
-      // 2. Authenticated user matches email
-      // 3. Public read (for order confirmation page)
-      allow read: if true; // Open for order confirmation
+      // Only admins can list/query all orders
+      allow list: if isAdmin();
 
-      // Allow creating order for guest checkout
-      // Validate required fields exist
-      allow create: if request.resource.data.customerInfo.email is string &&
-                       request.resource.data.items is list &&
-                       request.resource.data.paymentIntentId is string &&
-                       request.resource.data.total is number;
+      // Anyone with the order ID can read that specific order
+      // This is safe because order IDs are unpredictable Firestore auto-IDs
+      // returned only after successful Stripe payment
+      allow get: if true;
 
-      // Only admins can update orders
+      // CRITICAL: No client-side creation - prevents price manipulation
+      // Orders MUST be created server-side via Admin SDK in /api/webhook
+      allow create: if false;
+
+      // Only admins can update order status
       allow update: if isAdmin();
+
+      // No deletes allowed
+      allow delete: if false;
     }
 
     // Customers - users can read/write their own data
     match /customers/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false;
     }
 
     // Admins - admin only read
     match /admins/{userId} {
       allow read: if request.auth != null && request.auth.uid == userId;
       allow write: if false; // Manually managed in console
+      allow delete: if false;
     }
   }
 }

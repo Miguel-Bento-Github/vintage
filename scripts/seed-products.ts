@@ -21,9 +21,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Connect to emulators
-connectFirestoreEmulator(db, 'localhost', 3476);
-connectAuthEmulator(auth, 'http://localhost:3477', { disableWarnings: true });
+// Connect to emulators only if enabled
+if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === 'true') {
+  console.log('🔧 Connecting to Firebase emulators...');
+  connectFirestoreEmulator(db, 'localhost', 3476);
+  connectAuthEmulator(auth, 'http://localhost:3477', { disableWarnings: true });
+} else {
+  console.log('🔥 Connecting to production Firebase...');
+}
 
 async function promptAdminCredentials(): Promise<{ email: string; password: string }> {
   const rl = readline.createInterface({

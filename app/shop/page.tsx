@@ -24,7 +24,7 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category') || '';
 
-  const { data: products = [], isLoading, isError, error, refetch } = useProducts();
+  const { data: products = [], isLoading, isError, refetch } = useProducts();
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');

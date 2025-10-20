@@ -58,7 +58,7 @@ export default function OrderConfirmationPage() {
         // If we're on the processing page with a payment intent, we might need to create the order
         if (orderId === 'processing' && paymentIntentId && redirectStatus === 'succeeded') {
           // First, try to fetch existing order
-          let response = await fetch(`/api/orders/${paymentIntentId}`);
+          const response = await fetch(`/api/orders/${paymentIntentId}`);
 
           if (response.ok) {
             // Order already exists
@@ -353,7 +353,7 @@ export default function OrderConfirmationPage() {
                   clipRule="evenodd"
                 />
               </svg>
-              You'll receive an order confirmation email shortly
+              You&apos;ll receive an order confirmation email shortly
             </li>
             <li className="flex items-start">
               <svg
@@ -367,7 +367,7 @@ export default function OrderConfirmationPage() {
                   clipRule="evenodd"
                 />
               </svg>
-              We'll send you shipping updates as your order is prepared
+              We&apos;ll send you shipping updates as your order is prepared
             </li>
             <li className="flex items-start">
               <svg

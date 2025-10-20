@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "next dev --turbopack -p 5577",
     "build": "next build --turbopack",
-    "start": "next start",
+    "start": "next start -p 5577",
     "lint": "eslint",
-    "seed": "tsx scripts/seed-products.ts"
+    "type-check": "tsc --noEmit",
+    "seed": "tsx scripts/seed-products.ts",
+    "test:security": "tsx scripts/test-firestore-rules.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

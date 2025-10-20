@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { Order, OrderStatus } from '@/types';
 import { getAllOrders, updateOrderStatus } from '@/services/orderService';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -65,7 +64,7 @@ export default function OrderManagementPage() {
       if (result.success && result.data) {
         setOrders(result.data);
       } else {
-        setError(result.error || 'Failed to load orders');
+        setError('Failed to load orders');
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -92,7 +91,7 @@ export default function OrderManagementPage() {
         setTrackingNumber('');
         setError(null);
       } else {
-        setError(result.error || 'Failed to update order status');
+        setError('Failed to update order status');
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -113,7 +112,7 @@ export default function OrderManagementPage() {
     return colors[status];
   };
 
-  const formatDate = (timestamp: any): string => {
+  const formatDate = (timestamp: { toDate: () => Date }): string => {
     return timestamp.toDate().toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
