@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Order, OrderStatus } from '@/types';
 import { getAllOrders, updateOrderStatus } from '@/services/orderService';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import ErrorState from '@/components/ErrorState';
 
 type StatusFilter = OrderStatus | 'all';
 
@@ -124,9 +126,22 @@ export default function OrderManagementPage() {
   if (isLoading) {
     return (
       <div className="p-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-700"></div>
+        <div className="flex flex-col items-center justify-center h-64">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-600">Loading orders...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (error && orders.length === 0) {
+    return (
+      <div className="p-8">
+        <ErrorState
+          title="Unable to load orders"
+          message={error}
+          onRetry={fetchOrders}
+        />
       </div>
     );
   }

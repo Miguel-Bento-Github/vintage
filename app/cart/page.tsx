@@ -58,14 +58,15 @@ export default function CartPage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-sm">
               {/* Header */}
-              <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h2 className="font-semibold text-gray-900">
                   {items.length} {items.length === 1 ? 'Item' : 'Items'}
                 </h2>
                 {items.length > 0 && (
                   <button
                     onClick={clearCart}
-                    className="text-sm text-red-600 hover:text-red-700 font-medium"
+                    className="px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md font-medium transition-colors"
+                    style={{ minHeight: '44px' }}
                   >
                     Clear Cart
                   </button>
@@ -75,8 +76,8 @@ export default function CartPage() {
               {/* Items List */}
               <div className="divide-y divide-gray-200">
                 {items.map((item) => (
-                  <div key={item.productId} className="p-6">
-                    <div className="flex gap-4">
+                  <div key={item.productId} className="p-4 sm:p-6">
+                    <div className="flex gap-3 sm:gap-4">
                       {/* Image */}
                       <div className="flex-shrink-0">
                         <Link href={`/product/${item.productId}`}>
@@ -130,7 +131,8 @@ export default function CartPage() {
                           </p>
                           <button
                             onClick={() => removeFromCart(item.productId)}
-                            className="text-sm text-red-600 hover:text-red-700 font-medium"
+                            className="px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md font-medium transition-colors"
+                            style={{ minHeight: '44px', minWidth: '80px' }}
                           >
                             Remove
                           </button>
@@ -166,9 +168,9 @@ export default function CartPage() {
             </div>
           </div>
 
-          {/* Order Summary - Desktop */}
+          {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-8">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 lg:sticky lg:top-24">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
 
               <div className="space-y-4 mb-6">

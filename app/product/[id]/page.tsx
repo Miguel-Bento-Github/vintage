@@ -203,8 +203,8 @@ export default async function ProductPage({ params }: PageProps) {
       <div className="min-h-screen bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Breadcrumbs */}
-          <nav className="mb-8 text-sm">
-            <ol className="flex items-center space-x-2 text-gray-500">
+          <nav className="mb-8 text-xs sm:text-sm overflow-x-auto">
+            <ol className="flex items-center space-x-2 text-gray-500 whitespace-nowrap">
               <li>
                 <Link href="/" className="hover:text-gray-700">
                   Home
@@ -226,7 +226,7 @@ export default async function ProductPage({ params }: PageProps) {
                 </Link>
               </li>
               <li>/</li>
-              <li className="text-gray-900 font-medium">{product.title}</li>
+              <li className="text-gray-900 font-medium truncate max-w-[150px] sm:max-w-none">{product.title}</li>
             </ol>
           </nav>
 
@@ -248,9 +248,9 @@ export default async function ProductPage({ params }: PageProps) {
               </h1>
 
               {/* Price and Era */}
-              <div className="flex items-center gap-4 mb-6">
-                <p className="text-3xl font-bold text-gray-900">
-                  ${product.price.toFixed(2)}
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-6">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  €{product.price.toFixed(2)}
                 </p>
                 <span className="px-4 py-1 bg-amber-700 text-white text-sm font-semibold rounded-full">
                   {product.era}
@@ -420,7 +420,7 @@ export default async function ProductPage({ params }: PageProps) {
                         {similarProduct.title}
                       </h3>
                       <p className="text-xl font-bold text-gray-900">
-                        ${similarProduct.price.toFixed(2)}
+                        €{similarProduct.price.toFixed(2)}
                       </p>
                     </div>
                   </Link>

@@ -134,7 +134,7 @@ export default async function HomePage() {
                       {product.title}
                     </h3>
                     <p className="text-xl font-bold text-gray-900">
-                      ${product.price.toFixed(2)}
+                      €{product.price.toFixed(2)}
                     </p>
                   </div>
                 </Link>

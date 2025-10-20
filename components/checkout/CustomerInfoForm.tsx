@@ -33,9 +33,10 @@ export default function CustomerInfoForm({
             id="email"
             value={formData.email}
             onChange={(e) => onFormDataChange({ ...formData, email: e.target.value })}
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 ${
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
               formErrors.email ? 'border-red-500' : 'border-gray-300'
             }`}
+            style={{ minHeight: '44px' }}
             placeholder="you@example.com"
           />
           {formErrors.email && <p className="mt-1 text-sm text-red-600">{formErrors.email}</p>}
@@ -51,7 +52,7 @@ export default function CustomerInfoForm({
             id="name"
             value={formData.name}
             onChange={(e) => onFormDataChange({ ...formData, name: e.target.value })}
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 ${
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
               formErrors.name ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="John Doe"
@@ -69,7 +70,7 @@ export default function CustomerInfoForm({
             id="street"
             value={formData.street}
             onChange={(e) => onFormDataChange({ ...formData, street: e.target.value })}
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 ${
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
               formErrors.street ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="e.g. 123 Rue de Rivoli, Hauptstraße 45"
@@ -88,7 +89,7 @@ export default function CustomerInfoForm({
               id="city"
               value={formData.city}
               onChange={(e) => onFormDataChange({ ...formData, city: e.target.value })}
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 ${
+              className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
                 formErrors.city ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="e.g. Paris, Berlin, Amsterdam"
@@ -105,7 +106,7 @@ export default function CustomerInfoForm({
               id="state"
               value={formData.state}
               onChange={(e) => onFormDataChange({ ...formData, state: e.target.value })}
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 ${
+              className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
                 formErrors.state ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="e.g. CA, Bavaria, Île-de-France"
@@ -122,7 +123,7 @@ export default function CustomerInfoForm({
               id="postalCode"
               value={formData.postalCode}
               onChange={(e) => onFormDataChange({ ...formData, postalCode: e.target.value })}
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 ${
+              className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
                 formErrors.postalCode ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="e.g. 75001, 10115, SW1A 1AA"
@@ -142,7 +143,7 @@ export default function CustomerInfoForm({
             id="country"
             value={formData.country}
             onChange={(e) => onFormDataChange({ ...formData, country: e.target.value })}
-            className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 ${
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
               formErrors.country ? 'border-red-500' : 'border-gray-300'
             }`}
           >

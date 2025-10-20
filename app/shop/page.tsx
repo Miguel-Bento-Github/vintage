@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useProducts } from '@/hooks/useProducts';
 import { ERAS, CATEGORIES, CONDITIONS } from '@/lib/constants';
+import ErrorState from '@/components/ErrorState';
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 type PriceRange = 'under-50' | '50-100' | '100-200' | '200-plus';
@@ -23,7 +24,7 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category') || '';
 
-  const { data: products = [], isLoading } = useProducts();
+  const { data: products = [], isLoading, isError, error, refetch } = useProducts();
 
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -399,14 +400,16 @@ function ShopContent() {
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-base"
+              style={{ minHeight: '44px' }}
             />
           </div>
           <div className="flex gap-2">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white"
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-base"
+              style={{ minHeight: '44px' }}
             >
               <option value="newest">Newest First</option>
               <option value="price-asc">Price: Low to High</option>
@@ -415,7 +418,8 @@ function ShopContent() {
             {/* Mobile filter toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden px-4 py-2 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors"
+              className="lg:hidden px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors font-medium whitespace-nowrap"
+              style={{ minHeight: '44px' }}
             >
               Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
             </button>
@@ -485,7 +489,14 @@ function ShopContent() {
             </div>
 
             {/* Product Grid */}
-            {isLoading ? (
+            {isError ? (
+              <ErrorState
+                title="Unable to load products"
+                message="We're having trouble loading the products. Please check your connection and try again."
+                onRetry={() => refetch()}
+                showHomeLink={false}
+              />
+            ) : isLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="bg-white rounded-lg overflow-hidden shadow-sm animate-pulse">
@@ -540,7 +551,7 @@ function ShopContent() {
                       </h3>
                       <div className="flex items-center justify-between">
                         <p className="text-xl font-bold text-gray-900">
-                          ${product.price.toFixed(2)}
+                          €{product.price.toFixed(2)}
                         </p>
                         <p className="text-sm text-gray-500">{product.size.label}</p>
                       </div>

@@ -100,6 +100,8 @@ const sampleProducts = [
     tags: ['polo', 'preppy', 'logo', 'casual'],
     images: [
       'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=800',
+      'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800',
+      'https://images.unsplash.com/photo-1603251579431-8041402bdeda?w=800',
     ],
     inStock: true,
     featured: false,
@@ -141,6 +143,8 @@ const sampleProducts = [
     tags: ['basketball', 'jordan', 'logo', 'athletic'],
     images: [
       'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800',
+      'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800',
+      'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800',
     ],
     inStock: true,
     featured: false,
@@ -203,6 +207,8 @@ const sampleProducts = [
     tags: ['workwear', 'chinos', 'durable', 'skate'],
     images: [
       'https://images.unsplash.com/photo-1624378515195-6bbdb73dff1a?w=800',
+      'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=800',
+      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800',
     ],
     inStock: false,
     featured: false,
@@ -244,6 +250,8 @@ const sampleProducts = [
     tags: ['oxford', 'preppy', 'button-down', 'dress-shirt'],
     images: [
       'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800',
+      'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800',
+      'https://images.unsplash.com/photo-1603251579431-8041402bdeda?w=800',
     ],
     inStock: true,
     featured: false,
@@ -306,6 +314,8 @@ const sampleProducts = [
     tags: ['wool', 'plaid', 'flannel', 'workwear', 'americana'],
     images: [
       'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800',
+      'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800',
+      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800',
     ],
     inStock: true,
     featured: true,
@@ -326,6 +336,8 @@ const sampleProducts = [
     tags: ['floral', 'midi', 'boho', 'summer'],
     images: [
       'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
+      'https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800',
+      'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800',
     ],
     inStock: true,
     featured: false,
@@ -346,6 +358,8 @@ const sampleProducts = [
     tags: ['leather', 'bomber', 'pilot', 'motorcycle'],
     images: [
       'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800',
+      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800',
+      'https://images.unsplash.com/photo-1520367935095-76c8ed2d6f0e?w=800',
     ],
     inStock: true,
     featured: true,
@@ -366,6 +380,8 @@ const sampleProducts = [
     tags: ['corduroy', 'flare', 'hippie', 'boho'],
     images: [
       'https://images.unsplash.com/photo-1624378515195-6bbdb73dff1a?w=800',
+      'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=800',
+      'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800',
     ],
     inStock: true,
     featured: false,
@@ -386,6 +402,8 @@ const sampleProducts = [
     tags: ['wool', 'plaid', 'tartan', 'preppy'],
     images: [
       'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800',
+      'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800',
+      'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
     ],
     inStock: true,
     featured: false,
@@ -406,6 +424,8 @@ const sampleProducts = [
     tags: ['cable-knit', 'wool', 'irish', 'fisherman'],
     images: [
       'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800',
+      'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800',
+      'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800',
     ],
     inStock: true,
     featured: false,
@@ -426,6 +446,8 @@ const sampleProducts = [
     tags: ['military', 'navy', 'wool', 'peacoat'],
     images: [
       'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800',
+      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800',
+      'https://images.unsplash.com/photo-1520367935095-76c8ed2d6f0e?w=800',
     ],
     inStock: true,
     featured: true,
@@ -447,6 +469,8 @@ const sampleProducts = [
     tags: ['velvet', 'cocktail', 'party', 'formal', 'rockabilly'],
     images: [
       'https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800',
+      'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
+      'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800',
     ],
     inStock: true,
     featured: true,
@@ -467,6 +491,8 @@ const sampleProducts = [
     tags: ['denim', 'trucker', 'jean-jacket', 'type-iii'],
     images: [
       'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=800',
+      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800',
+      'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?w=800',
     ],
     inStock: true,
     featured: true,
@@ -487,6 +513,8 @@ const sampleProducts = [
     tags: ['silk', 'bomber', 'souvenir', 'embroidered', 'sukajan'],
     images: [
       'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800',
+      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800',
+      'https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?w=800',
     ],
     inStock: true,
     featured: true,
@@ -507,6 +535,8 @@ const sampleProducts = [
     tags: ['fair-isle', 'cardigan', 'wool', 'geometric'],
     images: [
       'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800',
+      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800',
+      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800',
     ],
     inStock: true,
     featured: false,
@@ -524,6 +554,8 @@ const sampleProducts = [
     tags: ['belt', 'leather', 'brass', 'western'],
     images: [
       'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800',
+      'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800',
+      'https://images.unsplash.com/photo-1611923134239-3f813957c7c3?w=800',
     ],
     inStock: true,
     featured: false,
@@ -544,6 +576,8 @@ const sampleProducts = [
     tags: ['tweed', 'wool', 'herringbone', 'formal'],
     images: [
       'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800',
+      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800',
+      'https://images.unsplash.com/photo-1558689946-57798f522042?w=800',
     ],
     inStock: true,
     featured: false,
@@ -564,6 +598,8 @@ const sampleProducts = [
     tags: ['tennis', 'pleated', 'athletic', 'preppy'],
     images: [
       'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800',
+      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800',
+      'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800',
     ],
     inStock: false,
     featured: false,
