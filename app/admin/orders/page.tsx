@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Order, OrderStatus } from '@/types';
 import { getAllOrders, updateOrderStatus } from '@/services/orderService';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -358,12 +359,14 @@ export default function OrderManagementPage() {
                 <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
                   {selectedOrder.items.map((item, index) => (
                     <div key={index} className="p-4 flex gap-4">
-                      <div className="w-16 h-16 bg-gray-100 rounded flex-shrink-0">
+                      <div className="w-16 h-16 bg-gray-100 rounded flex-shrink-0 relative">
                         {item.imageUrl && (
-                          <img
+                          <Image
                             src={item.imageUrl}
                             alt={item.title}
-                            className="w-full h-full object-cover rounded"
+                            fill
+                            className="object-cover rounded"
+                            sizes="64px"
                           />
                         )}
                       </div>
