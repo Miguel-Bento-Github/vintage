@@ -1,10 +1,12 @@
 import { initializeApp, getApps, cert, ServiceAccount } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, Firestore } from 'firebase-admin/firestore';
 
 /**
  * Firebase Admin SDK initialization
  * This runs server-side only and bypasses Firestore security rules
  */
+
+let adminDb: Firestore;
 
 // Initialize Firebase Admin
 if (!getApps().length) {
@@ -22,7 +24,20 @@ if (!getApps().length) {
     credential: cert(serviceAccount),
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   });
+
+  // Get Firestore instance
+  adminDb = getFirestore();
+
+  // Configure Firestore to use emulators in development
+  // Must be called before any other Firestore operations
+  if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === 'true') {
+    adminDb.settings({
+      host: 'localhost:3476',
+      ssl: false,
+    });
+  }
+} else {
+  adminDb = getFirestore();
 }
 
-// Export Firestore instance
-export const adminDb = getFirestore();
+export { adminDb };
