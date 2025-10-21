@@ -137,8 +137,8 @@ export default function PaymentForm({
         // Clear cart
         onClearCart();
 
-        // Redirect to confirmation page
-        router.push(`/${locale}/order-confirmation/${orderId || paymentIntent.id}`);
+        // Use window.location for full page navigation to avoid race condition with cart empty redirect
+        window.location.href = `/${locale}/order-confirmation/${orderId || paymentIntent.id}`;
       }
     } catch (err) {
       console.error('Payment error:', err);
