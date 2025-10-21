@@ -29,6 +29,26 @@ export default function CustomerInfoForm({
       </div>
 
       <div className="space-y-4">
+        {/* Full Name */}
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            {t('name')} *
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            autoComplete="name"
+            value={formData.name}
+            onChange={(e) => onFormDataChange({ ...formData, name: e.target.value })}
+            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
+              formErrors.name ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="John Doe"
+          />
+          {formErrors.name && <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>}
+        </div>
+
         {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -48,26 +68,6 @@ export default function CustomerInfoForm({
             placeholder="you@example.com"
           />
           {formErrors.email && <p className="mt-1 text-sm text-red-600">{formErrors.email}</p>}
-        </div>
-
-        {/* Full Name */}
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            {t('name')} *
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            autoComplete="name"
-            value={formData.name}
-            onChange={(e) => onFormDataChange({ ...formData, name: e.target.value })}
-            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
-              formErrors.name ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="John Doe"
-          />
-          {formErrors.name && <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>}
         </div>
 
         {/* Street Address */}
