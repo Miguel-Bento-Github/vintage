@@ -13,7 +13,6 @@ interface PaymentFormProps {
   shipping: number;
   total: number;
   onBack: () => void;
-  onClearCart: () => void;
 }
 
 export default function PaymentForm({
@@ -23,7 +22,6 @@ export default function PaymentForm({
   shipping,
   total,
   onBack,
-  onClearCart,
 }: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();

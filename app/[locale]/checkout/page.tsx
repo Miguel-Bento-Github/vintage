@@ -19,7 +19,6 @@ export default function CheckoutPage() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('checkout');
-  const tCommon = useTranslations('common');
   const { items, clearCart, getCartTotal } = useCart();
   const { currency } = useCurrency();
 
@@ -203,7 +202,6 @@ export default function CheckoutPage() {
                   shipping={shipping}
                   total={total}
                   onBack={handlePreviousStep}
-                  onClearCart={clearCart}
                 />
               </Elements>
             )}

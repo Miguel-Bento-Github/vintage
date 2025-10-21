@@ -10,7 +10,7 @@ export async function GET(
     const { id: orderId } = await params;
 
     // Try to fetch by order ID first using Admin SDK
-    let result = await getOrderAdmin(orderId);
+    const result = await getOrderAdmin(orderId);
 
     // If not found and ID looks like a payment intent ID, search for it
     if (!result.success || !result.data) {
