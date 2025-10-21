@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { CartItem } from '@/types';
-import { Currency } from '@/lib/currency';
+import { Currency, convertPrice } from '@/lib/currency';
 import { getStripeAmount, getStripeCurrency, isStripeSupportedCurrency } from '@/lib/stripeHelpers';
+import { getExchangeRatesServer } from '@/lib/exchangeRatesServer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,10 +25,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate subtotal and shipping (no tax - Stripe will calculate)
-    // Note: Prices in cart are already in the selected currency
-    const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-    const shipping = subtotal >= 100 ? 0 : 10; // Free shipping over €100 equivalent
+    // Fetch current exchange rates (server-side)
+    const exchangeRates = await getExchangeRatesServer();
+
+    // Calculate subtotal and shipping
+    // Note: Prices in cart are in EUR (base currency), need to convert to selected currency
+    const subtotalInEUR = items.reduce((sum, item) => sum + item.price, 0);
+    const subtotal = convertPrice(subtotalInEUR, currency, exchangeRates);
+
+    // Free shipping threshold: €100 or equivalent
+    const shippingThreshold = convertPrice(100, currency, exchangeRates);
+    const shippingCost = convertPrice(10, currency, exchangeRates);
+    const shipping = subtotal >= shippingThreshold ? 0 : shippingCost;
     const total = subtotal + shipping;
 
     // Convert to Stripe's smallest currency unit (cents for most, yen for JPY)
