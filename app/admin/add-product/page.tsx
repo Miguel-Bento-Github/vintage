@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, ChangeEvent } from 'react';
+import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { addProduct } from '@/services/productService';
 import { ERAS, CATEGORIES, CONDITIONS } from '@/lib/constants';
@@ -59,6 +59,13 @@ export default function AddProductPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  // Scroll to top when error or success message appears
+  useEffect(() => {
+    if (error || success) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [error, success]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
