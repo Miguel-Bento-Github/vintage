@@ -19,6 +19,7 @@ export default function CustomerInfoForm({
   onBack,
 }: CustomerInfoFormProps) {
   const t = useTranslations('checkout');
+  const tCommon = useTranslations('common');
 
   return (
     <div className="space-y-6">
@@ -36,6 +37,8 @@ export default function CustomerInfoForm({
           <input
             type="email"
             id="email"
+            name="email"
+            autoComplete="email"
             value={formData.email}
             onChange={(e) => onFormDataChange({ ...formData, email: e.target.value })}
             className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -55,6 +58,8 @@ export default function CustomerInfoForm({
           <input
             type="text"
             id="name"
+            name="name"
+            autoComplete="name"
             value={formData.name}
             onChange={(e) => onFormDataChange({ ...formData, name: e.target.value })}
             className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -73,6 +78,8 @@ export default function CustomerInfoForm({
           <input
             type="text"
             id="street"
+            name="address-line1"
+            autoComplete="address-line1"
             value={formData.street}
             onChange={(e) => onFormDataChange({ ...formData, street: e.target.value })}
             className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -92,6 +99,8 @@ export default function CustomerInfoForm({
             <input
               type="text"
               id="city"
+              name="address-level2"
+              autoComplete="address-level2"
               value={formData.city}
               onChange={(e) => onFormDataChange({ ...formData, city: e.target.value })}
               className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -109,6 +118,8 @@ export default function CustomerInfoForm({
             <input
               type="text"
               id="state"
+              name="address-level1"
+              autoComplete="address-level1"
               value={formData.state}
               onChange={(e) => onFormDataChange({ ...formData, state: e.target.value })}
               className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -126,6 +137,8 @@ export default function CustomerInfoForm({
             <input
               type="text"
               id="postalCode"
+              name="postal-code"
+              autoComplete="postal-code"
               value={formData.postalCode}
               onChange={(e) => onFormDataChange({ ...formData, postalCode: e.target.value })}
               className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -146,6 +159,8 @@ export default function CustomerInfoForm({
           </label>
           <select
             id="country"
+            name="country"
+            autoComplete="country"
             value={formData.country}
             onChange={(e) => onFormDataChange({ ...formData, country: e.target.value })}
             className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -187,7 +202,7 @@ export default function CustomerInfoForm({
           onClick={onBack}
           className="flex-1 px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
         >
-          {t('..common.back')} to Cart
+          {tCommon('back')} to Cart
         </button>
         <button
           type="button"
