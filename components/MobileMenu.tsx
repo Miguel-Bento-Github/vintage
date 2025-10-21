@@ -81,13 +81,6 @@ export default function MobileMenu() {
                           {t('shop')}
                         </Link>
                         <Link
-                          href={`/${locale}/about`}
-                          onClick={() => setIsOpen(false)}
-                          className={`px-6 py-4 ${pathname === `/${locale}/about` ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}
-                        >
-                          {t('about')}
-                        </Link>
-                        <Link
                           href={`/${locale}/cart`}
                           onClick={() => setIsOpen(false)}
                           className={`px-6 py-4 ${pathname === `/${locale}/cart` ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}

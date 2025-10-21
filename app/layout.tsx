@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vintage Store - Authentic Vintage Clothing",
+  title: "Dream Azul - Authentic Vintage Clothing",
   description: "Curated collection of authentic vintage clothing from the 1950s-2000s. One-of-a-kind pieces with character and history.",
 };
 

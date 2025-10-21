@@ -13,7 +13,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* About */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Vintage Store</h3>
+            <h3 className="text-white font-bold text-lg mb-4">Dream Azul</h3>
             <p className="text-sm">
               {t('product.authenticVintage')} {t('product.curatedWithCare').toLowerCase()}.
             </p>
@@ -51,11 +51,6 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4">{t('nav.contact')}</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href={`/${locale}/about`} className="hover:text-white">
-                  {t('nav.about')}
-                </Link>
-              </li>
-              <li>
                 <Link href={`/${locale}/contact`} className="hover:text-white">
                   {t('nav.contact')}
                 </Link>
@@ -88,7 +83,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-center">
-          <p>&copy; {new Date().getFullYear()} Vintage Store. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Dream Azul. All rights reserved.</p>
         </div>
       </div>
     </footer>

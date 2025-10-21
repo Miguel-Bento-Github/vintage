@@ -17,7 +17,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href={`/${locale}`} className="text-xl sm:text-2xl font-bold text-gray-900">
-            Vintage Store
+            Dream Azul
           </Link>
 
           {/* Desktop Navigation */}
@@ -27,9 +27,6 @@ export default function Header() {
             </Link>
             <Link href={`/${locale}/shop`} className="text-gray-700 hover:text-gray-900 transition-colors">
               {t('shop')}
-            </Link>
-            <Link href={`/${locale}/about`} className="text-gray-700 hover:text-gray-900 transition-colors">
-              {t('about')}
             </Link>
           </nav>
 
