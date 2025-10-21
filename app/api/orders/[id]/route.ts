@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrder, getOrderByPaymentIntentId } from '@/services/orderService';
+import { getOrderAdmin } from '@/services/adminOrderService';
+import { adminDb } from '@/lib/firebase-admin';
 
 export async function GET(
   request: NextRequest,
@@ -8,18 +9,32 @@ export async function GET(
   try {
     const { id: orderId } = await params;
 
-    // Try to fetch by order ID first
-    let result = await getOrder(orderId);
+    // Try to fetch by order ID first using Admin SDK
+    let result = await getOrderAdmin(orderId);
 
-    // If not found and ID looks like a payment intent ID, try that
-    if (!result.success && orderId.startsWith('pi_')) {
-      result = await getOrderByPaymentIntentId(orderId);
-    } else if (result.success && !result.data && orderId.startsWith('pi_')) {
-      // Also try payment intent if order not found by ID
-      result = await getOrderByPaymentIntentId(orderId);
-    }
-
+    // If not found and ID looks like a payment intent ID, search for it
     if (!result.success || !result.data) {
+      if (orderId.startsWith('pi_')) {
+        // Search for order by paymentIntentId using Admin SDK
+        const querySnapshot = await adminDb
+          .collection('orders')
+          .where('paymentIntentId', '==', orderId)
+          .limit(1)
+          .get();
+
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+          const order = {
+            id: doc.id,
+            ...doc.data(),
+          };
+          return NextResponse.json({
+            success: true,
+            order,
+          });
+        }
+      }
+
       return NextResponse.json(
         { error: 'Order not found' },
         { status: 404 }
