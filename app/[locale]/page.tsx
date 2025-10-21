@@ -45,17 +45,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <section className="relative bg-gradient-to-br from-amber-50 to-orange-50 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 tracking-tight mb-6">
               {t('homepage.hero.title')}
             </h1>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto mb-8">
               {t('homepage.hero.subtitle')}
             </p>
             <Link
               href={`/${locale}/shop`}
-              className="inline-block bg-amber-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-amber-800 transition-colors shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center px-16 py-8 bg-gradient-to-b from-amber-600 to-amber-800 text-white rounded-[50%] font-extrabold text-lg border-4 border-amber-900 shadow-[0_4px_0_0_rgba(120,53,15,0.4),inset_0_2px_0_0_rgba(255,255,255,0.2)] hover:shadow-[0_2px_0_0_rgba(120,53,15,0.4),inset_0_2px_0_0_rgba(255,255,255,0.2)] hover:translate-y-[2px] transition-all duration-150 relative overflow-hidden"
             >
-              {t('homepage.hero.shopNow')}
+              <span className="relative z-10">{t('homepage.hero.shopNow')}</span>
+              <span className="absolute inset-0 rounded-[50%] border-2 border-white/20 pointer-events-none"></span>
             </Link>
           </div>
         </div>
