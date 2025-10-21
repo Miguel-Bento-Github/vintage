@@ -5,10 +5,13 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const locale = useLocale();
+  const t = useTranslations('nav');
 
   return (
     <>
@@ -64,32 +67,32 @@ export default function MobileMenu() {
                       </div>
                       <nav className="flex flex-col py-4">
                         <Link
-                          href="/"
+                          href={`/${locale}`}
                           onClick={() => setIsOpen(false)}
-                          className={`px-6 py-4 ${pathname === '/' ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}
+                          className={`px-6 py-4 ${pathname === `/${locale}` ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}
                         >
-                          Home
+                          {t('home')}
                         </Link>
                         <Link
-                          href="/shop"
+                          href={`/${locale}/shop`}
                           onClick={() => setIsOpen(false)}
-                          className={`px-6 py-4 ${pathname === '/shop' ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}
+                          className={`px-6 py-4 ${pathname === `/${locale}/shop` ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}
                         >
-                          Shop
+                          {t('shop')}
                         </Link>
                         <Link
-                          href="/about"
+                          href={`/${locale}/about`}
                           onClick={() => setIsOpen(false)}
-                          className={`px-6 py-4 ${pathname === '/about' ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}
+                          className={`px-6 py-4 ${pathname === `/${locale}/about` ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}
                         >
-                          About
+                          {t('about')}
                         </Link>
                         <Link
-                          href="/cart"
+                          href={`/${locale}/cart`}
                           onClick={() => setIsOpen(false)}
-                          className={`px-6 py-4 ${pathname === '/cart' ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}
+                          className={`px-6 py-4 ${pathname === `/${locale}/cart` ? 'text-amber-700 bg-amber-50' : 'text-gray-900 hover:bg-gray-50'}`}
                         >
-                          Cart
+                          {t('cart')}
                         </Link>
                       </nav>
                     </div>

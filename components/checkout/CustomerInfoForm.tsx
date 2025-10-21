@@ -1,4 +1,7 @@
+'use client';
+
 import { CheckoutFormData, CheckoutFormErrors } from '@/types/checkout';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface CustomerInfoFormProps {
   formData: CheckoutFormData;
@@ -15,10 +18,12 @@ export default function CustomerInfoForm({
   onNext,
   onBack,
 }: CustomerInfoFormProps) {
+  const t = useTranslations('checkout');
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Customer Information</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('shippingInformation')}</h2>
         <p className="text-gray-600">Enter your contact and shipping details</p>
       </div>
 
@@ -26,7 +31,7 @@ export default function CustomerInfoForm({
         {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email Address *
+            {t('email')} *
           </label>
           <input
             type="email"
@@ -45,7 +50,7 @@ export default function CustomerInfoForm({
         {/* Full Name */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Full Name *
+            {t('name')} *
           </label>
           <input
             type="text"
@@ -63,7 +68,7 @@ export default function CustomerInfoForm({
         {/* Street Address */}
         <div>
           <label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
-            Street Address *
+            {t('addressLine1')} *
           </label>
           <input
             type="text"
@@ -82,7 +87,7 @@ export default function CustomerInfoForm({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
-              City *
+              {t('city')} *
             </label>
             <input
               type="text"
@@ -99,7 +104,7 @@ export default function CustomerInfoForm({
 
           <div>
             <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
-              State/Province/Region *
+              {t('state')} *
             </label>
             <input
               type="text"
@@ -116,7 +121,7 @@ export default function CustomerInfoForm({
 
           <div>
             <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-1">
-              Postal Code *
+              {t('postalCode')} *
             </label>
             <input
               type="text"
@@ -137,7 +142,7 @@ export default function CustomerInfoForm({
         {/* Country */}
         <div>
           <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
-            Country *
+            {t('country')} *
           </label>
           <select
             id="country"
@@ -182,14 +187,14 @@ export default function CustomerInfoForm({
           onClick={onBack}
           className="flex-1 px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
         >
-          Back to Cart
+          {t('..common.back')} to Cart
         </button>
         <button
           type="button"
           onClick={onNext}
           className="flex-1 px-6 py-3 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition font-medium"
         >
-          Continue to Review
+          Continue to {t('reviewOrder')}
         </button>
       </div>
     </div>

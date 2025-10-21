@@ -1,8 +1,10 @@
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { CartItem, CustomerInfo, OrderItem } from '@/types';
 import { CheckoutFormData } from '@/types/checkout';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface PaymentFormProps {
   items: CartItem[];
@@ -26,6 +28,9 @@ export default function PaymentForm({
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations('checkout');
+  const tCommon = useTranslations('common');
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -34,7 +39,7 @@ export default function PaymentForm({
     e.preventDefault();
 
     if (!stripe || !elements) {
-      setErrorMessage('Stripe has not loaded yet. Please try again.');
+      setErrorMessage(t('stripeNotLoaded'));
       return;
     }
 
@@ -45,7 +50,7 @@ export default function PaymentForm({
       // Submit payment to Stripe
       const { error: submitError } = await elements.submit();
       if (submitError) {
-        setErrorMessage(submitError.message || 'Failed to submit payment details');
+        setErrorMessage(submitError.message || t('paymentSubmitError'));
         setIsProcessing(false);
         return;
       }
@@ -54,7 +59,7 @@ export default function PaymentForm({
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/order-confirmation/processing`,
+          return_url: `${window.location.origin}/${locale}/order-confirmation/processing`,
           payment_method_data: {
             billing_details: {
               email: formData.email,
@@ -73,7 +78,7 @@ export default function PaymentForm({
       });
 
       if (error) {
-        setErrorMessage(error.message || 'Payment failed');
+        setErrorMessage(error.message || t('paymentFailed'));
         setIsProcessing(false);
         return;
       }
@@ -133,11 +138,11 @@ export default function PaymentForm({
         onClearCart();
 
         // Redirect to confirmation page
-        router.push(`/order-confirmation/${orderId || paymentIntent.id}`);
+        router.push(`/${locale}/order-confirmation/${orderId || paymentIntent.id}`);
       }
     } catch (err) {
       console.error('Payment error:', err);
-      setErrorMessage('An unexpected error occurred. Please try again.');
+      setErrorMessage(t('unexpectedError'));
       setIsProcessing(false);
     }
   };
@@ -145,18 +150,18 @@ export default function PaymentForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment</h2>
-        <p className="text-gray-600">Complete your purchase securely</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('payment')}</h2>
+        <p className="text-gray-600">{t('completePaymentSecurely')}</p>
       </div>
 
       {/* Order Summary (Compact) */}
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <div className="flex justify-between items-center">
-          <span className="text-gray-700">Total Amount (before tax)</span>
+          <span className="text-gray-700">{t('totalAmountBeforeTax')}</span>
           <span className="text-2xl font-bold text-gray-900">€{total.toFixed(2)}</span>
         </div>
         <p className="text-sm text-gray-600 mt-1">
-          {items.length} item{items.length !== 1 ? 's' : ''} • Tax/VAT calculated by Stripe
+          {items.length !== 1 ? t('itemsWithTaxNotePlural', { count: items.length }) : t('itemsWithTaxNote', { count: items.length })}
         </p>
       </div>
 
@@ -180,20 +185,20 @@ export default function PaymentForm({
           disabled={isProcessing}
           className="flex-1 px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Back
+          {tCommon('back')}
         </button>
         <button
           type="submit"
           disabled={!stripe || isProcessing}
           className="flex-1 px-6 py-3 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isProcessing ? 'Processing...' : 'Complete Payment'}
+          {isProcessing ? t('processing') : t('completePayment')}
         </button>
       </div>
 
       {/* Security Notice */}
       <p className="text-xs text-gray-500 text-center">
-        Your payment information is secure and encrypted. We never store your card details.
+        {t('securityNotice')}
       </p>
     </form>
   );

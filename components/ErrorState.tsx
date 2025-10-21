@@ -1,4 +1,8 @@
+'use client';
+
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface ErrorStateProps {
   title?: string;
@@ -8,11 +12,16 @@ interface ErrorStateProps {
 }
 
 export default function ErrorState({
-  title = 'Something went wrong',
-  message = 'We encountered an error while loading this content. Please try again.',
+  title,
+  message,
   onRetry,
   showHomeLink = true,
 }: ErrorStateProps) {
+  const locale = useLocale();
+  const t = useTranslations('common');
+
+  const displayTitle = title || t('somethingWentWrong');
+  const displayMessage = message || t('errorLoadingContent');
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
       <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
@@ -30,23 +39,23 @@ export default function ErrorState({
           />
         </svg>
       </div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-gray-600 text-center max-w-md mb-6">{message}</p>
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">{displayTitle}</h3>
+      <p className="text-gray-600 text-center max-w-md mb-6">{displayMessage}</p>
       <div className="flex gap-3">
         {onRetry && (
           <button
             onClick={onRetry}
             className="px-6 py-2 bg-amber-700 text-white rounded-lg font-semibold hover:bg-amber-800 transition-colors"
           >
-            Try Again
+            {t('tryAgain')}
           </button>
         )}
         {showHomeLink && (
           <Link
-            href="/"
+            href={`/${locale}`}
             className="px-6 py-2 bg-white text-gray-700 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
           >
-            Go Home
+            {t('goHome')}
           </Link>
         )}
       </div>

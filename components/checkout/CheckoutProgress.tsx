@@ -1,12 +1,18 @@
+'use client';
+
+import { useTranslations } from '@/hooks/useTranslations';
+
 interface CheckoutProgressProps {
   currentStep: 1 | 2 | 3;
 }
 
 export default function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
+  const t = useTranslations('checkout');
+
   const steps = [
-    { number: 1, label: 'Information' },
-    { number: 2, label: 'Review' },
-    { number: 3, label: 'Payment' },
+    { number: 1, label: t('information') },
+    { number: 2, label: t('review') },
+    { number: 3, label: t('payment') },
   ];
 
   return (
