@@ -78,8 +78,8 @@ export default function CustomerInfoForm({
           <input
             type="text"
             id="street"
-            name="address-line1"
-            autoComplete="address-line1"
+            name="street-address"
+            autoComplete="shipping street-address"
             value={formData.street}
             onChange={(e) => onFormDataChange({ ...formData, street: e.target.value })}
             className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -99,8 +99,8 @@ export default function CustomerInfoForm({
             <input
               type="text"
               id="city"
-              name="address-level2"
-              autoComplete="address-level2"
+              name="city"
+              autoComplete="shipping address-level2"
               value={formData.city}
               onChange={(e) => onFormDataChange({ ...formData, city: e.target.value })}
               className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -118,14 +118,14 @@ export default function CustomerInfoForm({
             <input
               type="text"
               id="state"
-              name="address-level1"
-              autoComplete="address-level1"
+              name="state"
+              autoComplete="shipping address-level1"
               value={formData.state}
               onChange={(e) => onFormDataChange({ ...formData, state: e.target.value })}
               className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
                 formErrors.state ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="e.g. CA, Bavaria, Île-de-France"
+              placeholder="e.g. CA, Bavaria, Cornwall"
             />
             {formErrors.state && <p className="mt-1 text-sm text-red-600">{formErrors.state}</p>}
           </div>
@@ -138,7 +138,7 @@ export default function CustomerInfoForm({
               type="text"
               id="postalCode"
               name="postal-code"
-              autoComplete="postal-code"
+              autoComplete="shipping postal-code"
               value={formData.postalCode}
               onChange={(e) => onFormDataChange({ ...formData, postalCode: e.target.value })}
               className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
@@ -160,7 +160,7 @@ export default function CustomerInfoForm({
           <select
             id="country"
             name="country"
-            autoComplete="country"
+            autoComplete="shipping country"
             value={formData.country}
             onChange={(e) => onFormDataChange({ ...formData, country: e.target.value })}
             className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
