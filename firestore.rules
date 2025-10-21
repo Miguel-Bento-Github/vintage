@@ -27,10 +27,9 @@ service cloud.firestore {
       // returned only after successful Stripe payment
       allow get: if true;
 
-      // Allow server-side order creation from API routes
-      // Server requests have no auth context (request.auth == null)
-      // Client-side creation still blocked by requiring auth == null
-      allow create: if request.auth == null || isAdmin();
+      // CRITICAL: No client-side creation - prevents price manipulation
+      // Orders MUST be created server-side via Admin SDK in /api/webhook
+      allow create: if false;
 
       // Only admins can update order status
       allow update: if isAdmin();
