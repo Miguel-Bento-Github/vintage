@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createOrder } from '@/services/orderService';
+import { createOrderAdmin } from '@/services/adminOrderService';
 import { CustomerInfo, OrderItem } from '@/types';
 
 interface CreateOrderRequest {
@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create order in Firebase
-    const result = await createOrder({
+    // Create order in Firebase using Admin SDK (bypasses security rules)
+    const result = await createOrderAdmin({
       paymentIntentId: body.paymentIntentId,
       customerInfo: body.customerInfo,
       items: body.items,
