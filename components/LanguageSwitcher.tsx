@@ -3,7 +3,7 @@
 import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
 import { locales, type Locale } from '@/i18n';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef, useEffect } from 'react';
 
 const localeNames: Record<Locale, string> = {
   en: 'English',
@@ -27,6 +27,21 @@ export default function LanguageSwitcher() {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
 
   const handleLocaleChange = (newLocale: Locale) => {
     if (newLocale === locale) {
@@ -48,58 +63,65 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-md"
+        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
         aria-label="Select language"
+        aria-expanded={isOpen}
         disabled={isPending}
       >
-        <span>{localeFlags[locale]}</span>
+        <span className="text-base">{localeFlags[locale]}</span>
         <span className="hidden sm:inline">{localeNames[locale]}</span>
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
-          stroke="currentColor"
           viewBox="0 0 24 24"
+          stroke="currentColor"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
-
-          {/* Dropdown */}
-          <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
-            <div className="py-1" role="menu" aria-orientation="vertical">
-              {locales.map((loc) => (
-                <button
-                  key={loc}
-                  onClick={() => handleLocaleChange(loc)}
-                  className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-gray-100 text-gray-900 ${
-                    loc === locale ? 'bg-gray-50 font-semibold' : ''
-                  }`}
-                  role="menuitem"
-                  disabled={isPending}
-                >
-                  <span>{localeFlags[loc]}</span>
+        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+          <div className="py-1">
+            {locales.map((loc) => (
+              <button
+                key={loc}
+                onClick={() => handleLocaleChange(loc)}
+                className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors flex items-center justify-between ${
+                  loc === locale ? 'bg-amber-50 text-amber-900 font-medium' : 'text-gray-900'
+                }`}
+                disabled={isPending}
+              >
+                <span className="flex items-center gap-3">
+                  <span className="text-base">{localeFlags[loc]}</span>
                   <span>{localeNames[loc]}</span>
-                  {loc === locale && (
-                    <svg className="ml-auto w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
-              ))}
-            </div>
+                </span>
+                {loc === locale && (
+                  <svg
+                    className="w-4 h-4 text-amber-700"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </button>
+            ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );
