@@ -3,6 +3,12 @@
  * Run with: npx tsx scripts/seed-products.ts
  */
 
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Load .env.local file
+config({ path: resolve(process.cwd(), '.env.local') });
+
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, Timestamp, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, connectAuthEmulator } from 'firebase/auth';
@@ -582,7 +588,7 @@ const sampleProducts = [
     images: [
       'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800',
       'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800',
-      'https://images.unsplash.com/photo-1558689946-57798f522042?w=800',
+      'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800',
     ],
     inStock: true,
     featured: false,
