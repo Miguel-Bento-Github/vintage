@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useCart } from '@/hooks/useCart';
 import { Era, Category } from '@/types';
 import { trackAddToCart } from '@/services/analyticsService';
+import { useTranslations } from '@/hooks/useTranslations';
 
 interface AddToCartButtonProps {
   product: {
@@ -22,6 +23,7 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({ product }: AddToCartButtonProps) {
   const { addToCart, items } = useCart();
   const [showAdded, setShowAdded] = useState(false);
+  const t = useTranslations('product');
 
   const isInCart = items.some((item) => item.productId === product.id);
 
@@ -52,10 +54,11 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   if (!product.inStock) {
     return (
       <button
+        type="button"
         disabled
         className="w-full py-4 px-6 bg-gray-300 text-gray-500 rounded-lg font-semibold text-lg cursor-not-allowed"
       >
-        Sold Out
+        {t('soldOut')}
       </button>
     );
   }
@@ -63,16 +66,18 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   if (isInCart) {
     return (
       <button
+        type="button"
         disabled
         className="w-full py-4 px-6 bg-gray-600 text-white rounded-lg font-semibold text-lg cursor-not-allowed"
       >
-        Already in Cart
+        {t('alreadyInCart')}
       </button>
     );
   }
 
   return (
     <button
+      type="button"
       onClick={handleAddToCart}
       className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-colors ${
         showAdded
@@ -80,7 +85,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
           : 'bg-amber-700 text-white hover:bg-amber-800'
       }`}
     >
-      {showAdded ? '✓ Added to Cart' : 'Add to Cart'}
+      {showAdded ? `✓ ${t('addedToCart')}` : t('addToCart')}
     </button>
   );
 }
