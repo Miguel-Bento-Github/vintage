@@ -413,7 +413,7 @@ export default function AddProductPage() {
         {/* Measurements */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Measurements (inches)
+            Measurements (cm)
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -570,7 +570,7 @@ export default function AddProductPage() {
                   htmlFor="price"
                   className="block text-sm font-semibold text-gray-900 mb-2"
                 >
-                  Price ($) <span className="text-red-500">*</span>
+                  Price (€) <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
