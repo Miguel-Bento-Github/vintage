@@ -134,11 +134,8 @@ export default function PaymentForm({
 
         const { orderId } = await response.json();
 
-        // Clear cart
-        onClearCart();
-
-        // Use window.location for full page navigation to avoid race condition with cart empty redirect
-        window.location.href = `/${locale}/order-confirmation/${orderId || paymentIntent.id}`;
+        // Navigate to order confirmation - cart will be cleared there
+        router.push(`/${locale}/order-confirmation/${orderId || paymentIntent.id}`);
       }
     } catch (err) {
       console.error('Payment error:', err);

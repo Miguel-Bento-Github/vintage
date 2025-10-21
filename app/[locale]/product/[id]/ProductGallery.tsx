@@ -39,7 +39,9 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
           {images.map((image, index) => (
             <button
               key={index}
+              type="button"
               onClick={() => setSelectedImage(index)}
+              aria-label={`View image ${index + 1} of ${images.length}`}
               className={`relative aspect-square bg-gray-100 rounded-lg overflow-hidden border-2 transition-all ${
                 selectedImage === index
                   ? 'border-amber-700 ring-2 ring-amber-700 ring-offset-2'

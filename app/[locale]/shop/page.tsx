@@ -198,6 +198,7 @@ function ShopContent() {
           <h3 className="font-semibold text-lg text-gray-900">{t('filters')}</h3>
           {activeFilterCount > 0 && (
             <button
+              type="button"
               onClick={clearFilters}
               className="text-sm text-amber-700 hover:text-amber-800"
             >
@@ -223,6 +224,7 @@ function ShopContent() {
       {/* Era Filter */}
       <div className="border-t pt-4">
         <button
+          type="button"
           onClick={() => toggleSection('era')}
           className="flex items-center justify-between w-full mb-3 text-gray-900"
         >
@@ -256,6 +258,7 @@ function ShopContent() {
       {/* Category Filter */}
       <div className="border-t pt-4">
         <button
+          type="button"
           onClick={() => toggleSection('category')}
           className="flex items-center justify-between w-full mb-3 text-gray-900"
         >
@@ -289,6 +292,7 @@ function ShopContent() {
       {/* Price Range Filter */}
       <div className="border-t pt-4">
         <button
+          type="button"
           onClick={() => toggleSection('price')}
           className="flex items-center justify-between w-full mb-3 text-gray-900"
         >
@@ -322,6 +326,7 @@ function ShopContent() {
       {/* Size Filter */}
       <div className="border-t pt-4">
         <button
+          type="button"
           onClick={() => toggleSection('size')}
           className="flex items-center justify-between w-full mb-3 text-gray-900"
         >
@@ -355,6 +360,7 @@ function ShopContent() {
       {/* Condition Filter */}
       <div className="border-t pt-4">
         <button
+          type="button"
           onClick={() => toggleSection('condition')}
           className="flex items-center justify-between w-full mb-3 text-gray-900"
         >
@@ -414,6 +420,7 @@ function ShopContent() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
+              aria-label="Sort products"
               className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-base"
               style={{ minHeight: '44px' }}
             >
@@ -423,6 +430,7 @@ function ShopContent() {
             </select>
             {/* Mobile filter toggle */}
             <button
+              type="button"
               onClick={() => setShowFilters(!showFilters)}
               className="lg:hidden px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors font-medium whitespace-nowrap"
               style={{ minHeight: '44px' }}
@@ -448,7 +456,9 @@ function ShopContent() {
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-bold">{t('filters')}</h2>
                     <button
+                      type="button"
                       onClick={() => setShowFilters(false)}
+                      aria-label="Close filters"
                       className="text-gray-500 hover:text-gray-700"
                     >
                       <svg
@@ -469,6 +479,7 @@ function ShopContent() {
                   <FiltersContent />
                   <div className="mt-6 pt-6 border-t">
                     <button
+                      type="button"
                       onClick={() => setShowFilters(false)}
                       className="w-full px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors font-semibold"
                     >
@@ -566,6 +577,7 @@ function ShopContent() {
               <div className="text-center py-12 bg-white rounded-lg">
                 <p className="text-gray-500 text-lg mb-4">{t('noProductsFound')}</p>
                 <button
+                  type="button"
                   onClick={clearFilters}
                   className="text-amber-700 hover:text-amber-800 font-semibold"
                 >

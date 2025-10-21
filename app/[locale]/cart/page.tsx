@@ -70,6 +70,7 @@ export default function CartPage() {
                 </h2>
                 {items.length > 0 && (
                   <button
+                    type="button"
                     onClick={clearCart}
                     className="px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md font-medium transition-colors"
                     style={{ minHeight: '44px' }}
@@ -134,6 +135,7 @@ export default function CartPage() {
                         <div className="flex items-center justify-between mt-4">
                           <Price amount={item.price} className="text-xl font-bold text-gray-900" />
                           <button
+                            type="button"
                             onClick={() => removeFromCart(item.productId)}
                             className="px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md font-medium transition-colors"
                             style={{ minHeight: '44px', minWidth: '80px' }}
