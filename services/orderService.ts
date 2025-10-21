@@ -23,6 +23,7 @@ import {
   FirebaseServiceResponse,
 } from '@/types/firebase';
 import { markProductSold } from './productService';
+import { calculateTax } from '@/lib/taxCalculation';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -44,16 +45,17 @@ function generateOrderNumber(): string {
 }
 
 /**
- * Calculate order totals
+ * Calculate order totals for second-hand vintage goods
  * @param items - Array of order items
  * @param shippingRate - Shipping cost (default: $10)
- * @param taxRate - Tax rate as decimal (default: 0.08 = 8%)
  * @returns Calculated subtotal, shipping, tax, and total
+ *
+ * Note: Tax is set to 0 for all second-hand vintage goods.
+ * See /docs/tax-policy.md and /lib/taxCalculation.ts for details.
  */
 export function calculateOrderTotals(
   items: OrderItem[],
-  shippingRate: number = 10.00,
-  taxRate: number = 0.08
+  shippingRate: number = 10.00
 ): {
   subtotal: number;
   shipping: number;
@@ -63,8 +65,9 @@ export function calculateOrderTotals(
   // Calculate subtotal from items
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
 
-  // Calculate tax on subtotal only (not shipping)
-  const tax = subtotal * taxRate;
+  // Calculate tax for second-hand goods (always 0)
+  // See /lib/taxCalculation.ts for explanation
+  const tax = calculateTax(subtotal);
 
   // Calculate total
   const total = subtotal + shippingRate + tax;

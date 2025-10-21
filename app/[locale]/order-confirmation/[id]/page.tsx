@@ -310,7 +310,7 @@ export default function OrderConfirmationPage() {
                   <span>{order.shipping === 0 ? t('free') : <Price amount={order.shipping} />}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
-                  <span>{t('tax')}</span>
+                  <span>{t('taxExempt')}</span>
                   <Price amount={order.tax} />
                 </div>
               </div>

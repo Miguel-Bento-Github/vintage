@@ -152,11 +152,11 @@ export default function PaymentForm({
       {/* Order Summary (Compact) */}
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <div className="flex justify-between items-center">
-          <span className="text-gray-700">{t('totalAmountBeforeTax')}</span>
+          <span className="text-gray-700">{t('totalAmount')}</span>
           <span className="text-2xl font-bold text-gray-900">€{total.toFixed(2)}</span>
         </div>
         <p className="text-sm text-gray-600 mt-1">
-          {items.length !== 1 ? t('itemsWithTaxNotePlural', { count: items.length }) : t('itemsWithTaxNote', { count: items.length })}
+          {items.length !== 1 ? t('itemsNotePlural', { count: items.length }) : t('itemsNote', { count: items.length })}
         </p>
       </div>
 

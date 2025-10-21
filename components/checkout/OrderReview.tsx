@@ -100,16 +100,16 @@ export default function OrderReview({
             <span>{shipping === 0 ? tCart('free') : <Price amount={shipping} />}</span>
           </div>
           <div className="flex justify-between text-gray-600">
-            <span>{tCart('tax')}</span>
-            <span className="text-sm">{tCart('calculatedAtCheckout')}</span>
+            <span>{tCart('taxExempt')}</span>
+            <Price amount={0} />
           </div>
           <div className="border-t border-gray-200 pt-2 mt-2">
             <div className="flex justify-between text-lg font-bold text-gray-900">
-              <span>{tCart('totalBeforeTax')}</span>
+              <span>{tCart('total')}</span>
               <Price amount={total} />
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              {tCart('taxCalculationNote')}
+              {tCart('taxExemptDescription')}
             </p>
           </div>
         </div>
