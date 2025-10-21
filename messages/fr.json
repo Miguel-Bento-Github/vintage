@@ -34,6 +34,8 @@
   },
   "product": {
     "addToCart": "Ajouter au Panier",
+    "addedToCart": "Ajouté au Panier",
+    "alreadyInCart": "Déjà dans le Panier",
     "soldOut": "Épuisé",
     "oneOfAKind": "Pièce unique",
     "brand": "Marque",

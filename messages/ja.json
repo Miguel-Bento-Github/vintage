@@ -34,6 +34,8 @@
   },
   "product": {
     "addToCart": "カートに追加",
+    "addedToCart": "カートに追加しました",
+    "alreadyInCart": "カートに入っています",
     "soldOut": "売り切れ",
     "oneOfAKind": "一点物",
     "brand": "ブランド",

@@ -34,6 +34,8 @@
   },
   "product": {
     "addToCart": "Add to Cart",
+    "addedToCart": "Added to Cart",
+    "alreadyInCart": "Already in Cart",
     "soldOut": "Sold Out",
     "sold": "SOLD",
     "oneOfAKind": "One-of-a-kind piece",
