@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Elements } from '@stripe/react-stripe-js';
 import { getStripe } from '@/lib/stripe';
 import { useCart } from '@/hooks/useCart';
+import { useCurrency } from '@/hooks/useCurrency';
 import { CheckoutFormData, CheckoutStep, CheckoutFormErrors } from '@/types/checkout';
 import { validateCustomerInfo, calculateCheckoutTotals } from '@/lib/checkoutValidation';
 import CheckoutProgress from '@/components/checkout/CheckoutProgress';
@@ -20,6 +21,7 @@ export default function CheckoutPage() {
   const t = useTranslations('checkout');
   const tCommon = useTranslations('common');
   const { items, clearCart, getCartTotal } = useCart();
+  const { currency } = useCurrency();
 
   const [step, setStep] = useState<CheckoutStep>(1);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -57,7 +59,7 @@ export default function CheckoutPage() {
         const response = await fetch('/api/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items }),
+          body: JSON.stringify({ items, currency }),
         });
 
         if (!response.ok) {
@@ -77,7 +79,7 @@ export default function CheckoutPage() {
     };
 
     createPaymentIntent();
-  }, [items]);
+  }, [items, currency]);
 
   // Handle step navigation
   const handleNextStep = () => {

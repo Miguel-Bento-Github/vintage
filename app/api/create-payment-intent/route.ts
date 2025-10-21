@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { CartItem } from '@/types';
+import { Currency } from '@/lib/currency';
+import { getStripeAmount, getStripeCurrency, isStripeSupportedCurrency } from '@/lib/stripeHelpers';
 
 export async function POST(request: NextRequest) {
   try {
-    const { items }: { items: CartItem[] } = await request.json();
+    const { items, currency = 'EUR' }: { items: CartItem[]; currency?: Currency } = await request.json();
 
     // Validate items
     if (!items || items.length === 0) {
@@ -14,19 +16,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate currency
+    if (!isStripeSupportedCurrency(currency)) {
+      return NextResponse.json(
+        { error: `Currency ${currency} is not supported` },
+        { status: 400 }
+      );
+    }
+
     // Calculate subtotal and shipping (no tax - Stripe will calculate)
+    // Note: Prices in cart are already in the selected currency
     const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-    const shipping = subtotal >= 100 ? 0 : 10; // Free shipping over $100
+    const shipping = subtotal >= 100 ? 0 : 10; // Free shipping over €100 equivalent
     const total = subtotal + shipping;
 
-    // Convert to cents for Stripe
-    const amount = Math.round(total * 100);
+    // Convert to Stripe's smallest currency unit (cents for most, yen for JPY)
+    const amount = getStripeAmount(total, currency);
 
     // Create payment intent
     // Store all order data in metadata so we can create the order later
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
-      currency: 'eur',
+      currency: getStripeCurrency(currency),
       automatic_payment_methods: {
         enabled: true,
       },
@@ -36,6 +47,7 @@ export async function POST(request: NextRequest) {
         subtotal: subtotal.toFixed(2),
         shipping: shipping.toFixed(2),
         total: total.toFixed(2),
+        currency: currency, // Store the currency for order creation
       },
     });
 
