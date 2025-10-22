@@ -44,6 +44,7 @@ export async function POST(request: NextRequest) {
 
     // Create payment intent
     // Store all order data in metadata so we can create the order later
+    // Note: Tax is $0.00 for second-hand goods - see /docs/tax-policy.md
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: getStripeCurrency(currency),
@@ -55,8 +56,10 @@ export async function POST(request: NextRequest) {
         items: JSON.stringify(items),
         subtotal: subtotal.toFixed(2),
         shipping: shipping.toFixed(2),
+        tax: '0.00', // Second-hand goods tax-exempt
         total: total.toFixed(2),
         currency: currency, // Store the currency for order creation
+        taxExemptReason: 'second_hand_goods', // For record-keeping
       },
     });
 
