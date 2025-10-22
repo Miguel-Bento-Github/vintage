@@ -73,7 +73,7 @@ export default function ShippingNotification({
       )}
 
       <Text style={styles.estimatedDelivery}>
-        <strong>{t.estimatedDelivery}:</strong> {estimatedDelivery}
+        <strong>{t.estimatedDelivery}:</strong> {estimatedDelivery || t.estimatedDeliveryTime}
       </Text>
 
       <Hr style={styles.hr} />
