@@ -5,6 +5,18 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import QueryProvider from '@/providers/QueryProvider';
+import { Geist, Geist_Mono } from "next/font/google";
+import "../globals.css";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export default function AdminLayout({
   children,
@@ -27,20 +39,30 @@ export default function AdminLayout({
 
   // If on login page, render it without auth check (but still wrap in QueryProvider)
   if (isLoginPage) {
-    return <QueryProvider>{children}</QueryProvider>;
+    return (
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <QueryProvider>{children}</QueryProvider>
+        </body>
+      </html>
+    );
   }
 
   // Show loading state while checking authentication
   if (loading) {
     return (
-      <QueryProvider>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading...</p>
-          </div>
-        </div>
-      </QueryProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <QueryProvider>
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+                <p className="mt-4 text-gray-600">Loading...</p>
+              </div>
+            </div>
+          </QueryProvider>
+        </body>
+      </html>
     );
   }
 
@@ -55,8 +77,10 @@ export default function AdminLayout({
   };
 
   return (
-    <QueryProvider>
-      <div className="flex h-screen bg-gray-100">
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <QueryProvider>
+          <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-md">
         <div className="p-6">
@@ -166,7 +190,9 @@ export default function AdminLayout({
           {children}
         </div>
       </main>
-      </div>
-    </QueryProvider>
+          </div>
+        </QueryProvider>
+      </body>
+    </html>
   );
 }
