@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { cache } from 'react';
 import { doc, getDoc, collection, query, where, limit, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Product } from '@/types';
@@ -10,11 +11,16 @@ import AddToCartButton from './AddToCartButton';
 import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
 
+// Enable Incremental Static Regeneration (ISR)
+// Revalidate every 10 minutes (600 seconds)
+export const revalidate = 600;
+
 interface PageProps {
   params: Promise<{ id: string; locale: string }>;
 }
 
-async function getProduct(id: string): Promise<Product | null> {
+// Cache product fetching with React cache() for request deduplication
+const getProduct = cache(async (id: string): Promise<Product | null> => {
   const docRef = doc(db, 'products', id);
   const docSnap = await getDoc(docRef);
 
@@ -26,9 +32,10 @@ async function getProduct(id: string): Promise<Product | null> {
     id: docSnap.id,
     ...docSnap.data(),
   } as Product;
-}
+});
 
-async function getSimilarProducts(product: Product): Promise<Product[]> {
+// Cache similar products fetching
+const getSimilarProducts = cache(async (product: Product): Promise<Product[]> => {
   // Get products from same era or category, excluding current product
   const productsRef = collection(db, 'products');
   const q = query(
@@ -46,6 +53,31 @@ async function getSimilarProducts(product: Product): Promise<Product[]> {
     }) as Product)
     .filter((p) => p.id !== product.id)
     .slice(0, 3);
+});
+
+// Pre-render featured products at build time for faster initial loads
+// Note: This only returns 'id' params because the [locale] segment
+// is handled by the parent layout's generateStaticParams
+export async function generateStaticParams() {
+  try {
+    const productsRef = collection(db, 'products');
+    const q = query(
+      productsRef,
+      where('featured', '==', true),
+      where('inStock', '==', true),
+      limit(20) // Pre-render top 20 featured products
+    );
+
+    const snapshot = await getDocs(q);
+    const products = snapshot.docs.map((doc) => ({
+      id: doc.id,
+    }));
+
+    return products;
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

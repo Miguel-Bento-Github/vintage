@@ -1,14 +1,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { cache } from 'react';
 import { collection, getDocs, query, where, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Product } from '@/types';
 import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
 
+// Enable Incremental Static Regeneration (ISR)
+// Revalidate every 5 minutes (300 seconds)
+export const revalidate = 300;
+
 // Metadata will be generated dynamically based on locale
 
-async function getFeaturedProducts(): Promise<Product[]> {
+// Cache featured products with React cache() for request deduplication
+const getFeaturedProducts = cache(async (): Promise<Product[]> => {
   const productsRef = collection(db, 'products');
   const q = query(
     productsRef,
@@ -22,7 +28,7 @@ async function getFeaturedProducts(): Promise<Product[]> {
     id: doc.id,
     ...doc.data(),
   })) as Product[];
-}
+});
 
 // Category images mapping - using Unsplash placeholder images
 const CATEGORY_IMAGES: Record<string, string> = {
