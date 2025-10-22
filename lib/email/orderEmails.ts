@@ -5,7 +5,10 @@ import { adminDb } from '../firebase-admin';
 import { Order, EmailHistoryEntry } from '@/types';
 import OrderConfirmation from '@/emails/templates/OrderConfirmation';
 import ShippingNotification from '@/emails/templates/ShippingNotification';
+import DeliveryConfirmation from '@/emails/templates/DeliveryConfirmation';
+import CancellationEmail from '@/emails/templates/CancellationEmail';
 import { Timestamp, FieldValue } from 'firebase-admin/firestore';
+import type { Locale } from '@/i18n';
 
 interface SendEmailResult {
   success: boolean;
@@ -19,7 +22,7 @@ interface SendEmailResult {
  */
 export async function sendOrderConfirmationEmail(
   order: Order,
-  locale: string = 'en'
+  locale: Locale = 'en'
 ): Promise<SendEmailResult> {
   try {
     // Render email template
@@ -83,11 +86,11 @@ export async function sendShippingNotificationEmail(
     trackingUrl?: string;
     carrier?: string;
     estimatedDelivery?: string;
-    locale?: string;
+    locale?: Locale;
   }
 ): Promise<SendEmailResult> {
   try {
-    const locale = options?.locale || 'en';
+    const locale: Locale = options?.locale || 'en';
 
     // Render email template
     const emailHtml = await render(
@@ -132,6 +135,127 @@ export async function sendShippingNotificationEmail(
     // Log failed attempt
     const emailHistoryEntry: Omit<EmailHistoryEntry, 'sentAt'> = {
       type: EmailType.SHIPPING_NOTIFICATION,
+      sentTo: order.customerInfo.email,
+      status: 'failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+
+    await updateOrderEmailHistory(order.id, emailHistoryEntry);
+
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Send delivery confirmation email
+ * Triggered when order status changes to 'delivered'
+ */
+export async function sendDeliveryConfirmationEmail(
+  order: Order,
+  locale: Locale = 'en'
+): Promise<SendEmailResult> {
+  try {
+    // Render email template
+    const emailHtml = await render(
+      DeliveryConfirmation({ order, locale })
+    );
+
+    // Send email via Resend
+    const result = await sendEmailSafely({
+      to: order.customerInfo.email,
+      subject: `Order Delivered - ${order.orderNumber}`,
+      html: emailHtml,
+      from: getFromAddress('orders'),
+      replyTo: 'support@dreamazul.com',
+    });
+
+    // Create email history entry
+    const emailHistoryEntry: Omit<EmailHistoryEntry, 'sentAt'> = {
+      type: EmailType.DELIVERY_CONFIRMATION,
+      sentTo: order.customerInfo.email,
+      emailId: result.data?.id,
+      status: result.success ? 'sent' : 'failed',
+      error: result.error ? String(result.error) : undefined,
+    };
+
+    // Update order with email history
+    await updateOrderEmailHistory(order.id, emailHistoryEntry);
+
+    return {
+      success: result.success,
+      emailId: result.data?.id,
+      error: result.error ? String(result.error) : undefined,
+    };
+  } catch (error) {
+    console.error('Failed to send delivery confirmation email:', error);
+
+    // Log failed attempt
+    const emailHistoryEntry: Omit<EmailHistoryEntry, 'sentAt'> = {
+      type: EmailType.DELIVERY_CONFIRMATION,
+      sentTo: order.customerInfo.email,
+      status: 'failed',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+
+    await updateOrderEmailHistory(order.id, emailHistoryEntry);
+
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Send cancellation email
+ * Triggered when order status changes to 'cancelled'
+ */
+export async function sendCancellationEmail(
+  order: Order,
+  cancellationReason?: string,
+  locale: Locale = 'en'
+): Promise<SendEmailResult> {
+  try {
+    // Render email template
+    const emailHtml = await render(
+      CancellationEmail({ order, cancellationReason, locale })
+    );
+
+    // Send email via Resend
+    const result = await sendEmailSafely({
+      to: order.customerInfo.email,
+      subject: `Order Cancelled - ${order.orderNumber}`,
+      html: emailHtml,
+      from: getFromAddress('orders'),
+      replyTo: 'support@dreamazul.com',
+    });
+
+    // Create email history entry
+    const emailHistoryEntry: Omit<EmailHistoryEntry, 'sentAt'> = {
+      type: EmailType.CANCELLATION,
+      sentTo: order.customerInfo.email,
+      emailId: result.data?.id,
+      status: result.success ? 'sent' : 'failed',
+      error: result.error ? String(result.error) : undefined,
+    };
+
+    // Update order with email history
+    await updateOrderEmailHistory(order.id, emailHistoryEntry);
+
+    return {
+      success: result.success,
+      emailId: result.data?.id,
+      error: result.error ? String(result.error) : undefined,
+    };
+  } catch (error) {
+    console.error('Failed to send cancellation email:', error);
+
+    // Log failed attempt
+    const emailHistoryEntry: Omit<EmailHistoryEntry, 'sentAt'> = {
+      type: EmailType.CANCELLATION,
       sentTo: order.customerInfo.email,
       status: 'failed',
       error: error instanceof Error ? error.message : 'Unknown error',

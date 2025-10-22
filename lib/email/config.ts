@@ -120,6 +120,7 @@ export enum EmailType {
   ORDER_CONFIRMATION = 'order_confirmation',
   SHIPPING_NOTIFICATION = 'shipping_notification',
   DELIVERY_CONFIRMATION = 'delivery_confirmation',
+  CANCELLATION = 'cancellation',
   ABANDONED_CART = 'abandoned_cart',
   ABANDONED_CART_REMINDER = 'abandoned_cart_reminder',
   ABANDONED_CART_FINAL = 'abandoned_cart_final',

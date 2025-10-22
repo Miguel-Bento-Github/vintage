@@ -67,7 +67,10 @@ export function getEmailTranslation(
 /**
  * Get all translations for a specific email type
  */
-export function getEmailMessages(locale: Locale, emailType: 'orderConfirmation' | 'shippingNotification') {
+export function getEmailMessages<T extends keyof typeof enMessages.email>(
+  locale: Locale,
+  emailType: T
+): typeof enMessages.email[T] {
   const translation = messages[locale] || messages.en;
   // Fallback to English if email translations don't exist in this locale
   if (!translation.email || !translation.email[emailType]) {
