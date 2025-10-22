@@ -19,7 +19,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations('checkout');
-  const { items, clearCart, getCartTotal } = useCart();
+  const { items, getCartTotal } = useCart();
   const { currency } = useCurrency();
 
   const [step, setStep] = useState<CheckoutStep>(1);

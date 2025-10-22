@@ -28,7 +28,8 @@
  * - Customers may have use tax or import duty obligations in their jurisdiction
  * - Sellers should consult tax professionals about their specific situation
  */
-export function calculateTax(subtotal: number): number {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function calculateTax(_subtotal: number): number {
   // All items are second-hand vintage goods, tax-exempt in most jurisdictions
   return 0;
 }
@@ -39,7 +40,8 @@ export function calculateTax(subtotal: number): number {
  * @param locale - Current locale (for future localization)
  * @returns Tax exemption message
  */
-export function getTaxExemptionNotice(locale: string = 'en'): string {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function getTaxExemptionNotice(_locale: string = 'en'): string {
   // Future: Could be localized based on locale
   return 'Tax: $0.00 (Second-hand goods tax-exempt)';
 }

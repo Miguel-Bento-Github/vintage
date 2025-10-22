@@ -80,7 +80,7 @@ export default function EmailPreviewTemplatePage({
       } else {
         setSendStatus(`✗ Error: ${result.error}`);
       }
-    } catch (error) {
+    } catch {
       setSendStatus('✗ Failed to send email');
     }
   };
