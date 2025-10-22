@@ -35,8 +35,7 @@ const nextConfig = {
   },
 
   // Production optimizations
-  productionBrowserSourceMaps: false, // Disable source maps in production for smaller builds
-  swcMinify: true, // Enable SWC minification for faster builds
+  productionBrowserSourceMaps: false,
 
   // Compiler optimizations
   compiler: {
