@@ -1,0 +1,24 @@
+{
+  "name": "Dream Azul - Vintage Clothing",
+  "short_name": "Dream Azul",
+  "description": "Curated collection of authentic vintage clothing from the 1950s-2000s",
+  "icons": [
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#d4c5b0",
+  "background_color": "#faf9f7",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}
