@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createOrderAdmin } from '@/services/adminOrderService';
 import { CustomerInfo, OrderItem } from '@/types';
 import { sendOrderConfirmationEmail } from '@/lib/email/orderEmails';
+import type { Locale } from '@/i18n';
 
 interface CreateOrderRequest {
   paymentIntentId: string;
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     // Send order confirmation email in user's language (async, don't wait)
     if (result.data) {
-      const emailLocale = result.data.locale || 'en';
+      const emailLocale = (result.data.locale || 'en') as Locale;
       sendOrderConfirmationEmail(result.data, emailLocale).catch((error) => {
         console.error('Failed to send order confirmation email:', error);
         // Don't fail order creation if email fails

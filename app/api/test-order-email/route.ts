@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
       status: 'paid',
       paymentIntentId: 'pi_test_123456',
       locale: locale,
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
+      createdAt: Timestamp.now() as unknown as Order['createdAt'],
+      updatedAt: Timestamp.now() as unknown as Order['updatedAt'],
     };
 
     // Send the email
