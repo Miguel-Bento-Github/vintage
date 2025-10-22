@@ -139,10 +139,15 @@ export async function PATCH(
       }
 
       // Use the customer's preferred language from the order
-      const emailLocale = order.locale || 'en';
+      const emailLocale = orderData?.locale || order.locale || 'en';
 
       // Send email asynchronously (don't wait for it)
-      sendShippingNotificationEmail(updatedOrder, {
+      // Note: Pass the unserialized order data to email function (needs Timestamp objects)
+      sendShippingNotificationEmail({
+        ...updatedOrder,
+        createdAt: orderData?.createdAt,
+        updatedAt: orderData?.updatedAt,
+      } as any, {
         trackingUrl,
         carrier,
         estimatedDelivery: '5-7 business days',
