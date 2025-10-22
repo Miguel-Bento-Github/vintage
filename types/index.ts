@@ -98,6 +98,15 @@ export interface OrderItem {
   imageUrl: string;
 }
 
+export interface EmailHistoryEntry {
+  type: string;                     // e.g., 'order_confirmation', 'shipping_notification'
+  sentAt: Timestamp;
+  sentTo: string;                   // Email address
+  emailId?: string;                 // Resend email ID
+  status: 'sent' | 'failed';
+  error?: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;              // e.g., "VTG-20250118-001"
@@ -111,6 +120,8 @@ export interface Order {
   status: OrderStatus;
   paymentIntentId: string;          // Stripe payment intent ID
   trackingNumber?: string;
+  emailHistory?: EmailHistoryEntry[]; // Track all emails sent for this order
+  locale?: string;                  // User's preferred language (e.g., 'en', 'es', 'fr')
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
