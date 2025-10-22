@@ -7,6 +7,7 @@ import { getFirestore, Firestore } from 'firebase-admin/firestore';
  */
 
 let adminDb: Firestore;
+let isEmulatorConfigured = false;
 
 // Initialize Firebase Admin
 if (!getApps().length) {
@@ -29,14 +30,17 @@ if (!getApps().length) {
   adminDb = getFirestore();
 
   // Configure Firestore to use emulators in development
-  // Must be called before any other Firestore operations
-  if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === 'true') {
+  // Must be called ONCE before any other Firestore operations
+  if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === 'true' && !isEmulatorConfigured) {
     adminDb.settings({
       host: 'localhost:3476',
       ssl: false,
     });
+    isEmulatorConfigured = true;
+    console.log('🔧 [Admin] Connected to Firebase emulators (Firestore: 3476)');
   }
 } else {
+  // App already initialized, just get the existing Firestore instance
   adminDb = getFirestore();
 }
 

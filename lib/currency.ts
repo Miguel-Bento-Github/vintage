@@ -146,10 +146,17 @@ export function setExchangeRates(rates: Record<Currency, number>): void {
 
 /**
  * Fetches live exchange rates from the API
+ * Client-side only: Use getExchangeRatesServer() for server-side code
  * Returns cached rates if available and fresh, otherwise fetches new rates
  */
 export async function fetchExchangeRates(): Promise<Record<Currency, number>> {
   try {
+    // Check if we're on the server
+    if (typeof window === 'undefined') {
+      console.warn('fetchExchangeRates() called on server-side. Use getExchangeRatesServer() instead.');
+      return DEFAULT_EXCHANGE_RATES;
+    }
+
     const response = await fetch('/api/exchange-rates');
     if (!response.ok) {
       throw new Error('Failed to fetch exchange rates');

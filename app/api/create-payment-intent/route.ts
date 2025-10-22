@@ -39,6 +39,20 @@ export async function POST(request: NextRequest) {
     const shipping = subtotal >= shippingThreshold ? 0 : shippingCost;
     const total = subtotal + shipping;
 
+    // Validate minimum amount for Stripe
+    // Stripe requires at least €0.50 (or equivalent) in the settlement currency
+    const minimumInEUR = 0.50;
+    const totalInEUR = subtotalInEUR + (shipping > 0 ? 10 : 0); // Convert shipping back to EUR
+
+    if (totalInEUR < minimumInEUR) {
+      return NextResponse.json(
+        {
+          error: `Minimum order amount is €${minimumInEUR.toFixed(2)} (${convertPrice(minimumInEUR, currency, exchangeRates).toFixed(2)} ${currency}). Please add more items to your cart.`,
+        },
+        { status: 400 }
+      );
+    }
+
     // Convert to Stripe's smallest currency unit (cents for most, yen for JPY)
     const amount = getStripeAmount(total, currency);
 
