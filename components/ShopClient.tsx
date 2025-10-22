@@ -151,7 +151,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
           return b.price - a.price;
         case 'newest':
         default:
-          return b.createdAt.toMillis() - a.createdAt.toMillis();
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       }
     });
 
