@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createOrderAdmin } from '@/services/adminOrderService';
 import { CustomerInfo, OrderItem } from '@/types';
+import { sendOrderConfirmationEmail } from '@/lib/email/orderEmails';
 
 interface CreateOrderRequest {
   paymentIntentId: string;
@@ -10,6 +11,7 @@ interface CreateOrderRequest {
   shipping: number;
   tax: number;
   total: number;
+  locale?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -48,6 +50,7 @@ export async function POST(request: NextRequest) {
       tax: body.tax,
       total: body.total,
       status: 'paid', // Payment already succeeded at this point
+      locale: body.locale || 'en', // Store user's language preference, default to English
     });
 
     if (!result.success) {
@@ -56,6 +59,15 @@ export async function POST(request: NextRequest) {
         { error: result.error || 'Failed to create order' },
         { status: 500 }
       );
+    }
+
+    // Send order confirmation email in user's language (async, don't wait)
+    if (result.data) {
+      const emailLocale = result.data.locale || 'en';
+      sendOrderConfirmationEmail(result.data, emailLocale).catch((error) => {
+        console.error('Failed to send order confirmation email:', error);
+        // Don't fail order creation if email fails
+      });
     }
 
     // Return order ID
