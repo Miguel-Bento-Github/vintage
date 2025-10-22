@@ -157,10 +157,14 @@ async function updateOrderEmailHistory(
   try {
     const orderRef = adminDb.collection('orders').doc(orderId);
 
-    // Add sentAt timestamp
+    // Add sentAt timestamp and remove undefined fields
     const fullEntry: EmailHistoryEntry = {
-      ...emailEntry,
+      type: emailEntry.type,
+      sentTo: emailEntry.sentTo,
+      status: emailEntry.status,
       sentAt: Timestamp.now(),
+      ...(emailEntry.emailId && { emailId: emailEntry.emailId }),
+      ...(emailEntry.error && { error: emailEntry.error }),
     };
 
     // Append to emailHistory array
