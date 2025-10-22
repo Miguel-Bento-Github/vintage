@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getOrderAdmin } from '@/services/adminOrderService';
 import { adminDb } from '@/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
-import { OrderStatus } from '@/types';
-import { sendShippingNotificationEmail, getCarrierTrackingUrl } from '@/lib/email/orderEmails';
+import { OrderStatus, Order } from '@/types';
+import { sendShippingNotificationEmail, sendDeliveryConfirmationEmail, sendCancellationEmail, getCarrierTrackingUrl } from '@/lib/email/orderEmails';
+import type { Locale } from '@/i18n';
 
 export async function GET(
   request: NextRequest,
@@ -130,6 +131,16 @@ export async function PATCH(
       updatedAt: orderData?.updatedAt?.toDate?.()?.toISOString() || orderData?.updatedAt,
     };
 
+    // Get the customer's preferred language from the order
+    const emailLocale: Locale = (orderData?.locale || order.locale || 'en') as Locale;
+
+    // Create order object with Timestamp objects for email templates
+    const orderWithTimestamps: Order = {
+      ...updatedOrder,
+      createdAt: orderData?.createdAt,
+      updatedAt: orderData?.updatedAt,
+    } as Order;
+
     // Send shipping notification email if status changed to 'shipped'
     if (status === 'shipped' && order.status !== 'shipped') {
       // Build tracking URL if we have tracking number and carrier
@@ -138,22 +149,31 @@ export async function PATCH(
         trackingUrl = getCarrierTrackingUrl(carrier, trackingNumber);
       }
 
-      // Use the customer's preferred language from the order
-      const emailLocale = orderData?.locale || order.locale || 'en';
-
       // Send email asynchronously (don't wait for it)
-      // Note: Pass the unserialized order data to email function (needs Timestamp objects)
-      sendShippingNotificationEmail({
-        ...updatedOrder,
-        createdAt: orderData?.createdAt,
-        updatedAt: orderData?.updatedAt,
-      } as any, {
+      sendShippingNotificationEmail(orderWithTimestamps, {
         trackingUrl,
         carrier,
-        estimatedDelivery: '5-7 business days',
         locale: emailLocale,
       }).catch((error) => {
         console.error('Failed to send shipping notification email:', error);
+        // Don't fail status update if email fails
+      });
+    }
+
+    // Send delivery confirmation email if status changed to 'delivered'
+    if (status === 'delivered' && order.status !== 'delivered') {
+      // Send email asynchronously (don't wait for it)
+      sendDeliveryConfirmationEmail(orderWithTimestamps, emailLocale).catch((error) => {
+        console.error('Failed to send delivery confirmation email:', error);
+        // Don't fail status update if email fails
+      });
+    }
+
+    // Send cancellation email if status changed to 'cancelled'
+    if (status === 'cancelled' && order.status !== 'cancelled') {
+      // Send email asynchronously (don't wait for it)
+      sendCancellationEmail(orderWithTimestamps, undefined, emailLocale).catch((error) => {
+        console.error('Failed to send cancellation email:', error);
         // Don't fail status update if email fails
       });
     }
