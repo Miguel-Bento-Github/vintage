@@ -21,6 +21,7 @@ export default function OrderManagementPage() {
 
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
   const [trackingNumber, setTrackingNumber] = useState<string>('');
+  const [carrier, setCarrier] = useState<string>('USPS');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   // Fetch all orders on mount
@@ -49,8 +50,13 @@ export default function OrderManagementPage() {
 
     // Apply sort
     filtered.sort((a, b) => {
-      const dateA = a.createdAt.toDate().getTime();
-      const dateB = b.createdAt.toDate().getTime();
+      // Handle both Timestamp objects and Date objects
+      const dateA = a.createdAt instanceof Date
+        ? a.createdAt.getTime()
+        : (typeof a.createdAt.toDate === 'function' ? a.createdAt.toDate().getTime() : 0);
+      const dateB = b.createdAt instanceof Date
+        ? b.createdAt.getTime()
+        : (typeof b.createdAt.toDate === 'function' ? b.createdAt.toDate().getTime() : 0);
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
 
@@ -81,7 +87,8 @@ export default function OrderManagementPage() {
       const result = await updateOrderStatus(
         orderId,
         newStatus,
-        newStatus === 'shipped' ? trackingNumber : undefined
+        newStatus === 'shipped' ? trackingNumber : undefined,
+        newStatus === 'shipped' ? carrier : undefined
       );
 
       if (result.success && result.data) {
@@ -90,6 +97,7 @@ export default function OrderManagementPage() {
           prev.map(order => (order.id === orderId ? result.data! : order))
         );
         setTrackingNumber('');
+        setCarrier('USPS');
         setError(null);
       } else {
         setError('Failed to update order status');
@@ -451,25 +459,42 @@ export default function OrderManagementPage() {
                     </div>
 
                     {selectedOrder.status === 'shipped' && (
-                      <div className="mt-3">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Tracking Number
-                        </label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={trackingNumber}
-                            onChange={(e) => setTrackingNumber(e.target.value)}
-                            placeholder="Enter tracking number"
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                          />
-                          <button
-                            onClick={() => handleStatusUpdate(selectedOrder.id, 'shipped')}
-                            disabled={!trackingNumber || updatingOrderId === selectedOrder.id}
-                            className="px-4 py-2 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      <div className="mt-3 space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Carrier
+                          </label>
+                          <select
+                            value={carrier}
+                            onChange={(e) => setCarrier(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                           >
-                            Update
-                          </button>
+                            <option value="USPS">USPS</option>
+                            <option value="UPS">UPS</option>
+                            <option value="FedEx">FedEx</option>
+                            <option value="DHL">DHL</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Tracking Number
+                          </label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={trackingNumber}
+                              onChange={(e) => setTrackingNumber(e.target.value)}
+                              placeholder="Enter tracking number"
+                              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                            />
+                            <button
+                              onClick={() => handleStatusUpdate(selectedOrder.id, 'shipped')}
+                              disabled={!trackingNumber || updatingOrderId === selectedOrder.id}
+                              className="px-4 py-2 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Update
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -495,6 +520,51 @@ export default function OrderManagementPage() {
                   </p>
                 </div>
               </div>
+
+              {/* Email History */}
+              {selectedOrder.emailHistory && selectedOrder.emailHistory.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Email History</h3>
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                    {selectedOrder.emailHistory.map((email, index) => (
+                      <div key={index} className="border-b border-gray-200 last:border-b-0 pb-3 last:pb-0">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-900">
+                              {email.type === 'order_confirmation' && '📧 Order Confirmation'}
+                              {email.type === 'shipping_notification' && '📦 Shipping Notification'}
+                              {!email.type.includes('order_confirmation') && !email.type.includes('shipping_notification') && `📨 ${email.type}`}
+                            </p>
+                            <p className="text-xs text-gray-600 mt-1">
+                              To: {email.sentTo}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {formatDate(email.sentAt)}
+                            </p>
+                            {email.emailId && (
+                              <p className="text-xs text-gray-400 mt-1 font-mono">
+                                ID: {email.emailId}
+                              </p>
+                            )}
+                          </div>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            email.status === 'sent'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {email.status === 'sent' ? '✓ Sent' : '✗ Failed'}
+                          </span>
+                        </div>
+                        {email.error && (
+                          <p className="text-xs text-red-600 mt-2 p-2 bg-red-50 rounded">
+                            Error: {email.error}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4">
