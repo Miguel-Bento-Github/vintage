@@ -1,4 +1,21 @@
 import { Timestamp } from 'firebase/firestore';
+import type { Timestamp as AdminTimestamp } from 'firebase-admin/firestore';
+
+// Type for timestamps that can come from either client or admin SDK
+export type FirebaseTimestamp = Timestamp | AdminTimestamp | Date | string;
+
+/**
+ * Safely converts a FirebaseTimestamp to an ISO string
+ */
+export function timestampToISO(timestamp: FirebaseTimestamp | null | undefined): string | undefined {
+  if (!timestamp) return undefined;
+  if (typeof timestamp === 'string') return timestamp;
+  if (timestamp instanceof Date) return timestamp.toISOString();
+  if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
+    return timestamp.toDate().toISOString();
+  }
+  return undefined;
+}
 
 // ============================================================================
 // ENUMS & CONSTANTS
@@ -122,8 +139,8 @@ export interface Order {
   trackingNumber?: string;
   emailHistory?: EmailHistoryEntry[]; // Track all emails sent for this order
   locale?: string;                  // User's preferred language (e.g., 'en', 'es', 'fr')
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: FirebaseTimestamp;
+  updatedAt: FirebaseTimestamp;
 }
 
 // Type for creating a new order

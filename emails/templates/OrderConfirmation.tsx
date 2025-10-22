@@ -1,7 +1,7 @@
 import { Text, Heading, Section, Hr } from '@react-email/components';
 import EmailLayout from '../components/EmailLayout';
 import Button from '../components/Button';
-import { Order } from '@/types';
+import { Order, FirebaseTimestamp } from '@/types';
 import { getEmailMessages } from '@/lib/email/translations';
 import type { Locale } from '@/i18n';
 
@@ -29,8 +29,17 @@ export default function OrderConfirmation({
   };
 
   // Format date
-  const formatDate = (timestamp: { toDate: () => Date } | Date) => {
-    const date = timestamp instanceof Date ? timestamp : timestamp.toDate();
+  const formatDate = (timestamp: FirebaseTimestamp) => {
+    let date: Date;
+    if (typeof timestamp === 'string') {
+      date = new Date(timestamp);
+    } else if (timestamp instanceof Date) {
+      date = timestamp;
+    } else if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
+      date = timestamp.toDate();
+    } else {
+      date = new Date();
+    }
     return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',

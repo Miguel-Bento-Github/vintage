@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getOrderAdmin } from '@/services/adminOrderService';
 import { adminDb } from '@/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
-import { OrderStatus, Order } from '@/types';
+import { OrderStatus, Order, timestampToISO } from '@/types';
 import { sendShippingNotificationEmail, sendDeliveryConfirmationEmail, sendCancellationEmail, getCarrierTrackingUrl } from '@/lib/email/orderEmails';
-import type { Locale } from '@/i18n';
+import { toLocale } from '@/i18n';
 
 export async function GET(
   request: NextRequest,
@@ -33,8 +33,8 @@ export async function GET(
             id: doc.id,
             ...docData,
             // Convert Firestore Timestamps to ISO strings for JSON serialization
-            createdAt: docData?.createdAt?.toDate?.()?.toISOString() || docData?.createdAt,
-            updatedAt: docData?.updatedAt?.toDate?.()?.toISOString() || docData?.updatedAt,
+            createdAt: timestampToISO(docData?.createdAt) || docData?.createdAt,
+            updatedAt: timestampToISO(docData?.updatedAt) || docData?.updatedAt,
           };
           return NextResponse.json({
             success: true,
@@ -53,8 +53,8 @@ export async function GET(
     const orderData = result.data;
     const serializedOrder = orderData ? {
       ...orderData,
-      createdAt: orderData.createdAt?.toDate?.()?.toISOString() || orderData.createdAt,
-      updatedAt: orderData.updatedAt?.toDate?.()?.toISOString() || orderData.updatedAt,
+      createdAt: timestampToISO(orderData.createdAt) || orderData.createdAt,
+      updatedAt: timestampToISO(orderData.updatedAt) || orderData.updatedAt,
     } : null;
 
     return NextResponse.json({
@@ -123,23 +123,44 @@ export async function PATCH(
     // Get updated order
     const updatedDoc = await orderRef.get();
     const orderData = updatedDoc.data();
+
+    if (!orderData) {
+      return NextResponse.json(
+        { error: 'Order not found after update' },
+        { status: 404 }
+      );
+    }
+
+    // Get the customer's preferred language from the order
+    const emailLocale = toLocale(orderData.locale || order.locale);
+
+    // Build order object for API response with ISO string timestamps
     const updatedOrder = {
       id: updatedDoc.id,
       ...orderData,
-      // Convert Firestore Timestamps to ISO strings for JSON serialization
-      createdAt: orderData?.createdAt?.toDate?.()?.toISOString() || orderData?.createdAt,
-      updatedAt: orderData?.updatedAt?.toDate?.()?.toISOString() || orderData?.updatedAt,
+      createdAt: timestampToISO(orderData.createdAt) || orderData.createdAt,
+      updatedAt: timestampToISO(orderData.updatedAt) || orderData.updatedAt,
     };
 
-    // Get the customer's preferred language from the order
-    const emailLocale: Locale = (orderData?.locale || order.locale || 'en') as Locale;
-
-    // Create order object with Timestamp objects for email templates
-    const orderWithTimestamps: Order = {
-      ...updatedOrder,
-      createdAt: orderData?.createdAt,
-      updatedAt: orderData?.updatedAt,
-    } as Order;
+    // Build order object for email templates with original Timestamp objects
+    const orderForEmail: Order = {
+      id: updatedDoc.id,
+      orderNumber: orderData.orderNumber,
+      customerInfo: orderData.customerInfo,
+      items: orderData.items,
+      subtotal: orderData.subtotal,
+      shipping: orderData.shipping,
+      tax: orderData.tax,
+      total: orderData.total,
+      status: orderData.status,
+      paymentIntentId: orderData.paymentIntentId,
+      trackingNumber: orderData.trackingNumber,
+      emailHistory: orderData.emailHistory,
+      locale: orderData.locale,
+      customerId: orderData.customerId,
+      createdAt: orderData.createdAt,
+      updatedAt: orderData.updatedAt,
+    };
 
     // Send shipping notification email if status changed to 'shipped'
     if (status === 'shipped' && order.status !== 'shipped') {
@@ -150,7 +171,7 @@ export async function PATCH(
       }
 
       // Send email asynchronously (don't wait for it)
-      sendShippingNotificationEmail(orderWithTimestamps, {
+      sendShippingNotificationEmail(orderForEmail, {
         trackingUrl,
         carrier,
         locale: emailLocale,
@@ -163,7 +184,7 @@ export async function PATCH(
     // Send delivery confirmation email if status changed to 'delivered'
     if (status === 'delivered' && order.status !== 'delivered') {
       // Send email asynchronously (don't wait for it)
-      sendDeliveryConfirmationEmail(orderWithTimestamps, emailLocale).catch((error) => {
+      sendDeliveryConfirmationEmail(orderForEmail, emailLocale).catch((error) => {
         console.error('Failed to send delivery confirmation email:', error);
         // Don't fail status update if email fails
       });
@@ -172,7 +193,7 @@ export async function PATCH(
     // Send cancellation email if status changed to 'cancelled'
     if (status === 'cancelled' && order.status !== 'cancelled') {
       // Send email asynchronously (don't wait for it)
-      sendCancellationEmail(orderWithTimestamps, undefined, emailLocale).catch((error) => {
+      sendCancellationEmail(orderForEmail, undefined, emailLocale).catch((error) => {
         console.error('Failed to send cancellation email:', error);
         // Don't fail status update if email fails
       });

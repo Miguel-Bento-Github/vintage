@@ -603,14 +603,32 @@ export async function getTotalRevenue(
     // Filter by date range if provided
     if (startDate) {
       orders = orders.filter(order => {
-        const orderDate = order.createdAt.toDate();
+        let orderDate: Date;
+        if (typeof order.createdAt === 'string') {
+          orderDate = new Date(order.createdAt);
+        } else if (order.createdAt instanceof Date) {
+          orderDate = order.createdAt;
+        } else if ('toDate' in order.createdAt && typeof order.createdAt.toDate === 'function') {
+          orderDate = order.createdAt.toDate();
+        } else {
+          return false;
+        }
         return orderDate >= startDate;
       });
     }
 
     if (endDate) {
       orders = orders.filter(order => {
-        const orderDate = order.createdAt.toDate();
+        let orderDate: Date;
+        if (typeof order.createdAt === 'string') {
+          orderDate = new Date(order.createdAt);
+        } else if (order.createdAt instanceof Date) {
+          orderDate = order.createdAt;
+        } else if ('toDate' in order.createdAt && typeof order.createdAt.toDate === 'function') {
+          orderDate = order.createdAt.toDate();
+        } else {
+          return false;
+        }
         return orderDate <= endDate;
       });
     }
