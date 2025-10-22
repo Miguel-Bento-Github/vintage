@@ -235,6 +235,7 @@
     "shipping": "送料",
     "free": "無料",
     "tax": "税金/VAT",
+    "taxExempt": "税金/VAT（免税）",
     "total": "合計",
     "backToHome": "ホームへ戻る",
     "whatHappensNext": "今後の流れ",

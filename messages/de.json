@@ -235,6 +235,7 @@
     "shipping": "Versand",
     "free": "KOSTENLOS",
     "tax": "MwSt./Steuer",
+    "taxExempt": "MwSt./Steuer (Befreit)",
     "total": "Gesamt",
     "backToHome": "Zurück zur Startseite",
     "whatHappensNext": "Wie geht es weiter?",

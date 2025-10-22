@@ -235,6 +235,7 @@
     "shipping": "Livraison",
     "free": "GRATUIT",
     "tax": "TVA/Taxes",
+    "taxExempt": "TVA/Taxes (Exempté)",
     "total": "Total",
     "backToHome": "Retour à l'Accueil",
     "whatHappensNext": "Et maintenant ?",
