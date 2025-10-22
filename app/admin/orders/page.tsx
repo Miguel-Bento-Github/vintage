@@ -125,8 +125,21 @@ export default function OrderManagementPage() {
     return colors[status];
   };
 
-  const formatDate = (timestamp: { toDate: () => Date }): string => {
-    return timestamp.toDate().toLocaleDateString('en-US', {
+  const formatDate = (timestamp: any): string => {
+    let date: Date;
+
+    if (!timestamp) return 'N/A';
+    if (typeof timestamp === 'string') {
+      date = new Date(timestamp);
+    } else if (timestamp instanceof Date) {
+      date = timestamp;
+    } else if (typeof timestamp.toDate === 'function') {
+      date = timestamp.toDate();
+    } else {
+      return 'N/A';
+    }
+
+    return date.toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
