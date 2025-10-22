@@ -1,24 +1,27 @@
 import { Suspense } from 'react';
 import { cache } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import { Product } from '@/types';
 import ShopClient from '@/components/ShopClient';
 
 export const revalidate = 180;
 
 const getProducts = cache(async (): Promise<Product[]> => {
-  const productsRef = collection(db, 'products');
-  const q = query(
-    productsRef,
-    orderBy('createdAt', 'desc')
-  );
+  const snapshot = await adminDb
+    .collection('products')
+    .orderBy('createdAt', 'desc')
+    .get();
 
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Product[];
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
+      updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
+      soldAt: data.soldAt?.toDate?.()?.toISOString() || null,
+    };
+  }) as Product[];
 });
 
 function ShopLoading() {
