@@ -285,58 +285,52 @@ export async function getAllOrders(
 
 /**
  * Update order status (admin function)
+ * Uses API route to ensure emails are sent when status changes
  * @param orderId - Order document ID
  * @param status - New order status
  * @param trackingNumber - Optional tracking number (for shipped status)
+ * @param carrier - Optional carrier name (for shipped status)
  * @returns Updated order
  */
 export async function updateOrderStatus(
   orderId: string,
   status: OrderStatus,
-  trackingNumber?: string
+  trackingNumber?: string,
+  carrier?: string
 ): Promise<FirebaseServiceResponse<Order>> {
   try {
-    const docRef = doc(db, 'orders', orderId);
+    // Call API route to update order status
+    // This ensures emails are sent server-side with proper authentication
+    const response = await fetch(`/api/orders/${orderId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        status,
+        trackingNumber,
+        carrier,
+      }),
+    });
 
-    // Check if order exists
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) {
+    if (!response.ok) {
+      const error = await response.json();
       return {
         success: false,
-        error: 'Order not found',
+        error: error.error || 'Failed to update order status',
       };
     }
 
-    // Prepare update data
-    const updateData: Partial<Order> & { updatedAt: Timestamp } = {
-      status,
-      updatedAt: Timestamp.now(),
-    };
-
-    // Add tracking number if provided
-    if (trackingNumber) {
-      updateData.trackingNumber = trackingNumber;
-    }
-
-    await updateDoc(docRef, updateData);
-
-    // Get updated order
-    const updatedSnap = await getDoc(docRef);
-    const updatedOrder: Order = {
-      id: updatedSnap.id,
-      ...updatedSnap.data(),
-    } as Order;
-
+    const result = await response.json();
     return {
       success: true,
-      data: updatedOrder,
+      data: result.order,
     };
   } catch (error) {
     console.error('Error updating order status:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update order status',
-      code: (error as { code?: string }).code,
     };
   }
 }

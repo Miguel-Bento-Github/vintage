@@ -11,7 +11,7 @@ export default function CartIcon() {
   return (
     <Link
       href={`/${locale}/cart`}
-      className="relative inline-flex items-center justify-center p-2 text-gray-700 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
+      className="relative inline-flex items-center justify-center p-2 hover:text-gray-900 rounded-md hover:bg-gray-100 transition-colors"
       style={{ minWidth: '44px', minHeight: '44px' }}
       aria-label={`Shopping cart with ${itemCount} items`}
     >

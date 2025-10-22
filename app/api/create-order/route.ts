@@ -18,6 +18,20 @@ export async function POST(request: NextRequest) {
   try {
     const body: CreateOrderRequest = await request.json();
 
+    // Get locale from request headers (next-intl sets this)
+    const headerLocale = request.headers.get('x-locale') || request.headers.get('accept-language')?.split(',')[0]?.split('-')[0];
+
+    // Try to extract locale from referer URL (most reliable source)
+    const referer = request.headers.get('referer');
+    let refererLocale: string | null = null;
+    if (referer) {
+      const match = referer.match(/\/([a-z]{2})\//);
+      if (match) refererLocale = match[1];
+    }
+
+    // Priority: body locale > referer locale > header locale > default 'en'
+    const finalLocale = body.locale || refererLocale || headerLocale || 'en';
+
     // Validate required fields
     if (!body.paymentIntentId) {
       return NextResponse.json(
@@ -50,7 +64,7 @@ export async function POST(request: NextRequest) {
       tax: body.tax,
       total: body.total,
       status: 'paid', // Payment already succeeded at this point
-      locale: body.locale || 'en', // Store user's language preference, default to English
+      locale: finalLocale, // Store user's language preference
     });
 
     if (!result.success) {

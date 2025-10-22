@@ -121,7 +121,7 @@ export default function PaymentForm({
             shipping,
             tax: 0, // Tax calculated by Stripe
             total: finalTotal, // Use actual charged amount from Stripe
-            locale, // Pass user's language preference for emails
+            // Note: locale is auto-detected server-side from referer URL
           }),
         });
 

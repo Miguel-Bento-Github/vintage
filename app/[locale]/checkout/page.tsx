@@ -38,7 +38,7 @@ export default function CheckoutPage() {
   });
   const [formErrors, setFormErrors] = useState<CheckoutFormErrors>({});
 
-  // Calculate totals (tax calculated by Stripe based on location)
+  // Calculate totals (tax is $0.00 for second-hand goods)
   const { subtotal, shipping, total } = calculateCheckoutTotals(getCartTotal());
 
   // Redirect if cart is empty
