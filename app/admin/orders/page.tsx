@@ -50,13 +50,17 @@ export default function OrderManagementPage() {
 
     // Apply sort
     filtered.sort((a, b) => {
-      // Handle both Timestamp objects and Date objects
-      const dateA = a.createdAt instanceof Date
-        ? a.createdAt.getTime()
-        : (typeof a.createdAt.toDate === 'function' ? a.createdAt.toDate().getTime() : 0);
-      const dateB = b.createdAt instanceof Date
-        ? b.createdAt.getTime()
-        : (typeof b.createdAt.toDate === 'function' ? b.createdAt.toDate().getTime() : 0);
+      // Handle ISO strings, Date objects, and Timestamp objects
+      const getTime = (timestamp: any): number => {
+        if (!timestamp) return 0;
+        if (typeof timestamp === 'string') return new Date(timestamp).getTime();
+        if (timestamp instanceof Date) return timestamp.getTime();
+        if (typeof timestamp.toDate === 'function') return timestamp.toDate().getTime();
+        return 0;
+      };
+
+      const dateA = getTime(a.createdAt);
+      const dateB = getTime(b.createdAt);
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
 
