@@ -2,7 +2,7 @@ import { Text, Heading, Section, Hr } from '@react-email/components';
 import EmailLayout from '../components/EmailLayout';
 import Button from '../components/Button';
 import { Order } from '@/types';
-import { getEmailTranslation } from '@/lib/email/translations';
+import { getEmailMessages } from '@/lib/email/translations';
 import type { Locale } from '@/i18n';
 
 interface OrderConfirmationProps {
