@@ -27,7 +27,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // The <html> tag is rendered in the [locale]/layout.tsx
-  // to allow for dynamic lang attribute based on locale
   return children;
 }

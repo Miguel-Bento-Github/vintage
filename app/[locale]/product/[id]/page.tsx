@@ -11,15 +11,12 @@ import AddToCartButton from './AddToCartButton';
 import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
 
-// Enable Incremental Static Regeneration (ISR)
-// Revalidate every 10 minutes (600 seconds)
 export const revalidate = 600;
 
 interface PageProps {
   params: Promise<{ id: string; locale: string }>;
 }
 
-// Cache product fetching with React cache() for request deduplication
 const getProduct = cache(async (id: string): Promise<Product | null> => {
   const docRef = doc(db, 'products', id);
   const docSnap = await getDoc(docRef);
@@ -34,9 +31,7 @@ const getProduct = cache(async (id: string): Promise<Product | null> => {
   } as Product;
 });
 
-// Cache similar products fetching
 const getSimilarProducts = cache(async (product: Product): Promise<Product[]> => {
-  // Get products from same era or category, excluding current product
   const productsRef = collection(db, 'products');
   const q = query(
     productsRef,
@@ -55,9 +50,6 @@ const getSimilarProducts = cache(async (product: Product): Promise<Product[]> =>
     .slice(0, 3);
 });
 
-// Pre-render featured products at build time for faster initial loads
-// Note: This only returns 'id' params because the [locale] segment
-// is handled by the parent layout's generateStaticParams
 export async function generateStaticParams() {
   try {
     const productsRef = collection(db, 'products');
@@ -65,7 +57,7 @@ export async function generateStaticParams() {
       productsRef,
       where('featured', '==', true),
       where('inStock', '==', true),
-      limit(20) // Pre-render top 20 featured products
+      limit(20)
     );
 
     const snapshot = await getDocs(q);

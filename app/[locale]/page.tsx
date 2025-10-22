@@ -7,13 +7,8 @@ import { Product } from '@/types';
 import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
 
-// Enable Incremental Static Regeneration (ISR)
-// Revalidate every 5 minutes (300 seconds)
 export const revalidate = 300;
 
-// Metadata will be generated dynamically based on locale
-
-// Cache featured products with React cache() for request deduplication
 const getFeaturedProducts = cache(async (): Promise<Product[]> => {
   const productsRef = collection(db, 'products');
   const q = query(
@@ -30,7 +25,6 @@ const getFeaturedProducts = cache(async (): Promise<Product[]> => {
   })) as Product[];
 });
 
-// Category images mapping - using Unsplash placeholder images
 const CATEGORY_IMAGES: Record<string, string> = {
   Jacket: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=600&fit=crop',
   Dress: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=600&fit=crop',
