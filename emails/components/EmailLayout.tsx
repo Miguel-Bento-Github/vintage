@@ -39,9 +39,9 @@ export default function EmailLayout({
         <Container style={styles.container}>
           {/* Header */}
           <Section style={styles.header}>
-            {/* Logo - JPG format for email compatibility */}
+            {/* Logo - Using absolute production URL for email compatibility */}
             <Img
-              src={`${process.env.NEXT_PUBLIC_BASE_URL || 'https://vintage-store-mu.vercel.app'}/logo.jpg`}
+              src="https://www.dreamazul.com/logo.jpg"
               alt={footer.companyName}
               width="80"
               height="80"
