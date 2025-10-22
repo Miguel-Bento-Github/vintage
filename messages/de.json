@@ -431,5 +431,13 @@
       "supportEmail": "Schreiben Sie uns an",
       "apology": "Wir danken Ihnen für Ihr Verständnis"
     }
+  },
+  "notFound": {
+    "title": "Seite Nicht Gefunden",
+    "description": "Entschuldigung, wir konnten die gesuchte Seite nicht finden. Sie wurde möglicherweise verschoben oder gelöscht.",
+    "goHome": "Zur Startseite",
+    "browseProducts": "Produkte Durchsuchen",
+    "needHelp": "Brauchen Sie Hilfe?",
+    "contactUs": "Kontaktieren Sie uns"
   }
 }

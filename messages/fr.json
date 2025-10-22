@@ -431,5 +431,13 @@
       "supportEmail": "Écrivez-nous à",
       "apology": "Nous apprécions votre compréhension"
     }
+  },
+  "notFound": {
+    "title": "Page Non Trouvée",
+    "description": "Désolé, nous n'avons pas pu trouver la page que vous recherchez. Elle a peut-être été déplacée ou supprimée.",
+    "goHome": "Aller à l'Accueil",
+    "browseProducts": "Parcourir les Produits",
+    "needHelp": "Besoin d'aide?",
+    "contactUs": "Contactez-nous"
   }
 }
