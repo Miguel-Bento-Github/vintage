@@ -374,6 +374,7 @@
       "trackingNumber": "Numéro de Suivi",
       "carrier": "Transporteur",
       "estimatedDelivery": "Livraison Estimée",
+      "estimatedDeliveryTime": "5-7 jours ouvrables",
       "trackPackageButton": "Suivre Votre Colis",
       "itemsInShipment": "Articles dans Cet Envoi",
       "era": "Époque",
@@ -387,6 +388,45 @@
       "supportText": "Questions sur votre livraison?",
       "supportEmail": "Écrivez-nous à",
       "thankYou": "Merci d'avoir choisi Dream Azul!"
+    },
+    "deliveryConfirmation": {
+      "subject": "Commande Livrée - {orderNumber}",
+      "preview": "Votre commande {orderNumber} a été livrée!",
+      "heading": "Votre Commande a Été Livrée!",
+      "greeting": "Bonjour {name},",
+      "intro": "Nous sommes ravis de confirmer que vos articles vintage ont été livrés à votre adresse. Nous espérons que vous les adorez!",
+      "orderNumber": "Numéro de Commande",
+      "deliveredItems": "Articles Livrés",
+      "era": "Époque",
+      "size": "Taille",
+      "deliveredTo": "Livré à",
+      "feedbackHeading": "Comment Avons-Nous Fait?",
+      "feedbackText": "Nous aimerions connaître votre expérience! Vos commentaires nous aident à améliorer et à découvrir de nouveaux trésors vintage.",
+      "viewOrderButton": "Voir les Détails de la Commande",
+      "supportText": "Questions ou préoccupations concernant votre commande?",
+      "supportEmail": "Écrivez-nous à",
+      "thankYou": "Merci de soutenir la mode vintage!"
+    },
+    "cancellationEmail": {
+      "subject": "Commande Annulée - {orderNumber}",
+      "preview": "Votre commande {orderNumber} a été annulée",
+      "heading": "Commande Annulée",
+      "greeting": "Bonjour {name},",
+      "intro": "Cet e-mail confirme que votre commande a été annulée et qu'un remboursement complet a été traité.",
+      "orderNumber": "Numéro de Commande",
+      "reasonLabel": "Raison de l'Annulation",
+      "cancelledItems": "Articles Annulés",
+      "era": "Époque",
+      "size": "Taille",
+      "refundHeading": "Informations sur le Remboursement",
+      "refundText": "Un remboursement complet a été traité sur votre mode de paiement d'origine.",
+      "refundAmount": "Montant du Remboursement",
+      "refundNote": "Veuillez prévoir 5 à 7 jours ouvrables pour que le remboursement apparaisse sur votre compte.",
+      "continueShoppingText": "Nous sommes désolés que cette commande n'ait pas fonctionné. Nous espérons que vous trouverez un autre trésor vintage que vous aimerez!",
+      "continueShoppingButton": "Continuer les Achats",
+      "supportText": "Questions sur votre annulation ou remboursement?",
+      "supportEmail": "Écrivez-nous à",
+      "apology": "Nous apprécions votre compréhension"
     }
   }
 }

@@ -374,6 +374,7 @@
       "trackingNumber": "Sendungsverfolgungsnummer",
       "carrier": "Versanddienstleister",
       "estimatedDelivery": "Voraussichtliche Lieferung",
+      "estimatedDeliveryTime": "5-7 Werktage",
       "trackPackageButton": "Paket Verfolgen",
       "itemsInShipment": "Artikel in Dieser Sendung",
       "era": "Epoche",
@@ -387,6 +388,45 @@
       "supportText": "Fragen zu Ihrer Lieferung?",
       "supportEmail": "Schreiben Sie uns an",
       "thankYou": "Vielen Dank, dass Sie Dream Azul gewählt haben!"
+    },
+    "deliveryConfirmation": {
+      "subject": "Bestellung Zugestellt - {orderNumber}",
+      "preview": "Ihre Bestellung {orderNumber} wurde zugestellt!",
+      "heading": "Ihre Bestellung Wurde Zugestellt!",
+      "greeting": "Hallo {name},",
+      "intro": "Wir freuen uns, Ihnen mitzuteilen, dass Ihre Vintage-Artikel an Ihre Adresse zugestellt wurden. Wir hoffen, Sie lieben sie!",
+      "orderNumber": "Bestellnummer",
+      "deliveredItems": "Zugestellte Artikel",
+      "era": "Epoche",
+      "size": "Größe",
+      "deliveredTo": "Zugestellt an",
+      "feedbackHeading": "Wie Haben Wir Uns Geschlagen?",
+      "feedbackText": "Wir würden gerne von Ihrer Erfahrung hören! Ihr Feedback hilft uns zu verbessern und neue Vintage-Schätze zu entdecken.",
+      "viewOrderButton": "Bestelldetails Anzeigen",
+      "supportText": "Fragen oder Bedenken zu Ihrer Bestellung?",
+      "supportEmail": "Schreiben Sie uns an",
+      "thankYou": "Vielen Dank für die Unterstützung von Vintage-Mode!"
+    },
+    "cancellationEmail": {
+      "subject": "Bestellung Storniert - {orderNumber}",
+      "preview": "Ihre Bestellung {orderNumber} wurde storniert",
+      "heading": "Bestellung Storniert",
+      "greeting": "Hallo {name},",
+      "intro": "Diese E-Mail bestätigt, dass Ihre Bestellung storniert wurde und eine vollständige Rückerstattung bearbeitet wurde.",
+      "orderNumber": "Bestellnummer",
+      "reasonLabel": "Stornierungsgrund",
+      "cancelledItems": "Stornierte Artikel",
+      "era": "Epoche",
+      "size": "Größe",
+      "refundHeading": "Rückerstattungsinformationen",
+      "refundText": "Eine vollständige Rückerstattung wurde auf Ihre ursprüngliche Zahlungsmethode bearbeitet.",
+      "refundAmount": "Rückerstattungsbetrag",
+      "refundNote": "Bitte rechnen Sie mit 5-7 Werktagen, bis die Rückerstattung auf Ihrem Konto erscheint.",
+      "continueShoppingText": "Es tut uns leid, dass diese Bestellung nicht geklappt hat. Wir hoffen, Sie finden einen anderen Vintage-Schatz, den Sie lieben werden!",
+      "continueShoppingButton": "Weiter Einkaufen",
+      "supportText": "Fragen zu Ihrer Stornierung oder Rückerstattung?",
+      "supportEmail": "Schreiben Sie uns an",
+      "apology": "Wir danken Ihnen für Ihr Verständnis"
     }
   }
 }

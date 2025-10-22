@@ -374,6 +374,7 @@
       "trackingNumber": "Número de Seguimiento",
       "carrier": "Transportista",
       "estimatedDelivery": "Entrega Estimada",
+      "estimatedDeliveryTime": "5-7 días hábiles",
       "trackPackageButton": "Rastrear tu Paquete",
       "itemsInShipment": "Artículos en Este Envío",
       "era": "Era",
@@ -387,6 +388,45 @@
       "supportText": "¿Preguntas sobre tu entrega?",
       "supportEmail": "Escríbenos a",
       "thankYou": "¡Gracias por elegir Dream Azul!"
+    },
+    "deliveryConfirmation": {
+      "subject": "Pedido Entregado - {orderNumber}",
+      "preview": "¡Tu pedido {orderNumber} ha sido entregado!",
+      "heading": "¡Tu Pedido Ha Sido Entregado!",
+      "greeting": "Hola {name},",
+      "intro": "¡Nos complace confirmar que tus artículos vintage han sido entregados en tu dirección. Esperamos que los ames!",
+      "orderNumber": "Número de Pedido",
+      "deliveredItems": "Artículos Entregados",
+      "era": "Era",
+      "size": "Talla",
+      "deliveredTo": "Entregado a",
+      "feedbackHeading": "¿Cómo lo Hicimos?",
+      "feedbackText": "¡Nos encantaría conocer tu experiencia! Tu opinión nos ayuda a mejorar y descubrir nuevos tesoros vintage.",
+      "viewOrderButton": "Ver Detalles del Pedido",
+      "supportText": "¿Preguntas o inquietudes sobre tu pedido?",
+      "supportEmail": "Escríbenos a",
+      "thankYou": "¡Gracias por apoyar la moda vintage!"
+    },
+    "cancellationEmail": {
+      "subject": "Pedido Cancelado - {orderNumber}",
+      "preview": "Tu pedido {orderNumber} ha sido cancelado",
+      "heading": "Pedido Cancelado",
+      "greeting": "Hola {name},",
+      "intro": "Este correo confirma que tu pedido ha sido cancelado y se ha procesado un reembolso completo.",
+      "orderNumber": "Número de Pedido",
+      "reasonLabel": "Motivo de la Cancelación",
+      "cancelledItems": "Artículos Cancelados",
+      "era": "Era",
+      "size": "Talla",
+      "refundHeading": "Información del Reembolso",
+      "refundText": "Se ha procesado un reembolso completo a tu método de pago original.",
+      "refundAmount": "Monto del Reembolso",
+      "refundNote": "Por favor, espera de 5 a 7 días hábiles para que el reembolso aparezca en tu cuenta.",
+      "continueShoppingText": "Lamentamos que este pedido no funcionara. ¡Esperamos que encuentres otro tesoro vintage que ames!",
+      "continueShoppingButton": "Continuar Comprando",
+      "supportText": "¿Preguntas sobre tu cancelación o reembolso?",
+      "supportEmail": "Escríbenos a",
+      "apology": "Agradecemos tu comprensión"
     }
   }
 }

@@ -374,6 +374,7 @@
       "trackingNumber": "追跡番号",
       "carrier": "配送業者",
       "estimatedDelivery": "配送予定",
+      "estimatedDeliveryTime": "5〜7営業日",
       "trackPackageButton": "荷物を追跡する",
       "itemsInShipment": "この発送の商品",
       "era": "年代",
@@ -387,6 +388,45 @@
       "supportText": "配送に関するご質問は？",
       "supportEmail": "メールアドレス",
       "thankYou": "Dream Azulをお選びいただきありがとうございます！"
+    },
+    "deliveryConfirmation": {
+      "subject": "商品配達完了 - {orderNumber}",
+      "preview": "ご注文{orderNumber}が配達されました！",
+      "heading": "ご注文が配達されました！",
+      "greeting": "{name}様",
+      "intro": "ヴィンテージアイテムがお客様の住所に配達されたことをお知らせいたします。気に入っていただけることを願っています！",
+      "orderNumber": "注文番号",
+      "deliveredItems": "配達された商品",
+      "era": "年代",
+      "size": "サイズ",
+      "deliveredTo": "配達先",
+      "feedbackHeading": "ご感想をお聞かせください",
+      "feedbackText": "お客様のご体験をぜひお聞かせください！フィードバックは私たちのサービス向上と新しいヴィンテージの発見に役立ちます。",
+      "viewOrderButton": "注文詳細を見る",
+      "supportText": "ご注文に関するご質問やご不明な点は？",
+      "supportEmail": "メールアドレス",
+      "thankYou": "ヴィンテージファッションをご支援いただきありがとうございます！"
+    },
+    "cancellationEmail": {
+      "subject": "注文キャンセル - {orderNumber}",
+      "preview": "ご注文{orderNumber}がキャンセルされました",
+      "heading": "注文キャンセル",
+      "greeting": "{name}様",
+      "intro": "このメールは、ご注文がキャンセルされ、全額返金が処理されたことを確認するものです。",
+      "orderNumber": "注文番号",
+      "reasonLabel": "キャンセル理由",
+      "cancelledItems": "キャンセルされた商品",
+      "era": "年代",
+      "size": "サイズ",
+      "refundHeading": "返金情報",
+      "refundText": "元のお支払い方法への全額返金が処理されました。",
+      "refundAmount": "返金額",
+      "refundNote": "返金がアカウントに表示されるまで5〜7営業日かかる場合があります。",
+      "continueShoppingText": "今回のご注文がうまくいかず申し訳ございません。他にもお気に入りのヴィンテージアイテムが見つかることを願っています！",
+      "continueShoppingButton": "ショッピングを続ける",
+      "supportText": "キャンセルまたは返金に関するご質問は？",
+      "supportEmail": "メールアドレス",
+      "apology": "ご理解いただきありがとうございます"
     }
   }
 }

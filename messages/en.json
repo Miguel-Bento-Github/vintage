@@ -377,6 +377,7 @@
       "trackingNumber": "Tracking Number",
       "carrier": "Carrier",
       "estimatedDelivery": "Estimated Delivery",
+      "estimatedDeliveryTime": "5-7 business days",
       "trackPackageButton": "Track Your Package",
       "itemsInShipment": "Items in This Shipment",
       "era": "Era",
@@ -390,6 +391,45 @@
       "supportText": "Questions about your delivery?",
       "supportEmail": "Email us at",
       "thankYou": "Thank you for choosing Dream Azul!"
+    },
+    "deliveryConfirmation": {
+      "subject": "Order Delivered - {orderNumber}",
+      "preview": "Your order {orderNumber} has been delivered!",
+      "heading": "Your Order Has Been Delivered!",
+      "greeting": "Hi {name},",
+      "intro": "We're excited to confirm that your vintage items have been delivered to your address. We hope you love them!",
+      "orderNumber": "Order Number",
+      "deliveredItems": "Delivered Items",
+      "era": "Era",
+      "size": "Size",
+      "deliveredTo": "Delivered To",
+      "feedbackHeading": "How Did We Do?",
+      "feedbackText": "We'd love to hear about your experience! Your feedback helps us improve and discover new vintage treasures.",
+      "viewOrderButton": "View Order Details",
+      "supportText": "Questions or concerns about your order?",
+      "supportEmail": "Email us at",
+      "thankYou": "Thank you for supporting vintage fashion!"
+    },
+    "cancellationEmail": {
+      "subject": "Order Cancelled - {orderNumber}",
+      "preview": "Your order {orderNumber} has been cancelled",
+      "heading": "Order Cancelled",
+      "greeting": "Hi {name},",
+      "intro": "This email confirms that your order has been cancelled and a full refund has been processed.",
+      "orderNumber": "Order Number",
+      "reasonLabel": "Cancellation Reason",
+      "cancelledItems": "Cancelled Items",
+      "era": "Era",
+      "size": "Size",
+      "refundHeading": "Refund Information",
+      "refundText": "A full refund has been processed to your original payment method.",
+      "refundAmount": "Refund Amount",
+      "refundNote": "Please allow 5-7 business days for the refund to appear in your account.",
+      "continueShoppingText": "We're sorry this order didn't work out. We hope you'll find another vintage treasure you love!",
+      "continueShoppingButton": "Continue Shopping",
+      "supportText": "Questions about your cancellation or refund?",
+      "supportEmail": "Email us at",
+      "apology": "We appreciate your understanding"
     }
   }
 }
