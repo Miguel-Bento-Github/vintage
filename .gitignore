@@ -13,6 +13,10 @@
 # testing
 /coverage
 
+# lighthouse reports
+lighthouse*.json
+lighthouse*.html
+
 # next.js
 /.next/
 /out/
