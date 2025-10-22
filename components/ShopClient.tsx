@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Product } from '@/types';
 import { ERAS, CATEGORIES, CONDITIONS } from '@/lib/constants';
 import { useLocale } from 'next-intl';
@@ -28,21 +28,36 @@ interface ShopClientProps {
 
 export default function ShopClient({ initialProducts }: ShopClientProps) {
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get('category') || '';
+  const router = useRouter();
+  const pathname = usePathname();
   const locale = useLocale();
   const t = useTranslations('shop');
   const tCommon = useTranslations('common');
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedEras, setSelectedEras] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    initialCategory ? [initialCategory] : []
+  const normalizeValue = (value: string) => {
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  };
+
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [selectedEras, setSelectedEras] = useState<string[]>(
+    searchParams.get('era')?.split(',').filter(Boolean).map(normalizeValue) || []
   );
-  const [selectedPriceRanges, setSelectedPriceRanges] = useState<PriceRange[]>([]);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
-  const [inStockOnly, setInStockOnly] = useState(false);
-  const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    searchParams.get('category')?.split(',').filter(Boolean).map(normalizeValue) || []
+  );
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState<PriceRange[]>(
+    (searchParams.get('price')?.split(',').filter(Boolean) || []) as PriceRange[]
+  );
+  const [selectedSizes, setSelectedSizes] = useState<string[]>(
+    searchParams.get('size')?.split(',').filter(Boolean).map((s) => s.toUpperCase()) || []
+  );
+  const [selectedConditions, setSelectedConditions] = useState<string[]>(
+    searchParams.get('condition')?.split(',').filter(Boolean).map(normalizeValue) || []
+  );
+  const [inStockOnly, setInStockOnly] = useState(searchParams.get('inStock') === 'true');
+  const [sortBy, setSortBy] = useState<SortOption>(
+    (searchParams.get('sort') as SortOption) || 'newest'
+  );
   const [showFilters, setShowFilters] = useState(false);
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -59,6 +74,34 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
       [section]: !prev[section],
     }));
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (searchQuery) params.set('search', searchQuery);
+    if (selectedEras.length > 0) params.set('era', selectedEras.join(','));
+    if (selectedCategories.length > 0) params.set('category', selectedCategories.join(','));
+    if (selectedPriceRanges.length > 0) params.set('price', selectedPriceRanges.join(','));
+    if (selectedSizes.length > 0) params.set('size', selectedSizes.join(','));
+    if (selectedConditions.length > 0) params.set('condition', selectedConditions.join(','));
+    if (inStockOnly) params.set('inStock', 'true');
+    if (sortBy !== 'newest') params.set('sort', sortBy);
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    router.replace(newUrl, { scroll: false });
+  }, [
+    searchQuery,
+    selectedEras,
+    selectedCategories,
+    selectedPriceRanges,
+    selectedSizes,
+    selectedConditions,
+    inStockOnly,
+    sortBy,
+    pathname,
+    router,
+  ]);
 
   const toggleEra = (era: string) => {
     setSelectedEras((prev) =>
