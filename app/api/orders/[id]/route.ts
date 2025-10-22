@@ -27,9 +27,13 @@ export async function GET(
 
         if (!querySnapshot.empty) {
           const doc = querySnapshot.docs[0];
+          const docData = doc.data();
           const order = {
             id: doc.id,
-            ...doc.data(),
+            ...docData,
+            // Convert Firestore Timestamps to ISO strings for JSON serialization
+            createdAt: docData?.createdAt?.toDate?.()?.toISOString() || docData?.createdAt,
+            updatedAt: docData?.updatedAt?.toDate?.()?.toISOString() || docData?.updatedAt,
           };
           return NextResponse.json({
             success: true,
@@ -44,9 +48,17 @@ export async function GET(
       );
     }
 
+    // Convert Firestore Timestamps to ISO strings for JSON serialization
+    const orderData = result.data;
+    const serializedOrder = orderData ? {
+      ...orderData,
+      createdAt: orderData.createdAt?.toDate?.()?.toISOString() || orderData.createdAt,
+      updatedAt: orderData.updatedAt?.toDate?.()?.toISOString() || orderData.updatedAt,
+    } : null;
+
     return NextResponse.json({
       success: true,
-      order: result.data,
+      order: serializedOrder,
     });
   } catch (error) {
     console.error('Error fetching order:', error);
@@ -109,9 +121,13 @@ export async function PATCH(
 
     // Get updated order
     const updatedDoc = await orderRef.get();
+    const orderData = updatedDoc.data();
     const updatedOrder = {
       id: updatedDoc.id,
-      ...updatedDoc.data(),
+      ...orderData,
+      // Convert Firestore Timestamps to ISO strings for JSON serialization
+      createdAt: orderData?.createdAt?.toDate?.()?.toISOString() || orderData?.createdAt,
+      updatedAt: orderData?.updatedAt?.toDate?.()?.toISOString() || orderData?.updatedAt,
     };
 
     // Send shipping notification email if status changed to 'shipped'
