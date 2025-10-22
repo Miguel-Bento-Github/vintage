@@ -566,7 +566,7 @@ const sampleProducts = [
     images: [
       'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800',
       'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800',
-      'https://images.unsplash.com/photo-1611923134239-3f813957c7c3?w=800',
+      'https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800',
     ],
     inStock: true,
     featured: false,

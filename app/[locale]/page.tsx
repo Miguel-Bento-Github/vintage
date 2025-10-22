@@ -31,7 +31,7 @@ const CATEGORY_IMAGES: Record<string, string> = {
   Jeans: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=600&fit=crop',
   Shirt: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&h=600&fit=crop',
   Pants: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=600&fit=crop',
-  Accessories: 'https://images.unsplash.com/photo-1611923134239-3f813957c7c3?w=800&h=600&fit=crop',
+  Accessories: 'https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&h=600&fit=crop',
 };
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
