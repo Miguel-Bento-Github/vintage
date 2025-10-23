@@ -4,25 +4,29 @@ import { adminDb } from '@/lib/firebase-admin';
 import { Product } from '@/types';
 import ShopClient from '@/components/ShopClient';
 
-export const dynamic = 'force-dynamic';
 export const revalidate = 180;
 
 const getProducts = cache(async (): Promise<Product[]> => {
-  const snapshot = await adminDb
-    .collection('products')
-    .orderBy('createdAt', 'desc')
-    .get();
+  try {
+    const snapshot = await adminDb
+      .collection('products')
+      .orderBy('createdAt', 'desc')
+      .get();
 
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      ...data,
-      createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
-      updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
-      soldAt: data.soldAt?.toDate?.()?.toISOString() || null,
-    };
-  }) as Product[];
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
+        soldAt: data.soldAt?.toDate?.()?.toISOString() || null,
+      };
+    }) as Product[];
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
 });
 
 function ShopLoading() {

@@ -6,27 +6,31 @@ import { Product } from '@/types';
 import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
 
-export const dynamic = 'force-dynamic';
 export const revalidate = 300;
 
 const getFeaturedProducts = cache(async (): Promise<Product[]> => {
-  const snapshot = await adminDb
-    .collection('products')
-    .where('featured', '==', true)
-    .where('inStock', '==', true)
-    .limit(8)
-    .get();
+  try {
+    const snapshot = await adminDb
+      .collection('products')
+      .where('featured', '==', true)
+      .where('inStock', '==', true)
+      .limit(8)
+      .get();
 
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      ...data,
-      createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
-      updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
-      soldAt: data.soldAt?.toDate?.()?.toISOString() || null,
-    };
-  }) as Product[];
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
+        soldAt: data.soldAt?.toDate?.()?.toISOString() || null,
+      };
+    }) as Product[];
+  } catch (error) {
+    console.error('Error fetching featured products:', error);
+    return [];
+  }
 });
 
 const CATEGORY_IMAGES: Record<string, string> = {
