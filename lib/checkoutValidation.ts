@@ -1,4 +1,5 @@
 import { CheckoutFormData, CheckoutFormErrors } from '@/types/checkout';
+import { calculateShipping, getShippingEstimate, isCountrySupported } from '@/lib/shipping';
 
 export function validateCustomerInfo(formData: CheckoutFormData): CheckoutFormErrors {
   const errors: CheckoutFormErrors = {};
@@ -35,16 +36,30 @@ export function validateCustomerInfo(formData: CheckoutFormData): CheckoutFormEr
 
   if (!formData.country) {
     errors.country = 'Country is required';
+  } else if (!isCountrySupported(formData.country)) {
+    errors.country = 'We do not currently ship to this country';
   }
 
   return errors;
 }
 
-export function calculateCheckoutTotals(cartTotal: number) {
+/**
+ * Calculate checkout totals based on cart total and destination country
+ * @param cartTotal - Cart subtotal
+ * @param countryCode - ISO 3166-1 alpha-2 country code (optional)
+ * @returns Subtotal, shipping cost, and total
+ */
+export function calculateCheckoutTotals(cartTotal: number, countryCode?: string) {
   const subtotal = cartTotal;
-  const shipping = subtotal >= 100 ? 0 : 10;
-  // Tax will be calculated by Stripe based on customer location
-  // European VAT rates vary by country (19-25%), US sales tax varies by state
+
+  // Calculate shipping based on destination country
+  // Default to domestic (ES) if no country provided
+  const shipping = countryCode
+    ? calculateShipping(countryCode)
+    : calculateShipping('ES');
+
+  // Tax is $0.00 for second-hand vintage goods
+  // See /lib/taxCalculation.ts for explanation
   const total = subtotal + shipping;
 
   return { subtotal, shipping, total };

@@ -170,6 +170,9 @@ export interface Order {
   trackingNumber?: string;
   emailHistory?: EmailHistoryEntry[]; // Track all emails sent for this order
   locale?: string;                  // User's preferred language (e.g., 'en', 'es', 'fr')
+  shippingZone?: string;            // Shipping zone: 'domestic', 'europe', 'north-america', etc.
+  estimatedDeliveryDays?: string;   // Estimated delivery time (e.g., '5-7 business days')
+  destinationCountry?: string;      // Destination country code (ISO 3166-1 alpha-2)
   createdAt: FirebaseTimestamp;
   updatedAt: FirebaseTimestamp;
 }

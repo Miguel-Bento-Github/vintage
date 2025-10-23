@@ -24,6 +24,7 @@ import {
 } from '@/types/firebase';
 import { markProductSold } from './productService';
 import { calculateTax } from '@/lib/taxCalculation';
+import { calculateShipping, getShippingEstimate } from '@/lib/shipping';
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -47,23 +48,32 @@ function generateOrderNumber(): string {
 /**
  * Calculate order totals for second-hand vintage goods
  * @param items - Array of order items
- * @param shippingRate - Shipping cost (default: $10)
- * @returns Calculated subtotal, shipping, tax, and total
+ * @param countryCode - ISO 3166-1 alpha-2 country code (e.g., 'US', 'ES', 'GB')
+ * @param weightInGrams - Optional weight for weight-based shipping calculation
+ * @returns Calculated subtotal, shipping, tax, total, and shipping info
  *
  * Note: Tax is set to 0 for all second-hand vintage goods.
  * See /docs/tax-policy.md and /lib/taxCalculation.ts for details.
  */
 export function calculateOrderTotals(
   items: OrderItem[],
-  shippingRate: number = 10.00
+  countryCode: string = 'ES',
+  weightInGrams?: number
 ): {
   subtotal: number;
   shipping: number;
   tax: number;
   total: number;
+  shippingZone: string;
+  estimatedDeliveryDays: string;
+  destinationCountry: string;
 } {
   // Calculate subtotal from items
   const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+
+  // Calculate shipping based on destination country
+  const shippingEstimate = getShippingEstimate(countryCode, weightInGrams);
+  const shippingRate = shippingEstimate.cost;
 
   // Calculate tax for second-hand goods (always 0)
   // See /lib/taxCalculation.ts for explanation
@@ -77,6 +87,9 @@ export function calculateOrderTotals(
     shipping: Math.round(shippingRate * 100) / 100,
     tax: Math.round(tax * 100) / 100,
     total: Math.round(total * 100) / 100,
+    shippingZone: shippingEstimate.zone,
+    estimatedDeliveryDays: shippingEstimate.estimatedDays,
+    destinationCountry: shippingEstimate.destinationCountry,
   };
 }
 
@@ -106,14 +119,18 @@ export async function createOrder(
     const orderNumber = generateOrderNumber();
 
     // Calculate totals if not provided
+    const countryCode = orderData.customerInfo.shippingAddress.country || 'ES';
     const totals = orderData.total
       ? {
           subtotal: orderData.subtotal,
           shipping: orderData.shipping,
           tax: orderData.tax,
           total: orderData.total,
+          shippingZone: orderData.shippingZone,
+          estimatedDeliveryDays: orderData.estimatedDeliveryDays,
+          destinationCountry: orderData.destinationCountry,
         }
-      : calculateOrderTotals(orderData.items);
+      : calculateOrderTotals(orderData.items, countryCode);
 
     // Create order document
     const orderToCreate = {
