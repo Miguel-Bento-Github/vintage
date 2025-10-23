@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { CheckoutFormData, CheckoutFormErrors } from '@/types/checkout';
 import { useTranslations } from '@/hooks/useTranslations';
-import { getShippingEstimate, getRealTimeShippingQuote } from '@/lib/shipping';
+import { useShippingQuote } from '@/hooks/useShipping';
 import CountryCombobox from '@/components/CountryCombobox';
 
 interface CustomerInfoFormProps {
@@ -24,49 +23,11 @@ export default function CustomerInfoForm({
   const t = useTranslations('checkout');
   const tCommon = useTranslations('common');
 
-  // State for real-time shipping quote
-  const [shippingQuote, setShippingQuote] = useState<{
-    cost: number;
-    carrier: string;
-    service: string;
-    estimatedDays: string;
-    source: 'api' | 'static';
-  } | null>(null);
-  const [isLoadingQuote, setIsLoadingQuote] = useState(false);
-
-  // Fetch real-time shipping quote when country or postal code changes
-  useEffect(() => {
-    if (!formData.country) {
-      setShippingQuote(null);
-      return;
-    }
-
-    const fetchShippingQuote = async () => {
-      setIsLoadingQuote(true);
-      try {
-        const quote = await getRealTimeShippingQuote(
-          formData.country,
-          formData.postalCode || undefined
-        );
-        setShippingQuote(quote);
-      } catch (error) {
-        console.error('Error fetching shipping quote:', error);
-        // Fallback to static estimate
-        const staticEstimate = getShippingEstimate(formData.country);
-        setShippingQuote({
-          cost: staticEstimate.cost,
-          carrier: 'Standard',
-          service: `${staticEstimate.zone} shipping`,
-          estimatedDays: staticEstimate.estimatedDays,
-          source: 'static',
-        });
-      } finally {
-        setIsLoadingQuote(false);
-      }
-    };
-
-    fetchShippingQuote();
-  }, [formData.country, formData.postalCode]);
+  // Fetch real-time shipping quote with TanStack Query
+  const { data: shippingQuote, isLoading: isLoadingQuote } = useShippingQuote(
+    formData.country,
+    formData.postalCode || undefined
+  );
 
   return (
     <div className="space-y-6">

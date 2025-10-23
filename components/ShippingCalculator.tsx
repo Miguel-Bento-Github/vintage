@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { getShippingEstimate, formatShippingCost, getRealTimeShippingQuote } from '@/lib/shipping';
+import { useState } from 'react';
+import { formatShippingCost } from '@/lib/shipping';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useShippingQuote } from '@/hooks/useShipping';
 import CountryCombobox from './CountryCombobox';
 
 interface ShippingCalculatorProps {
@@ -13,49 +14,14 @@ interface ShippingCalculatorProps {
 export default function ShippingCalculator({ productWeight, className = '' }: ShippingCalculatorProps) {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isLoadingQuote, setIsLoadingQuote] = useState(false);
   const { currency } = useCurrency();
 
-  const [shippingQuote, setShippingQuote] = useState<{
-    cost: number;
-    carrier: string;
-    service: string;
-    estimatedDays: string;
-    source: 'api' | 'static';
-    zone: string;
-  } | null>(null);
-
-  // Fetch real-time shipping quote when country changes
-  useEffect(() => {
-    if (!selectedCountry) {
-      setShippingQuote(null);
-      return;
-    }
-
-    const fetchQuote = async () => {
-      setIsLoadingQuote(true);
-      try {
-        const quote = await getRealTimeShippingQuote(selectedCountry, undefined, productWeight);
-        setShippingQuote(quote);
-      } catch (error) {
-        console.error('Error fetching shipping quote:', error);
-        // Fallback to static estimate
-        const staticEstimate = getShippingEstimate(selectedCountry, productWeight);
-        setShippingQuote({
-          cost: staticEstimate.cost,
-          carrier: 'Standard',
-          service: `${staticEstimate.zone} shipping`,
-          estimatedDays: staticEstimate.estimatedDays,
-          source: 'static',
-          zone: staticEstimate.zone,
-        });
-      } finally {
-        setIsLoadingQuote(false);
-      }
-    };
-
-    fetchQuote();
-  }, [selectedCountry, productWeight]);
+  // Fetch real-time shipping quote with TanStack Query
+  const { data: shippingQuote, isLoading: isLoadingQuote } = useShippingQuote(
+    selectedCountry,
+    undefined,
+    productWeight
+  );
 
   return (
     <div className={`border border-gray-200 rounded-lg ${className}`}>
