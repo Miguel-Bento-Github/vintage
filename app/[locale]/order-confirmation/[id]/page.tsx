@@ -8,7 +8,6 @@ import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { useCart } from '@/hooks/useCart';
 import { useTranslations } from '@/hooks/useTranslations';
-import { useOrder } from '@/hooks/useOrders';
 import Price from '@/components/Price';
 
 interface OrderDetails {
