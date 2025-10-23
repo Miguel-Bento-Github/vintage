@@ -4,6 +4,7 @@ import { adminDb } from '@/lib/firebase-admin';
 import { Product } from '@/types';
 import ShopClient from '@/components/ShopClient';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 180;
 
 const getProducts = cache(async (): Promise<Product[]> => {

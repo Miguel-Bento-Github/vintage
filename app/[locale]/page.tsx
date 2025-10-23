@@ -1,28 +1,32 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { cache } from 'react';
-import { collection, getDocs, query, where, limit } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { adminDb } from '@/lib/firebase-admin';
 import { Product } from '@/types';
 import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 300;
 
 const getFeaturedProducts = cache(async (): Promise<Product[]> => {
-  const productsRef = collection(db, 'products');
-  const q = query(
-    productsRef,
-    where('featured', '==', true),
-    where('inStock', '==', true),
-    limit(8)
-  );
+  const snapshot = await adminDb
+    .collection('products')
+    .where('featured', '==', true)
+    .where('inStock', '==', true)
+    .limit(8)
+    .get();
 
-  const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Product[];
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
+      updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
+      soldAt: data.soldAt?.toDate?.()?.toISOString() || null,
+    };
+  }) as Product[];
 });
 
 const CATEGORY_IMAGES: Record<string, string> = {
