@@ -334,8 +334,68 @@ export function getCustomsDeclaration(itemDescription: string, value: number): {
 }
 
 /**
+ * Get cached shipping quote from sessionStorage
+ * Cache expires after 1 hour
+ */
+function getCachedShippingQuote(cacheKey: string): {
+  cost: number;
+  carrier: string;
+  service: string;
+  zone: ShippingZone;
+  estimatedDays: string;
+  source: 'api' | 'static';
+  currency: string;
+} | null {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const cached = sessionStorage.getItem(`shipping-quote-${cacheKey}`);
+    if (!cached) return null;
+
+    const { data, timestamp } = JSON.parse(cached);
+    const oneHour = 60 * 60 * 1000;
+
+    // Cache valid for 1 hour
+    if (Date.now() - timestamp < oneHour) {
+      return data;
+    }
+
+    // Cache expired, remove it
+    sessionStorage.removeItem(`shipping-quote-${cacheKey}`);
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Cache shipping quote in sessionStorage
+ */
+function cacheShippingQuote(cacheKey: string, data: {
+  cost: number;
+  carrier: string;
+  service: string;
+  zone: ShippingZone;
+  estimatedDays: string;
+  source: 'api' | 'static';
+  currency: string;
+}): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    sessionStorage.setItem(`shipping-quote-${cacheKey}`, JSON.stringify({
+      data,
+      timestamp: Date.now(),
+    }));
+  } catch (error) {
+    console.warn('Failed to cache shipping quote:', error);
+  }
+}
+
+/**
  * Get real-time shipping quote from API (client-side)
  * Falls back to static rates if API unavailable or fails
+ * Caches results for 1 hour to reduce API calls
  *
  * @param countryCode - ISO 3166-1 alpha-2 country code
  * @param postalCode - Optional postal code for more accurate rates
@@ -355,6 +415,15 @@ export async function getRealTimeShippingQuote(
   source: 'api' | 'static';
   currency: string;
 }> {
+  const weight = weightGrams || 500;
+  const cacheKey = `${countryCode}-${postalCode || 'none'}-${weight}`;
+
+  // Check cache first
+  const cached = getCachedShippingQuote(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   try {
     const response = await fetch('/api/shipping-quote', {
       method: 'POST',
@@ -364,7 +433,7 @@ export async function getRealTimeShippingQuote(
       body: JSON.stringify({
         countryCode,
         postalCode,
-        weightGrams: weightGrams || 500, // Default 500g for vintage clothing
+        weightGrams: weight,
       }),
     });
 
@@ -375,6 +444,8 @@ export async function getRealTimeShippingQuote(
     const data = await response.json();
 
     if (data.success) {
+      // Cache the successful result
+      cacheShippingQuote(cacheKey, data.data);
       return data.data;
     } else {
       throw new Error(data.error || 'Unknown error');
@@ -383,15 +454,19 @@ export async function getRealTimeShippingQuote(
     console.error('Error fetching real-time shipping quote:', error);
 
     // Fallback to static calculation
-    const estimate = getShippingEstimate(countryCode, weightGrams);
-    return {
+    const estimate = getShippingEstimate(countryCode, weight);
+    const fallback = {
       cost: estimate.cost,
       carrier: 'Standard',
       service: `${estimate.zone} shipping`,
       zone: estimate.zone,
       estimatedDays: estimate.estimatedDays,
-      source: 'static',
+      source: 'static' as const,
       currency: 'USD',
     };
+
+    // Cache the fallback too (prevents repeated failed API calls)
+    cacheShippingQuote(cacheKey, fallback);
+    return fallback;
   }
 }
