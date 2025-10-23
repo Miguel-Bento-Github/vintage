@@ -56,3 +56,6 @@ firebase-export-*/
 
 # firebase config (IDE artifacts)
 .config/
+
+# documentation
+.docs/
