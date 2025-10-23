@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { SHIPPING_RATES, getCountriesByZone, getCustomsInfo } from '@/lib/shipping';
+import { SHIPPING_RATES, getCountriesByZone } from '@/lib/shipping';
 import type { Metadata } from 'next';
 
 export async function generateMetadata(): Promise<Metadata> {

@@ -1,5 +1,5 @@
 import { CheckoutFormData, CheckoutFormErrors } from '@/types/checkout';
-import { calculateShipping, getShippingEstimate, isCountrySupported } from '@/lib/shipping';
+import { calculateShipping, isCountrySupported } from '@/lib/shipping';
 
 export function validateCustomerInfo(formData: CheckoutFormData): CheckoutFormErrors {
   const errors: CheckoutFormErrors = {};

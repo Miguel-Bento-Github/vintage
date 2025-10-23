@@ -33,9 +33,6 @@ export interface Country {
   zone: ShippingZone;
 }
 
-// Domestic country (adjust this to your base country)
-const DOMESTIC_COUNTRY = 'ES'; // Spain - adjust as needed
-
 // Shipping rates by zone (in USD)
 export const SHIPPING_RATES: Record<ShippingZone, ShippingRate> = {
   'domestic': {

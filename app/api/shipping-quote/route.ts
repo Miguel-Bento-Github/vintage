@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSendCloudRate } from '@/lib/sendcloud';
-import { calculateShipping, getShippingEstimate } from '@/lib/shipping';
+import { getShippingEstimate } from '@/lib/shipping';
 
 /**
  * POST /api/shipping-quote

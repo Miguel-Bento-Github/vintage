@@ -55,20 +55,6 @@ interface SendCloudShippingMethod {
   service_point_input?: string;
 }
 
-interface SendCloudQuoteResponse {
-  shipment: {
-    id: number;
-    carrier: string;
-    service_point?: unknown;
-    shipping_method: number;
-    shipping_method_checkout_name: string;
-  };
-  price: {
-    currency: string;
-    amount: string; // Price including VAT
-  };
-}
-
 /**
  * SendCloud API Client
  */
@@ -118,12 +104,10 @@ class SendCloudClient {
   /**
    * Get shipping quote for a parcel
    * @param parcel - Parcel details (weight, destination)
-   * @param fromAddress - Sender address (warehouse)
    * @returns Shipping quote with carrier and price
    */
   async getShippingQuote(
-    parcel: SendCloudParcel,
-    fromAddress: SendCloudAddress
+    parcel: SendCloudParcel
   ): Promise<{
     carrier: string;
     service: string;
@@ -286,31 +270,19 @@ export async function getSendCloudRate(
   }
 
   try {
-    // Get warehouse address from environment variables
-    const warehouseAddress: SendCloudAddress = {
-      name: process.env.WAREHOUSE_NAME || 'Vintage Store',
-      address: process.env.WAREHOUSE_ADDRESS || 'Warehouse Address',
-      city: process.env.WAREHOUSE_CITY || 'Amsterdam',
-      postal_code: process.env.WAREHOUSE_POSTAL_CODE || '1012AB',
-      country: process.env.WAREHOUSE_COUNTRY || 'NL',
-    };
-
     // Convert grams to kg for SendCloud
     const weightKg = (weightGrams / 1000).toFixed(2);
 
-    const quote = await client.getShippingQuote(
-      {
-        name: 'Vintage Clothing',
-        weight: weightKg,
-        country: countryCode,
-        postal_code: postalCode || '',
-        // Typical clothing package dimensions (can be customized)
-        length: '30', // cm
-        width: '25',  // cm
-        height: '5',  // cm
-      },
-      warehouseAddress
-    );
+    const quote = await client.getShippingQuote({
+      name: 'Vintage Clothing',
+      weight: weightKg,
+      country: countryCode,
+      postal_code: postalCode || '',
+      // Typical clothing package dimensions (can be customized)
+      length: '30', // cm
+      width: '25',  // cm
+      height: '5',  // cm
+    });
 
     return quote;
   } catch (error) {

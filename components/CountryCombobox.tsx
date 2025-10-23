@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { getSupportedCountries, type Country } from '@/lib/shipping';
 
 interface CountryComboboxProps {
@@ -38,14 +38,8 @@ export default function CountryCombobox({
     country.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Auto-detect country on mount
-  useEffect(() => {
-    if (autoDetect && !value) {
-      detectCountry();
-    }
-  }, [autoDetect, value]);
-
-  async function detectCountry() {
+  // Auto-detect country function
+  const detectCountry = useCallback(async () => {
     try {
       const { detectUserCountry } = await import('@/lib/location');
       const detectedCountry = await detectUserCountry();
@@ -55,7 +49,14 @@ export default function CountryCombobox({
     } catch (error) {
       console.error('Failed to detect country:', error);
     }
-  }
+  }, [onChange]);
+
+  // Auto-detect country on mount
+  useEffect(() => {
+    if (autoDetect && !value) {
+      detectCountry();
+    }
+  }, [autoDetect, value, detectCountry]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
