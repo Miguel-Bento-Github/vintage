@@ -10,6 +10,7 @@ import ProductGallery from './ProductGallery';
 import AddToCartButton from './AddToCartButton';
 import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
+import ShippingCalculator from '@/components/ShippingCalculator';
 
 export const revalidate = 600;
 
@@ -370,6 +371,9 @@ export default async function ProductPage({ params }: PageProps) {
                   <span className="font-semibold">{t('oneOfAKind')}</span> {t('uniqueVintageMessage')}
                 </p>
               </div>
+
+              {/* Shipping Calculator */}
+              <ShippingCalculator className="mb-6" />
             </div>
           </div>
 

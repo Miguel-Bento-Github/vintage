@@ -1,7 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { CheckoutFormData, CheckoutFormErrors } from '@/types/checkout';
 import { useTranslations } from '@/hooks/useTranslations';
+import { getShippingEstimate, getRealTimeShippingQuote } from '@/lib/shipping';
+import CountryCombobox from '@/components/CountryCombobox';
 
 interface CustomerInfoFormProps {
   formData: CheckoutFormData;
@@ -20,6 +23,50 @@ export default function CustomerInfoForm({
 }: CustomerInfoFormProps) {
   const t = useTranslations('checkout');
   const tCommon = useTranslations('common');
+
+  // State for real-time shipping quote
+  const [shippingQuote, setShippingQuote] = useState<{
+    cost: number;
+    carrier: string;
+    service: string;
+    estimatedDays: string;
+    source: 'api' | 'static';
+  } | null>(null);
+  const [isLoadingQuote, setIsLoadingQuote] = useState(false);
+
+  // Fetch real-time shipping quote when country or postal code changes
+  useEffect(() => {
+    if (!formData.country) {
+      setShippingQuote(null);
+      return;
+    }
+
+    const fetchShippingQuote = async () => {
+      setIsLoadingQuote(true);
+      try {
+        const quote = await getRealTimeShippingQuote(
+          formData.country,
+          formData.postalCode || undefined
+        );
+        setShippingQuote(quote);
+      } catch (error) {
+        console.error('Error fetching shipping quote:', error);
+        // Fallback to static estimate
+        const staticEstimate = getShippingEstimate(formData.country);
+        setShippingQuote({
+          cost: staticEstimate.cost,
+          carrier: 'Standard',
+          service: `${staticEstimate.zone} shipping`,
+          estimatedDays: staticEstimate.estimatedDays,
+          source: 'static',
+        });
+      } finally {
+        setIsLoadingQuote(false);
+      }
+    };
+
+    fetchShippingQuote();
+  }, [formData.country, formData.postalCode]);
 
   return (
     <div className="space-y-6">
@@ -157,42 +204,49 @@ export default function CustomerInfoForm({
           <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
             {t('country')} *
           </label>
-          <select
-            id="country"
-            name="country"
-            autoComplete="shipping country"
+          <CountryCombobox
             value={formData.country}
-            onChange={(e) => onFormDataChange({ ...formData, country: e.target.value })}
-            className={`w-full px-4 py-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-amber-700 text-base ${
-              formErrors.country ? 'border-red-500' : 'border-gray-300'
-            }`}
-          >
-            <option value="">Select Country</option>
-            <optgroup label="Europe">
-              <option value="FR">France</option>
-              <option value="DE">Germany</option>
-              <option value="IT">Italy</option>
-              <option value="ES">Spain</option>
-              <option value="NL">Netherlands</option>
-              <option value="BE">Belgium</option>
-              <option value="AT">Austria</option>
-              <option value="CH">Switzerland</option>
-              <option value="PT">Portugal</option>
-              <option value="SE">Sweden</option>
-              <option value="NO">Norway</option>
-              <option value="DK">Denmark</option>
-              <option value="FI">Finland</option>
-              <option value="PL">Poland</option>
-              <option value="CZ">Czech Republic</option>
-              <option value="IE">Ireland</option>
-              <option value="GB">United Kingdom</option>
-            </optgroup>
-            <optgroup label="North America">
-              <option value="US">United States</option>
-              <option value="CA">Canada</option>
-            </optgroup>
-          </select>
-          {formErrors.country && <p className="mt-1 text-sm text-red-600">{formErrors.country}</p>}
+            onChange={(countryCode) => onFormDataChange({ ...formData, country: countryCode })}
+            placeholder="Type your country name..."
+            autoDetect={true}
+            error={formErrors.country}
+          />
+
+          {/* Shipping Estimate */}
+          {isLoadingQuote && formData.country && (
+            <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
+              <div className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-700"></div>
+                <p className="text-sm text-gray-600">Loading shipping rates...</p>
+              </div>
+            </div>
+          )}
+
+          {!isLoadingQuote && shippingQuote && (
+            <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1">
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Shipping:</span>{' '}
+                    ${shippingQuote.cost.toFixed(2)} via {shippingQuote.carrier}
+                  </p>
+                  <p className="text-xs text-gray-700 mt-1">
+                    {shippingQuote.service} • Delivery: {shippingQuote.estimatedDays}
+                  </p>
+                </div>
+                {shippingQuote.source === 'api' && (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-700 text-white font-medium">
+                    ✓ Live rate
+                  </span>
+                )}
+                {shippingQuote.source === 'static' && (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-200 text-gray-700">
+                    Estimate
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

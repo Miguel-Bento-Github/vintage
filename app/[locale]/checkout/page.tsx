@@ -38,8 +38,8 @@ export default function CheckoutPage() {
   });
   const [formErrors, setFormErrors] = useState<CheckoutFormErrors>({});
 
-  // Calculate totals (tax is $0.00 for second-hand goods)
-  const { subtotal, shipping, total } = calculateCheckoutTotals(getCartTotal());
+  // Calculate totals dynamically based on selected country (tax is $0.00 for second-hand goods)
+  const { subtotal, shipping, total } = calculateCheckoutTotals(getCartTotal(), formData.country || undefined);
 
   // Redirect if cart is empty
   useEffect(() => {
