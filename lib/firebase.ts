@@ -74,8 +74,6 @@ if (process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATORS === 'true') {
       connectAuthEmulator(auth, 'http://localhost:3477', { disableWarnings: true });
       connectStorageEmulator(storage, 'localhost', 3478);
       emulatorsConnected = true;
-      const env = typeof window !== 'undefined' ? 'Client' : 'Server';
-      console.log(`🔧 [${env}] Connected to Firebase emulators (Firestore: 3476, Auth: 3477, Storage: 3478)`);
     } catch {
       // Emulators already connected (hot reload in dev) - this is fine
       if (!emulatorsConnected) {

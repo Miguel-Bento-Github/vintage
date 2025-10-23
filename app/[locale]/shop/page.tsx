@@ -2,12 +2,12 @@ import { Suspense } from 'react';
 import { cache } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { Product } from '@/types';
+import { SerializedProduct, timestampToISO } from '@/types';
 import ShopClient from '@/components/ShopClient';
 
 export const revalidate = 180;
 
-const getProducts = cache(async (): Promise<Product[]> => {
+const getProducts = cache(async (): Promise<SerializedProduct[]> => {
   const productsRef = collection(db, 'products');
   const q = query(
     productsRef,
@@ -15,10 +15,28 @@ const getProducts = cache(async (): Promise<Product[]> => {
   );
 
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Product[];
+  return snapshot.docs.map((doc): SerializedProduct => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      title: data.title,
+      description: data.description,
+      brand: data.brand,
+      era: data.era,
+      category: data.category,
+      size: data.size,
+      condition: data.condition,
+      conditionNotes: data.conditionNotes,
+      price: data.price,
+      images: data.images,
+      inStock: data.inStock,
+      featured: data.featured,
+      tags: data.tags,
+      createdAt: timestampToISO(data.createdAt) || '',
+      updatedAt: timestampToISO(data.updatedAt) || '',
+      soldAt: data.soldAt ? timestampToISO(data.soldAt) : undefined,
+    };
+  });
 });
 
 function ShopLoading() {

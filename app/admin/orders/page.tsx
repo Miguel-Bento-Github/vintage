@@ -50,11 +50,17 @@ export default function OrderManagementPage() {
 
     // Apply sort
     filtered.sort((a, b) => {
-      // Handle ISO strings, Date objects, and Timestamp objects
-      const getTime = (timestamp: string | Date | { toDate: () => Date } | null | undefined): number => {
+      // Handle ISO strings, Date objects, Timestamp objects, and plain timestamp objects
+      const getTime = (timestamp: string | Date | { toDate: () => Date } | { seconds: number; nanoseconds?: number } | null | undefined): number => {
         if (!timestamp) return 0;
         if (typeof timestamp === 'string') return new Date(timestamp).getTime();
         if (timestamp instanceof Date) return timestamp.getTime();
+        // Handle plain timestamp objects with seconds/nanoseconds
+        if (typeof timestamp === 'object' && 'seconds' in timestamp && typeof timestamp.seconds === 'number') {
+          const nanoseconds = timestamp.nanoseconds || 0;
+          return timestamp.seconds * 1000 + nanoseconds / 1000000;
+        }
+        // Handle Timestamp instances with toDate method
         if (typeof timestamp === 'object' && 'toDate' in timestamp && typeof timestamp.toDate === 'function') return timestamp.toDate().getTime();
         return 0;
       };
@@ -125,7 +131,7 @@ export default function OrderManagementPage() {
     return colors[status];
   };
 
-  const formatDate = (timestamp: string | Date | { toDate: () => Date } | null | undefined): string => {
+  const formatDate = (timestamp: string | Date | { toDate: () => Date } | { seconds: number; nanoseconds?: number } | null | undefined): string => {
     let date: Date;
 
     if (!timestamp) return 'N/A';
@@ -133,7 +139,11 @@ export default function OrderManagementPage() {
       date = new Date(timestamp);
     } else if (timestamp instanceof Date) {
       date = timestamp;
-    } else if (typeof timestamp.toDate === 'function') {
+    } else if (typeof timestamp === 'object' && 'seconds' in timestamp && typeof timestamp.seconds === 'number') {
+      // Handle plain timestamp objects with seconds/nanoseconds
+      const nanoseconds = timestamp.nanoseconds || 0;
+      date = new Date(timestamp.seconds * 1000 + nanoseconds / 1000000);
+    } else if (typeof timestamp === 'object' && 'toDate' in timestamp && typeof timestamp.toDate === 'function') {
       date = timestamp.toDate();
     } else {
       return 'N/A';

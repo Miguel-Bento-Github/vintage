@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Product } from '@/types';
+import { SerializedProduct } from '@/types';
 import { ERAS, CATEGORIES, CONDITIONS } from '@/lib/constants';
 import { useLocale } from 'next-intl';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -23,7 +23,7 @@ const PRICE_RANGES: { value: PriceRange; labelKey: string; min: number; max: num
 ];
 
 interface ShopClientProps {
-  initialProducts: Product[];
+  initialProducts: SerializedProduct[];
 }
 
 export default function ShopClient({ initialProducts }: ShopClientProps) {
@@ -194,13 +194,9 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
           return b.price - a.price;
         case 'newest':
         default: {
-          const getTime = (timestamp: Product['createdAt']): number => {
-            if (typeof timestamp === 'string') return new Date(timestamp).getTime();
-            if (timestamp instanceof Date) return timestamp.getTime();
-            if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
-              return timestamp.toDate().getTime();
-            }
-            return 0;
+          const getTime = (timestamp: string | undefined): number => {
+            if (!timestamp) return 0;
+            return new Date(timestamp).getTime();
           };
           return getTime(b.createdAt) - getTime(a.createdAt);
         }

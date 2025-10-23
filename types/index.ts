@@ -1,19 +1,43 @@
 import { Timestamp } from 'firebase/firestore';
 import type { Timestamp as AdminTimestamp } from 'firebase-admin/firestore';
 
+// Plain timestamp object structure from Firestore
+export interface PlainTimestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
 // Type for timestamps that can come from either client or admin SDK
-export type FirebaseTimestamp = Timestamp | AdminTimestamp | Date | string;
+export type FirebaseTimestamp = Timestamp | AdminTimestamp | Date | string | PlainTimestamp;
 
 /**
  * Safely converts a FirebaseTimestamp to an ISO string
  */
-export function timestampToISO(timestamp: FirebaseTimestamp | null | undefined): string | undefined {
-  if (!timestamp) return undefined;
-  if (typeof timestamp === 'string') return timestamp;
-  if (timestamp instanceof Date) return timestamp.toISOString();
+export function timestampToISO(timestamp: FirebaseTimestamp | null | undefined | any): string | undefined {
+  if (!timestamp) {
+    return undefined;
+  }
+  if (typeof timestamp === 'string') {
+    return timestamp;
+  }
+
+  // Handle plain objects with seconds/nanoseconds FIRST (most common from doc.data())
+  if (typeof timestamp === 'object' && 'seconds' in timestamp && typeof timestamp.seconds === 'number') {
+    const nanoseconds = timestamp.nanoseconds || 0;
+    const date = new Date(timestamp.seconds * 1000 + nanoseconds / 1000000);
+    return date.toISOString();
+  }
+
+  if (timestamp instanceof Date) {
+    return timestamp.toISOString();
+  }
+
+  // Handle Timestamp instances with toDate method
   if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
     return timestamp.toDate().toISOString();
   }
+
+  console.warn('[timestampToISO] Could not convert timestamp:', timestamp);
   return undefined;
 }
 
@@ -79,6 +103,13 @@ export interface Product {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   soldAt?: Timestamp;
+}
+
+// Serialized product for client components (timestamps as ISO strings)
+export interface SerializedProduct extends Omit<Product, 'createdAt' | 'updatedAt' | 'soldAt'> {
+  createdAt: string;
+  updatedAt: string;
+  soldAt?: string;
 }
 
 // Type for creating a new product (without auto-generated fields)

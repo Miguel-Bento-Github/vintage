@@ -182,16 +182,17 @@ export async function addProduct(
     }
 
     // Create product document
+    const now = Timestamp.now();
     const productToCreate = {
       ...productData,
       images: uploadResult.successful.map(img => img.url),
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
+      createdAt: now,
+      updatedAt: now,
     };
 
     const docRef = await addDoc(collection(db, 'products'), productToCreate);
 
-    // Get the created product
+    // Return the created product with proper types
     const createdProduct: Product = {
       id: docRef.id,
       ...productToCreate,

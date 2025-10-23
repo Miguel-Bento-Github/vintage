@@ -60,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     products.forEach((product) => {
       productPages.push({
         url: `${baseUrl}/${locale}/product/${product.id}`,
-        lastModified: product.updatedAt?.toDate() || new Date(),
+        lastModified: product.updatedAt ? new Date(product.updatedAt.toDate()) : new Date(),
         changeFrequency: 'weekly' as const,
         priority: product.featured ? 0.8 : 0.7,
       });
