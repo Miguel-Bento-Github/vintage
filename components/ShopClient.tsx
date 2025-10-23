@@ -193,8 +193,17 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
         case 'price-desc':
           return b.price - a.price;
         case 'newest':
-        default:
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        default: {
+          const getTime = (timestamp: Product['createdAt']): number => {
+            if (typeof timestamp === 'string') return new Date(timestamp).getTime();
+            if (timestamp instanceof Date) return timestamp.getTime();
+            if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
+              return timestamp.toDate().getTime();
+            }
+            return 0;
+          };
+          return getTime(b.createdAt) - getTime(a.createdAt);
+        }
       }
     });
 
