@@ -241,12 +241,14 @@ export function useUpdateOrderStatus() {
       orderId,
       status,
       trackingNumber,
+      carrier,
     }: {
       orderId: string;
       status: OrderStatus;
       trackingNumber?: string;
+      carrier?: string;
     }) => {
-      const result = await updateOrderStatus(orderId, status, trackingNumber);
+      const result = await updateOrderStatus(orderId, status, trackingNumber, carrier);
       if (!result.success) {
         throw new Error(result.error);
       }

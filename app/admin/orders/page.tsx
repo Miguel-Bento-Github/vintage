@@ -1,20 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { Order, OrderStatus } from '@/types';
-import { getAllOrders, updateOrderStatus } from '@/services/orderService';
+import { useOrders, useUpdateOrderStatus } from '@/hooks/useOrders';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorState from '@/components/ErrorState';
 
 type StatusFilter = OrderStatus | 'all';
 
 export default function OrderManagementPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // TanStack Query hooks
+  const { data: orders = [], isLoading, error: queryError, refetch } = useOrders();
+  const updateStatusMutation = useUpdateOrderStatus();
 
+  // Local UI state
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
@@ -24,13 +24,11 @@ export default function OrderManagementPage() {
   const [carrier, setCarrier] = useState<string>('USPS');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  // Fetch all orders on mount
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  // Error state from query or mutation
+  const error = queryError ? String(queryError) : updateStatusMutation.error ? String(updateStatusMutation.error) : null;
 
-  // Filter and sort orders when filters change
-  useEffect(() => {
+  // Filter and sort orders with useMemo for performance
+  const filteredOrders = useMemo(() => {
     let filtered = [...orders];
 
     // Apply status filter
@@ -70,50 +68,24 @@ export default function OrderManagementPage() {
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
 
-    setFilteredOrders(filtered);
+    return filtered;
   }, [orders, statusFilter, searchTerm, sortOrder]);
-
-  const fetchOrders = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const result = await getAllOrders();
-      if (result.success && result.data) {
-        setOrders(result.data);
-      } else {
-        setError('Failed to load orders');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred');
-      console.error('Error fetching orders:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
     setUpdatingOrderId(orderId);
-    try {
-      const result = await updateOrderStatus(
-        orderId,
-        newStatus,
-        newStatus === 'shipped' ? trackingNumber : undefined,
-        newStatus === 'shipped' ? carrier : undefined
-      );
 
-      if (result.success && result.data) {
-        // Update local state
-        setOrders(prev =>
-          prev.map(order => (order.id === orderId ? result.data! : order))
-        );
-        setTrackingNumber('');
-        setCarrier('USPS');
-        setError(null);
-      } else {
-        setError('Failed to update order status');
-      }
+    try {
+      await updateStatusMutation.mutateAsync({
+        orderId,
+        status: newStatus,
+        trackingNumber: newStatus === 'shipped' ? trackingNumber : undefined,
+        carrier: newStatus === 'shipped' ? carrier : undefined,
+      });
+
+      // Clear tracking fields after successful update
+      setTrackingNumber('');
+      setCarrier('USPS');
     } catch (err) {
-      setError('An unexpected error occurred');
       console.error('Error updating order:', err);
     } finally {
       setUpdatingOrderId(null);
@@ -175,7 +147,7 @@ export default function OrderManagementPage() {
         <ErrorState
           title="Unable to load orders"
           message={error}
-          onRetry={fetchOrders}
+          onRetry={() => refetch()}
         />
       </div>
     );

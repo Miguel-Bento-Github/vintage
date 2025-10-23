@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { useCart } from '@/hooks/useCart';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useOrder } from '@/hooks/useOrders';
 import Price from '@/components/Price';
 
 interface OrderDetails {
@@ -46,29 +48,25 @@ export default function OrderConfirmationPage() {
   const locale = useLocale();
   const t = useTranslations('confirmation');
   const { clearCart } = useCart();
-  const [order, setOrder] = useState<OrderDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [hasCleared, setHasCleared] = useState(false);
 
   const orderId = params.id as string;
   const paymentIntentId = searchParams.get('payment_intent');
   const redirectStatus = searchParams.get('redirect_status');
 
-  useEffect(() => {
-    const fetchOrCreateOrder = async () => {
-      try {
-        setIsLoading(true);
-
-        // If we're on the processing page with a payment intent, we might need to create the order
-        if (orderId === 'processing' && paymentIntentId && redirectStatus === 'succeeded') {
+  // Use TanStack Query to fetch or create order
+  const { data: order, isLoading, error: queryError } = useQuery<OrderDetails>({
+    queryKey: ['order-confirmation', orderId, paymentIntentId],
+    queryFn: async () => {
+      // If we're on the processing page with a payment intent, we might need to create the order
+      if (orderId === 'processing' && paymentIntentId && redirectStatus === 'succeeded') {
           // First, try to fetch existing order
           const response = await fetch(`/api/orders/${paymentIntentId}`);
 
           if (response.ok) {
             // Order already exists
             const data = await response.json();
-            setOrder(data.order);
+            return data.order;
           } else if (response.status === 404) {
             // Order doesn't exist yet - create it from payment intent metadata
             console.log('Order not found, creating from payment intent metadata');
@@ -138,34 +136,27 @@ export default function OrderConfirmationPage() {
               throw new Error('Failed to fetch created order');
             }
             const orderData = await orderResponse.json();
-            setOrder(orderData.order);
+            return orderData.order;
           } else {
             throw new Error('Failed to fetch order details');
           }
-        } else {
-          // Regular order fetch by ID
-          const fetchId = orderId === 'processing' && paymentIntentId ? paymentIntentId : orderId;
-          const response = await fetch(`/api/orders/${fetchId}`);
+      } else {
+        // Regular order fetch by ID
+        const fetchId = orderId === 'processing' && paymentIntentId ? paymentIntentId : orderId;
+        const response = await fetch(`/api/orders/${fetchId}`);
 
-          if (!response.ok) {
-            throw new Error('Failed to fetch order details');
-          }
-
-          const data = await response.json();
-          setOrder(data.order);
+        if (!response.ok) {
+          throw new Error('Failed to fetch order details');
         }
-      } catch (err) {
-        console.error('Error fetching/creating order:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load order details');
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
-    if (orderId) {
-      fetchOrCreateOrder();
-    }
-  }, [orderId, paymentIntentId, redirectStatus]);
+        const data = await response.json();
+        return data.order;
+      }
+    },
+    enabled: !!orderId,
+    staleTime: 1000 * 60 * 5, // 5 minutes - order details don't change frequently
+    retry: 1,
+  });
 
   // Clear cart when order is successfully loaded (only once)
   useEffect(() => {
@@ -174,6 +165,8 @@ export default function OrderConfirmationPage() {
       setHasCleared(true);
     }
   }, [order, hasCleared, clearCart]);
+
+  const error = queryError ? String(queryError) : null;
 
   if (isLoading) {
     return (

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { Elements } from '@stripe/react-stripe-js';
 import { getStripe } from '@/lib/stripe';
 import { useCart } from '@/hooks/useCart';
@@ -23,9 +24,6 @@ export default function CheckoutPage() {
   const { currency } = useCurrency();
 
   const [step, setStep] = useState<CheckoutStep>(1);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CheckoutFormData>({
     email: '',
@@ -48,37 +46,31 @@ export default function CheckoutPage() {
     }
   }, [items, router, locale]);
 
-  // Create payment intent on mount
-  useEffect(() => {
-    if (items.length === 0) return;
+  // Use TanStack Query to create payment intent
+  const { data: paymentIntentData, isLoading, error: queryError } = useQuery({
+    queryKey: ['payment-intent', items, currency],
+    queryFn: async () => {
+      const response = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, currency }),
+      });
 
-    const createPaymentIntent = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch('/api/create-payment-intent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items, currency }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to create payment intent');
-        }
-
-        const data = await response.json();
-        setClientSecret(data.clientSecret);
-        setError(null);
-      } catch (err) {
-        console.error('Error creating payment intent:', err);
-        setError(err instanceof Error ? err.message : 'Failed to initialize checkout. Please try again.');
-      } finally {
-        setIsLoading(false);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create payment intent');
       }
-    };
 
-    createPaymentIntent();
-  }, [items, currency]);
+      const data = await response.json();
+      return data.clientSecret;
+    },
+    enabled: items.length > 0,
+    staleTime: 1000 * 60 * 10, // 10 minutes - payment intents are valid for some time
+    retry: 1,
+  });
+
+  const clientSecret = paymentIntentData || null;
+  const error = queryError ? String(queryError) : null;
 
   // Handle step navigation
   const handleNextStep = () => {
