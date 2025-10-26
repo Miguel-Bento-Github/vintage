@@ -25,7 +25,11 @@ export default function OrderManagementPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   // Error state from query or mutation
-  const error = queryError ? String(queryError) : updateStatusMutation.error ? String(updateStatusMutation.error) : null;
+  const error = queryError
+    ? String(queryError)
+    : updateStatusMutation.error
+    ? String(updateStatusMutation.error)
+    : null;
 
   // Filter and sort orders with useMemo for performance
   const filteredOrders = useMemo(() => {

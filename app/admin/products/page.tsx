@@ -10,6 +10,16 @@ import { ERAS, CATEGORIES } from '@/lib/constants';
 
 const ITEMS_PER_PAGE = 20;
 
+const STOCK_STATUS_STYLES = {
+  inStock: 'bg-green-100 text-green-800',
+  sold: 'bg-gray-100 text-gray-800',
+};
+
+const STOCK_TOGGLE_ICONS = {
+  markSold: 'M5 13l4 4L19 7', // Checkmark
+  markAvailable: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15', // Refresh
+};
+
 export default function ProductsPage() {
   const router = useRouter();
   const { data: products, isLoading, error, refetch } = useProducts();
@@ -298,9 +308,7 @@ export default function ProductsPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          product.inStock
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-800'
+                          product.inStock ? STOCK_STATUS_STYLES.inStock : STOCK_STATUS_STYLES.sold
                         }`}
                       >
                         {product.inStock ? 'In Stock' : 'Sold'}
@@ -326,11 +334,7 @@ export default function ProductsPage() {
                               viewBox="0 0 24 24"
                               stroke="currentColor"
                             >
-                              {product.inStock ? (
-                                <path d="M5 13l4 4L19 7" />
-                              ) : (
-                                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                              )}
+                              <path d={product.inStock ? STOCK_TOGGLE_ICONS.markSold : STOCK_TOGGLE_ICONS.markAvailable} />
                             </svg>
                           )}
                         </button>

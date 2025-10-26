@@ -3,6 +3,15 @@
 import { useDashboardStats } from '@/hooks/useOrders';
 import { useProducts } from '@/hooks/useProducts';
 import Link from 'next/link';
+import type { OrderStatus } from '@/types';
+
+const ORDER_STATUS_STYLES: Record<OrderStatus, string> = {
+  pending: 'bg-yellow-100 text-yellow-800',
+  paid: 'bg-green-100 text-green-800',
+  shipped: 'bg-blue-100 text-blue-800',
+  delivered: 'bg-green-100 text-green-800',
+  cancelled: 'bg-red-100 text-red-800',
+};
 
 export default function AdminDashboard() {
   const { statusCounts, revenue, recentOrders, isLoading } = useDashboardStats();
@@ -185,17 +194,7 @@ export default function AdminDashboard() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          order.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : order.status === 'paid'
-                            ? 'bg-green-100 text-green-800'
-                            : order.status === 'shipped'
-                            ? 'bg-blue-100 text-blue-800'
-                            : order.status === 'delivered'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${ORDER_STATUS_STYLES[order.status]}`}
                       >
                         {order.status}
                       </span>
