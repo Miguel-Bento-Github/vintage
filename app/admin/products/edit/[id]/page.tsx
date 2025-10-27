@@ -258,18 +258,6 @@ export default function EditProductPage() {
       setError('Description is required');
       return false;
     }
-    if (!formData.brand.trim()) {
-      setError('Brand is required');
-      return false;
-    }
-    if (!formData.era) {
-      setError('Era is required');
-      return false;
-    }
-    if (!formData.category) {
-      setError('Category is required');
-      return false;
-    }
     if (!formData.condition) {
       setError('Condition is required');
       return false;
@@ -690,7 +678,7 @@ export default function EditProductPage() {
                   htmlFor="brand"
                   className="block text-sm font-semibold text-gray-900 mb-2"
                 >
-                  Brand <span className="text-red-500">*</span>
+                  Brand
                 </label>
                 <input
                   type="text"
@@ -700,7 +688,6 @@ export default function EditProductPage() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="e.g., Levi's"
-                  required
                 />
               </div>
 
@@ -709,7 +696,7 @@ export default function EditProductPage() {
                   htmlFor="era"
                   className="block text-sm font-semibold text-gray-900 mb-2"
                 >
-                  Era <span className="text-red-500">*</span>
+                  Era
                 </label>
                 <select
                   id="era"
@@ -717,7 +704,6 @@ export default function EditProductPage() {
                   value={formData.era}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
                 >
                   <option value="">Select era</option>
                   {ERAS.map((era) => (
@@ -733,7 +719,7 @@ export default function EditProductPage() {
                   htmlFor="category"
                   className="block text-sm font-semibold text-gray-900 mb-2"
                 >
-                  Category <span className="text-red-500">*</span>
+                  Category
                 </label>
                 <select
                   id="category"
@@ -741,7 +727,6 @@ export default function EditProductPage() {
                   value={formData.category}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
                   disabled={!formData.productType}
                 >
                   <option value="">

@@ -60,9 +60,9 @@ const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
 const CATEGORY_IMAGES: Record<string, string> = {
   Jacket: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=600&fit=crop',
   Dress: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=600&fit=crop',
-  Jeans: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&h=600&fit=crop',
-  Shirt: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&h=600&fit=crop',
-  Pants: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&h=600&fit=crop',
+  LP: 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=800&h=600&fit=crop',
+  Chair: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
+  Necklace: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=800&h=600&fit=crop',
   Accessories: 'https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&h=600&fit=crop',
 };
 

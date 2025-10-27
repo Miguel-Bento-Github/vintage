@@ -180,18 +180,6 @@ export default function AddProductPage() {
       setError('Description is required');
       return false;
     }
-    if (!formData.brand.trim()) {
-      setError('Brand is required');
-      return false;
-    }
-    if (!formData.era) {
-      setError('Era is required');
-      return false;
-    }
-    if (!formData.category) {
-      setError('Category is required');
-      return false;
-    }
     if (!formData.condition) {
       setError('Condition is required');
       return false;
@@ -461,7 +449,7 @@ export default function AddProductPage() {
                   htmlFor="brand"
                   className="block text-sm font-semibold text-gray-900 mb-2"
                 >
-                  Brand <span className="text-red-500">*</span>
+                  Brand
                 </label>
                 <input
                   type="text"
@@ -471,7 +459,6 @@ export default function AddProductPage() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="e.g., Levi's"
-                  required
                 />
               </div>
 
@@ -480,7 +467,7 @@ export default function AddProductPage() {
                   htmlFor="era"
                   className="block text-sm font-semibold text-gray-900 mb-2"
                 >
-                  Era <span className="text-red-500">*</span>
+                  Era
                 </label>
                 <select
                   id="era"
@@ -488,7 +475,6 @@ export default function AddProductPage() {
                   value={formData.era}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
                 >
                   <option value="">Select era</option>
                   {ERAS.map((era) => (
@@ -504,7 +490,7 @@ export default function AddProductPage() {
                   htmlFor="category"
                   className="block text-sm font-semibold text-gray-900 mb-2"
                 >
-                  Category <span className="text-red-500">*</span>
+                  Category
                 </label>
                 <select
                   id="category"
@@ -512,7 +498,6 @@ export default function AddProductPage() {
                   value={formData.category}
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
                   disabled={!formData.productType}
                 >
                   <option value="">
