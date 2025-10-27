@@ -10,7 +10,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About */}
           <div>
             <h3 className="text-white font-bold text-lg mb-4">Dream Azul</h3>
@@ -46,39 +46,16 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Customer Service */}
+          {/* Information */}
           <div>
-            <h4 className="text-white font-semibold mb-4">{t('nav.contact')}</h4>
+            <h4 className="text-white font-semibold mb-4">Information</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href={`/${locale}/contact`} className="hover:text-white">
-                  {t('nav.contact')}
-                </Link>
-              </li>
               <li>
                 <Link href={`/${locale}/shipping`} className="hover:text-white">
                   {t('checkout.shippingInformation')}
                 </Link>
               </li>
-              <li>
-                <Link href={`/${locale}/returns`} className="hover:text-white">
-                  Returns
-                </Link>
-              </li>
             </ul>
-          </div>
-
-          {/* Social */}
-          <div>
-            <h4 className="text-white font-semibold mb-4">Follow Us</h4>
-            <div className="flex space-x-4">
-              <a href="#" className="hover:text-white">
-                Instagram
-              </a>
-              <a href="#" className="hover:text-white">
-                Facebook
-              </a>
-            </div>
           </div>
         </div>
 
