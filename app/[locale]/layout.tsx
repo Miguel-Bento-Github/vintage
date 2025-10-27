@@ -32,11 +32,11 @@ export async function generateMetadata({
   const { locale } = await params;
 
   const descriptions: Record<string, string> = {
-    en: "Curated collection of authentic vintage clothing from the 1950s-2000s. One-of-a-kind pieces with character and history.",
-    es: "Colección curada de ropa vintage auténtica de los años 1950-2000. Piezas únicas con carácter e historia.",
-    fr: "Collection soignée de vêtements vintage authentiques des années 1950 à 2000. Pièces uniques avec caractère et histoire.",
-    de: "Kuratierte Kollektion authentischer Vintage-Kleidung aus den 1950er-2000er Jahren. Einzigartige Stücke mit Charakter und Geschichte.",
-    ja: "1950年代から2000年代の本物のヴィンテージ服のキュレーションコレクション。個性と歴史のあるユニークなアイテム。",
+    en: "Curated collection of authentic vintage items from the 1950s-2000s. One-of-a-kind pieces with character and history.",
+    es: "Colección curada de artículos vintage auténticos de los años 1950-2000. Piezas únicas con carácter e historia.",
+    fr: "Collection soignée d'articles vintage authentiques des années 1950 à 2000. Pièces uniques avec caractère et histoire.",
+    de: "Kuratierte Kollektion authentischer Vintage-Artikel aus den 1950er-2000er Jahren. Einzigartige Stücke mit Charakter und Geschichte.",
+    ja: "1950年代から2000年代の本物のヴィンテージ商品のキュレーションコレクション。個性と歴史のあるユニークなアイテム。",
   };
 
   return {

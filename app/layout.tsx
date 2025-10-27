@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dream Azul - Authentic Vintage Clothing",
-  description: "Curated collection of authentic vintage clothing from the 1950s-2000s. One-of-a-kind pieces with character and history.",
+  title: "Dream Azul - Authentic Vintage Items",
+  description: "Curated collection of authentic vintage items from the 1950s-2000s. One-of-a-kind pieces with character and history.",
   manifest: '/site.webmanifest',
   icons: {
     icon: [
