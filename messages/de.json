@@ -169,7 +169,7 @@
   },
   "checkout": {
     "checkout": "Kasse",
-    "checkoutDescription": "Schließen Sie Ihren Vintage-Kleidungskauf ab",
+    "checkoutDescription": "Schließen Sie Ihren Vintage-Kauf ab",
     "loadingCheckout": "Kasse wird geladen...",
     "checkoutError": "Kassenfehler",
     "returnToCart": "Zurück zum Warenkorb",

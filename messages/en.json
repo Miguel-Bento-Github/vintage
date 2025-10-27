@@ -128,7 +128,7 @@
     "tryAdjustingFilters": "Try adjusting your filters",
     "clearAllFilters": "Clear all filters",
     "shopVintage": "Shop Vintage",
-    "browseCollection": "Browse our curated collection of authentic vintage clothing",
+    "browseCollection": "Browse our curated collection of authentic vintage items",
     "loadingProducts": "Loading products...",
     "productsFound": "{count} product",
     "productsFoundPlural": "{count} products found",
@@ -169,7 +169,7 @@
   },
   "checkout": {
     "checkout": "Checkout",
-    "checkoutDescription": "Complete your vintage clothing purchase",
+    "checkoutDescription": "Complete your vintage purchase",
     "loadingCheckout": "Loading checkout...",
     "checkoutError": "Checkout Error",
     "returnToCart": "Return to Cart",

@@ -169,7 +169,7 @@
   },
   "checkout": {
     "checkout": "Paiement",
-    "checkoutDescription": "Finalisez votre achat de vêtements vintage",
+    "checkoutDescription": "Finalisez votre achat vintage",
     "loadingCheckout": "Chargement du paiement...",
     "checkoutError": "Erreur de Paiement",
     "returnToCart": "Retour au Panier",
