@@ -239,6 +239,7 @@ export interface CartItem {
   price: number;
   imageUrl: string;
   inStock: boolean;
+  isDeleted?: boolean; // Flag for deleted products
 }
 
 export interface Cart {
