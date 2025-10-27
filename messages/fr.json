@@ -444,6 +444,8 @@
     "pageTitle": "Politique d'Expédition",
     "pageDescription": "Nous expédions des articles vintage authentiques dans le monde entier. Consultez ci-dessous nos zones d'expédition, tarifs et délais de livraison estimés.",
     "zonesTitle": "Zones et Tarifs d'Expédition",
+    "estimatedRatesTitle": "Tarifs Estimés",
+    "estimatedRatesText": "Les tarifs indiqués ci-dessous sont des estimations. Les frais d'expédition réels seront calculés lors du paiement en fonction de votre destination, du poids et des dimensions du colis.",
     "domesticTitle": "National (Pays-Bas)",
     "domesticDays": "2-3 jours ouvrables",
     "europeTitle": "Europe",

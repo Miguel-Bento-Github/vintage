@@ -444,6 +444,8 @@
     "pageTitle": "配送ポリシー",
     "pageDescription": "世界中に本物のヴィンテージ商品を発送しております。配送地域、料金、配送予定時間をご確認ください。",
     "zonesTitle": "配送地域と料金",
+    "estimatedRatesTitle": "推定料金",
+    "estimatedRatesText": "以下に表示されている料金は概算です。実際の配送料金は、お届け先、荷物の重量、および寸法に基づいてチェックアウト時に計算されます。",
     "domesticTitle": "国内（オランダ）",
     "domesticDays": "2-3営業日",
     "europeTitle": "ヨーロッパ",

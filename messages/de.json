@@ -444,6 +444,8 @@
     "pageTitle": "Versandrichtlinien",
     "pageDescription": "Wir versenden authentische Vintage-Artikel weltweit. Überprüfen Sie unten unsere Versandzonen, Preise und geschätzten Lieferzeiten.",
     "zonesTitle": "Versandzonen & Preise",
+    "estimatedRatesTitle": "Geschätzte Preise",
+    "estimatedRatesText": "Die unten angezeigten Preise sind Schätzungen. Die tatsächlichen Versandkosten werden beim Checkout basierend auf Ihrem Zielort, Paketgewicht und Abmessungen berechnet.",
     "domesticTitle": "Inland (Niederlande)",
     "domesticDays": "2-3 Werktage",
     "europeTitle": "Europa",

@@ -444,6 +444,8 @@
     "pageTitle": "Shipping Policy",
     "pageDescription": "We ship authentic vintage items worldwide. Review our shipping zones, rates, and estimated delivery times below.",
     "zonesTitle": "Shipping Zones & Rates",
+    "estimatedRatesTitle": "Estimated Rates",
+    "estimatedRatesText": "The rates shown below are estimates. Actual shipping costs will be calculated at checkout based on your destination, package weight, and dimensions.",
     "domesticTitle": "Domestic (Netherlands)",
     "domesticDays": "2-3 business days",
     "europeTitle": "Europe",

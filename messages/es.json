@@ -444,6 +444,8 @@
     "pageTitle": "Política de Envío",
     "pageDescription": "Enviamos artículos vintage auténticos a todo el mundo. Revise nuestras zonas de envío, tarifas y tiempos de entrega estimados a continuación.",
     "zonesTitle": "Zonas y Tarifas de Envío",
+    "estimatedRatesTitle": "Tarifas Estimadas",
+    "estimatedRatesText": "Las tarifas que se muestran a continuación son estimadas. Los costos reales de envío se calcularán al finalizar la compra según su destino, peso del paquete y dimensiones.",
     "domesticTitle": "Nacional (Países Bajos)",
     "domesticDays": "2-3 días hábiles",
     "europeTitle": "Europa",
