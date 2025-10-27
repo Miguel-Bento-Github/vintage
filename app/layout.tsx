@@ -1,9 +1,48 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dream Azul - Authentic Vintage Items",
-  description: "Curated collection of authentic vintage items from the 1950s-2000s. One-of-a-kind pieces with character and history.",
+  title: "Dream Azul - Vintage Clothing, Furniture & Collectibles Online Shop | Utrecht, Netherlands",
+  description: "Premium online vintage shop based in Utrecht, Netherlands. Curated vintage clothing, furniture, vinyl records, jewelry & collectibles from 1950s-2000s. Worldwide shipping. Authentic pieces with history.",
+  keywords: [
+    'vintage shop',
+    'vintage clothing shop',
+    'vintage furniture',
+    'vintage online shop',
+    'vintage store Netherlands',
+    'vintage shop Utrecht',
+    'vintage clothes Europe',
+    'vintage furniture Netherlands',
+    'retro clothing',
+    'second hand designer',
+    'vintage vinyl records',
+    'vintage jewelry',
+    'mid-century furniture',
+    'vintage collectibles',
+  ],
   manifest: '/site.webmanifest',
+  alternates: {
+    canonical: 'https://dreamazul.com',
+    languages: {
+      'en': 'https://dreamazul.com/en',
+      'es': 'https://dreamazul.com/es',
+      'fr': 'https://dreamazul.com/fr',
+      'de': 'https://dreamazul.com/de',
+      'ja': 'https://dreamazul.com/ja',
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://dreamazul.com',
+    siteName: 'Dream Azul',
+    title: 'Dream Azul - Premium Vintage Shop | Clothing, Furniture, Collectibles',
+    description: 'Curated vintage clothing, furniture, vinyl records & collectibles. Based in Utrecht, NL. Worldwide shipping.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Dream Azul - Premium Vintage Shop',
+    description: 'Vintage clothing, furniture & collectibles from Utrecht, Netherlands',
+  },
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },

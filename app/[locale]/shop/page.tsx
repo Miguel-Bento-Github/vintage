@@ -4,8 +4,32 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { SerializedProduct, timestampToISO } from '@/types';
 import ShopClient from '@/components/ShopClient';
+import { Metadata } from 'next';
 
 export const revalidate = 180;
+
+export const metadata: Metadata = {
+  title: 'Shop Vintage Clothing, Furniture & Collectibles | Dream Azul Utrecht',
+  description: 'Browse our curated collection of vintage clothing, furniture, vinyl records, jewelry and collectibles. Authentic pieces from 1950s-2000s. Based in Utrecht, Netherlands. Worldwide shipping available.',
+  keywords: [
+    'buy vintage clothing online',
+    'vintage furniture shop',
+    'vintage shop Netherlands',
+    'second hand clothing',
+    'retro furniture',
+    'vintage vinyl records',
+    'vintage jewelry online',
+    'mid-century modern furniture',
+    'vintage collectibles',
+    'vintage shop Utrecht',
+    'vintage online store',
+  ],
+  openGraph: {
+    title: 'Shop Vintage Items | Dream Azul',
+    description: 'Curated vintage clothing, furniture, records & collectibles. Utrecht, Netherlands.',
+    type: 'website',
+  },
+};
 
 const getProducts = cache(async (): Promise<SerializedProduct[]> => {
   const productsRef = collection(db, 'products');
@@ -59,6 +83,26 @@ export default async function ShopPage() {
   // Helper to strip HTML tags from descriptions
   const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
+  // Breadcrumb Schema for navigation
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Shop',
+        item: `${baseUrl}/shop`,
+      },
+    ],
+  };
+
   // ItemList Schema for product collection
   const itemListSchema = {
     '@context': 'https://schema.org',
@@ -90,6 +134,11 @@ export default async function ShopPage() {
 
   return (
     <>
+      {/* Schema.org JSON-LD for Breadcrumb */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       {/* Schema.org JSON-LD for ItemList */}
       <script
         type="application/ld+json"

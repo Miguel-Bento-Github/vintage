@@ -72,19 +72,89 @@ export default async function LocaleLayout({
 
   const localizedDescription = descriptions[locale] || descriptions.en;
 
-  // Organization Schema for brand identity and knowledge panel
-  const organizationSchema = {
+  // LocalBusiness Schema for online vintage shop with location and service areas
+  const localBusinessSchema = {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    '@type': ['OnlineStore', 'LocalBusiness'],
     name: 'Dream Azul',
     url: baseUrl,
     logo: `${baseUrl}/logo.png`,
     description: localizedDescription,
+    image: `${baseUrl}/og-image.jpg`,
     foundingDate: '2024',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Utrecht',
+      addressRegion: 'Utrecht',
+      addressCountry: 'NL',
+      postalCode: '3500',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 52.0907,
+      longitude: 5.1214,
+    },
+    areaServed: [
+      {
+        '@type': 'Country',
+        name: 'Netherlands',
+      },
+      {
+        '@type': 'Country',
+        name: 'Germany',
+      },
+      {
+        '@type': 'Country',
+        name: 'Belgium',
+      },
+      {
+        '@type': 'Country',
+        name: 'France',
+      },
+      'Worldwide',
+    ],
+    priceRange: '€€',
+    currenciesAccepted: 'EUR',
+    paymentAccepted: 'Credit Card, Debit Card, PayPal',
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Service',
       availableLanguage: ['English', 'Spanish', 'French', 'German', 'Japanese'],
+      email: 'support@dreamazul.com',
+    },
+    sameAs: [
+      // Add your social media profiles here when available
+    ],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Vintage Items',
+      itemListElement: [
+        {
+          '@type': 'OfferCatalog',
+          name: 'Vintage Clothing',
+          itemListElement: [
+            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Vintage Jackets' } },
+            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Vintage Dresses' } },
+            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Vintage Jeans' } },
+          ],
+        },
+        {
+          '@type': 'OfferCatalog',
+          name: 'Vintage Furniture',
+          itemListElement: [
+            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Mid-Century Furniture' } },
+            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Vintage Chairs' } },
+          ],
+        },
+        {
+          '@type': 'OfferCatalog',
+          name: 'Collectibles',
+          itemListElement: [
+            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Vintage Vinyl Records' } },
+            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Vintage Jewelry' } },
+          ],
+        },
+      ],
     },
   };
 
@@ -109,10 +179,10 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* Schema.org JSON-LD for Organization */}
+        {/* Schema.org JSON-LD for LocalBusiness + OnlineStore */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
         {/* Schema.org JSON-LD for WebSite with SearchAction */}
         <script
