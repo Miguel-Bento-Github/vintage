@@ -27,7 +27,7 @@ export default function Header({
         style={styles.logo}
       />
       <Text style={styles.brandName}>{companyName}</Text>
-      <Text style={styles.tagline}>Authentic Vintage Clothing</Text>
+      <Text style={styles.tagline}>Authentic Vintage Items</Text>
     </Section>
   );
 }

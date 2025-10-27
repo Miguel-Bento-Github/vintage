@@ -48,7 +48,7 @@ export default function EmailLayout({
               style={styles.logo}
             />
             <Text style={styles.brandName}>{footer.companyName}</Text>
-            <Text style={styles.tagline}>Authentic Vintage Clothing</Text>
+            <Text style={styles.tagline}>Authentic Vintage Items</Text>
           </Section>
 
           {/* Main Content */}
