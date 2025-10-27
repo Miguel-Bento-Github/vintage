@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Vintage Store - Authentic Vintage Clothing',
+    name: 'Vintage Store - Authentic Vintage Items',
     short_name: 'Vintage Store',
-    description: 'Shop authentic vintage clothing from the 1950s to 2000s. Curated vintage jackets, jeans, dresses, and accessories.',
+    description: 'Shop authentic vintage items from the 1950s to 2000s. Curated vintage clothing, furniture, vinyl records, jewelry, and collectibles.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
