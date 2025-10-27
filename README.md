@@ -1,10 +1,10 @@
 # Vintage Store - E-Commerce Platform
 
-A modern, full-featured e-commerce platform for vintage clothing built with Next.js 15, Firebase, and Stripe. Features a responsive design, comprehensive error handling, and a complete checkout flow.
+A modern, full-featured e-commerce platform for vintage items built with Next.js 15, Firebase, and Stripe. Features a responsive design, comprehensive error handling, and a complete checkout flow.
 
 ## Features
 
-- **Product Catalog**: Browse vintage clothing by era, category, condition, and size
+- **Product Catalog**: Browse vintage items by era, category, condition, and product type (clothing, furniture, vinyl records, jewelry, collectibles, and more)
 - **Advanced Filtering**: Multi-criteria filtering with price ranges and sorting options
 - **Shopping Cart**: Full shopping cart functionality with quantity management
 - **Secure Checkout**: Stripe payment processing with customer information collection
