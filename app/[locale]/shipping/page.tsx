@@ -1,18 +1,11 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { SHIPPING_RATES, getCountriesByZone } from '@/lib/shipping';
-import type { Metadata } from 'next';
+import Price from '@/components/Price';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('shipping');
-
-  return {
-    title: `${t('pageTitle')} | Dream Azul`,
-    description: t('pageDescription'),
-  };
-}
-
-export default async function ShippingPolicyPage() {
-  const t = await getTranslations('shipping');
+export default function ShippingPolicyPage() {
+  const t = useTranslations('shipping');
   const countriesByZone = getCountriesByZone();
 
   return (
@@ -39,7 +32,7 @@ export default async function ShippingPolicyPage() {
                   <p className="text-sm text-gray-600 mt-1">{t('domesticDays')}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-amber-700">${SHIPPING_RATES.domestic.flatRate}</p>
+                  <Price amount={SHIPPING_RATES.domestic.flatRate} className="text-2xl font-bold text-amber-700" />
                   <p className="text-xs text-gray-500">{t('flatRate')}</p>
                 </div>
               </div>
@@ -63,7 +56,7 @@ export default async function ShippingPolicyPage() {
                   <p className="text-sm text-gray-600 mt-1">{t('europeDays')}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-amber-700">${SHIPPING_RATES.europe.flatRate}</p>
+                  <Price amount={SHIPPING_RATES.europe.flatRate} className="text-2xl font-bold text-amber-700" />
                   <p className="text-xs text-gray-500">{t('flatRate')}</p>
                 </div>
               </div>
@@ -87,7 +80,7 @@ export default async function ShippingPolicyPage() {
                   <p className="text-sm text-gray-600 mt-1">{t('northAmericaDays')}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-amber-700">${SHIPPING_RATES['north-america'].flatRate}</p>
+                  <Price amount={SHIPPING_RATES['north-america'].flatRate} className="text-2xl font-bold text-amber-700" />
                   <p className="text-xs text-gray-500">{t('flatRate')}</p>
                 </div>
               </div>
@@ -111,7 +104,7 @@ export default async function ShippingPolicyPage() {
                   <p className="text-sm text-gray-600 mt-1">{t('asiaPacificDays')}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-amber-700">${SHIPPING_RATES['asia-pacific'].flatRate}</p>
+                  <Price amount={SHIPPING_RATES['asia-pacific'].flatRate} className="text-2xl font-bold text-amber-700" />
                   <p className="text-xs text-gray-500">{t('flatRate')}</p>
                 </div>
               </div>
@@ -135,7 +128,7 @@ export default async function ShippingPolicyPage() {
                   <p className="text-sm text-gray-600 mt-1">{t('restOfWorldDays')}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-amber-700">${SHIPPING_RATES['rest-of-world'].flatRate}</p>
+                  <Price amount={SHIPPING_RATES['rest-of-world'].flatRate} className="text-2xl font-bold text-amber-700" />
                   <p className="text-xs text-gray-500">{t('flatRate')}</p>
                 </div>
               </div>

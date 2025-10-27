@@ -33,7 +33,7 @@ export interface Country {
   zone: ShippingZone;
 }
 
-// Shipping rates by zone (in USD)
+// Shipping rates by zone (in EUR - base currency)
 export const SHIPPING_RATES: Record<ShippingZone, ShippingRate> = {
   'domestic': {
     zone: 'domestic',
