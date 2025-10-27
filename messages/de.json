@@ -113,6 +113,8 @@
     "filters": "Filter",
     "clearAll": "Alle Löschen",
     "inStockOnly": "Nur Vorrätige",
+    "productType": "Produkttyp",
+    "selectProductTypeFirst": "Wählen Sie einen Produkttyp, um Kategorien anzuzeigen",
     "era": "Ära",
     "category": "Kategorie",
     "condition": "Zustand",

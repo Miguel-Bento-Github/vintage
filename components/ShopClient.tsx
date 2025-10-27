@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { SerializedProduct } from '@/types';
-import { ERAS, CATEGORIES, CONDITIONS } from '@/lib/constants';
+import { ERAS, CATEGORIES_BY_TYPE, CONDITIONS, PRODUCT_TYPES } from '@/lib/constants';
+import { ProductType } from '@/types';
 import { useLocale } from 'next-intl';
 import { useTranslations } from '@/hooks/useTranslations';
 import Price from '@/components/Price';
@@ -39,6 +40,9 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   };
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [selectedProductTypes, setSelectedProductTypes] = useState<ProductType[]>(
+    (searchParams.get('productType')?.split(',').filter(Boolean) as ProductType[]) || []
+  );
   const [selectedEras, setSelectedEras] = useState<string[]>(
     searchParams.get('era')?.split(',').filter(Boolean).map(normalizeValue) || []
   );
@@ -61,8 +65,9 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   const [showFilters, setShowFilters] = useState(false);
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    productType: true,
     era: true,
-    category: true,
+    category: false,
     price: false,
     size: false,
     condition: false,
@@ -79,6 +84,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     const params = new URLSearchParams();
 
     if (searchQuery) params.set('search', searchQuery);
+    if (selectedProductTypes.length > 0) params.set('productType', selectedProductTypes.join(','));
     if (selectedEras.length > 0) params.set('era', selectedEras.join(','));
     if (selectedCategories.length > 0) params.set('category', selectedCategories.join(','));
     if (selectedPriceRanges.length > 0) params.set('price', selectedPriceRanges.join(','));
@@ -92,6 +98,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     router.replace(newUrl, { scroll: false });
   }, [
     searchQuery,
+    selectedProductTypes,
     selectedEras,
     selectedCategories,
     selectedPriceRanges,
@@ -102,6 +109,14 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     pathname,
     router,
   ]);
+
+  const toggleProductType = (productType: ProductType) => {
+    setSelectedProductTypes((prev) =>
+      prev.includes(productType) ? prev.filter((pt) => pt !== productType) : [...prev, productType]
+    );
+    // Clear categories when product types change
+    setSelectedCategories([]);
+  };
 
   const toggleEra = (era: string) => {
     setSelectedEras((prev) =>
@@ -135,6 +150,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
 
   const clearFilters = () => {
     setSearchQuery('');
+    setSelectedProductTypes([]);
     setSelectedEras([]);
     setSelectedCategories([]);
     setSelectedPriceRanges([]);
@@ -154,6 +170,10 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
           p.description.toLowerCase().includes(query) ||
           p.brand.toLowerCase().includes(query)
       );
+    }
+
+    if (selectedProductTypes.length > 0) {
+      filtered = filtered.filter((p) => selectedProductTypes.includes(p.productType));
     }
 
     if (selectedEras.length > 0) {
@@ -207,6 +227,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   }, [
     initialProducts,
     searchQuery,
+    selectedProductTypes,
     selectedEras,
     selectedCategories,
     selectedPriceRanges,
@@ -216,7 +237,18 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     sortBy,
   ]);
 
+  // Get available categories based on selected product types
+  const availableCategories = useMemo(() => {
+    if (selectedProductTypes.length === 0) {
+      // If no product type selected, show all categories
+      return Array.from(new Set(Object.values(CATEGORIES_BY_TYPE).flat()));
+    }
+    // Get categories for selected product types
+    return Array.from(new Set(selectedProductTypes.flatMap(type => CATEGORIES_BY_TYPE[type])));
+  }, [selectedProductTypes]);
+
   const activeFilterCount =
+    selectedProductTypes.length +
     selectedEras.length +
     selectedCategories.length +
     selectedPriceRanges.length +
@@ -252,6 +284,40 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
           />
           <span className="text-sm font-medium text-gray-900">{t('inStockOnly')}</span>
         </label>
+      </div>
+
+      {/* Product Type Filter */}
+      <div className="border-t pt-4">
+        <button
+          type="button"
+          onClick={() => toggleSection('productType')}
+          className="flex items-center justify-between w-full mb-3 text-gray-900"
+        >
+          <h4 className="font-medium">{t('productType')}</h4>
+          <svg
+            className={`w-5 h-5 transition-transform ${expandedSections.productType ? 'rotate-180' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {expandedSections.productType && (
+          <div className="space-y-2">
+            {PRODUCT_TYPES.map((productType) => (
+              <label key={productType} className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedProductTypes.includes(productType)}
+                  onChange={() => toggleProductType(productType)}
+                  className="w-4 h-4 text-amber-700 border-gray-300 rounded focus:ring-amber-500"
+                />
+                <span className="text-sm text-gray-700">{productType}</span>
+              </label>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="border-t pt-4">
@@ -305,17 +371,21 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
         </button>
         {expandedSections.category && (
           <div className="space-y-2">
-            {CATEGORIES.map((category) => (
-              <label key={category} className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={selectedCategories.includes(category)}
-                  onChange={() => toggleCategory(category)}
-                  className="w-4 h-4 text-amber-700 border-gray-300 rounded focus:ring-amber-500"
-                />
-                <span className="text-sm text-gray-700">{category}</span>
-              </label>
-            ))}
+            {availableCategories.length > 0 ? (
+              availableCategories.map((category) => (
+                <label key={category} className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.includes(category)}
+                    onChange={() => toggleCategory(category)}
+                    className="w-4 h-4 text-amber-700 border-gray-300 rounded focus:ring-amber-500"
+                  />
+                  <span className="text-sm text-gray-700">{category}</span>
+                </label>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500 italic">{t('selectProductTypeFirst')}</p>
+            )}
           </div>
         )}
       </div>

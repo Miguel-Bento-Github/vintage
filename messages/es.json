@@ -113,6 +113,8 @@
     "filters": "Filtros",
     "clearAll": "Limpiar Todo",
     "inStockOnly": "Solo en Stock",
+    "productType": "Tipo de Producto",
+    "selectProductTypeFirst": "Seleccione un tipo de producto para ver las categorías",
     "era": "Época",
     "category": "Categoría",
     "condition": "Condición",

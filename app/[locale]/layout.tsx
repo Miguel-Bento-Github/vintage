@@ -59,9 +59,67 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dreamazul.com';
+
+  // Localized descriptions
+  const descriptions: Record<string, string> = {
+    en: "Curated collection of authentic vintage items from the 1950s-2000s. One-of-a-kind pieces with character and history.",
+    es: "Colección curada de artículos vintage auténticos de los años 1950-2000. Piezas únicas con carácter e historia.",
+    fr: "Collection soignée d'articles vintage authentiques des années 1950 à 2000. Pièces uniques avec caractère et histoire.",
+    de: "Kuratierte Kollektion authentischer Vintage-Artikel aus den 1950er-2000er Jahren. Einzigartige Stücke mit Charakter und Geschichte.",
+    ja: "1950年代から2000年代の本物のヴィンテージ商品のキュレーションコレクション。個性と歴史のあるユニークなアイテム。",
+  };
+
+  const localizedDescription = descriptions[locale] || descriptions.en;
+
+  // Organization Schema for brand identity and knowledge panel
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Dream Azul',
+    url: baseUrl,
+    logo: `${baseUrl}/logo.png`,
+    description: localizedDescription,
+    foundingDate: '2024',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'Customer Service',
+      availableLanguage: ['English', 'Spanish', 'French', 'German', 'Japanese'],
+    },
+  };
+
+  // WebSite Schema with SearchAction for sitelinks search box
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    url: baseUrl,
+    name: 'Dream Azul',
+    description: localizedDescription,
+    inLanguage: locale,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${baseUrl}/${locale}/shop?search={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {/* Schema.org JSON-LD for Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        {/* Schema.org JSON-LD for WebSite with SearchAction */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
             <CurrencyProvider>

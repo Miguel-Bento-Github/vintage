@@ -87,8 +87,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // SEO-optimized title with long-tail keywords
   const seoTitle = `${product.brand} ${product.title} ${product.era} - Vintage ${product.category} | Vintage Store`;
 
+  // Strip HTML tags for SEO descriptions
+  const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const plainDescription = stripHtml(product.description);
+
   // Rich description with keywords
-  const seoDescription = `${product.condition} condition ${product.era} ${product.brand} ${product.title}. ${product.description.slice(0, 120)}... Authentic vintage ${product.category.toLowerCase()}. ${product.inStock ? 'In stock and ready to ship.' : 'Sold out.'}`;
+  const seoDescription = `${product.condition} condition ${product.era} ${product.brand} ${product.title}. ${plainDescription.slice(0, 120)}... Authentic vintage ${product.category.toLowerCase()}. ${product.inStock ? 'In stock and ready to ship.' : 'Sold out.'}`;
 
   const imageUrl = product.images && product.images.length > 0 ? product.images[0] : '';
 
@@ -107,7 +111,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ],
     openGraph: {
       title: `${product.brand} ${product.title}`,
-      description: product.description,
+      description: plainDescription,
       images: imageUrl ? [{ url: imageUrl, alt: `${product.brand} ${product.title}` }] : [],
       siteName: 'Vintage Store',
       type: 'website',
@@ -115,7 +119,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     twitter: {
       card: 'summary_large_image',
       title: `${product.brand} ${product.title}`,
-      description: product.description.slice(0, 160),
+      description: plainDescription.slice(0, 160),
       images: imageUrl ? [imageUrl] : [],
     },
     alternates: {
@@ -139,11 +143,14 @@ export default async function ProductPage({ params }: PageProps) {
   // Schema.org Product structured data with enhanced details
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://vintage-store.vercel.app';
 
+  // Strip HTML tags for schema descriptions
+  const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: `${product.brand} ${product.title}`,
-    description: product.description,
+    description: stripHtml(product.description),
     sku: product.id,
     brand: {
       '@type': 'Brand',
@@ -180,7 +187,42 @@ export default async function ProductPage({ params }: PageProps) {
       priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       seller: {
         '@type': 'Organization',
-        name: 'Vintage Store',
+        name: 'Dream Azul',
+      },
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: '0',
+          currency: 'EUR',
+        },
+        shippingDestination: {
+          '@type': 'DefinedRegion',
+          addressCountry: 'NL',
+        },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          handlingTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 2,
+            maxValue: 3,
+            unitCode: 'DAY',
+          },
+          transitTime: {
+            '@type': 'QuantitativeValue',
+            minValue: 2,
+            maxValue: 7,
+            unitCode: 'DAY',
+          },
+        },
+      },
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'NL',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: 7,
+        returnMethod: 'https://schema.org/ReturnByMail',
+        returnFees: 'https://schema.org/FreeReturn',
       },
     },
   };
@@ -292,7 +334,10 @@ export default async function ProductPage({ params }: PageProps) {
 
               {/* Description */}
               <div className="mb-6">
-                <p className="text-gray-700 leading-relaxed">{product.description}</p>
+                <div
+                  className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
               </div>
 
               {/* Specifications */}

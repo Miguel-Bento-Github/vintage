@@ -113,6 +113,8 @@
     "filters": "フィルター",
     "clearAll": "すべてクリア",
     "inStockOnly": "在庫ありのみ",
+    "productType": "商品タイプ",
+    "selectProductTypeFirst": "カテゴリーを表示するには商品タイプを選択してください",
     "era": "年代",
     "category": "カテゴリー",
     "condition": "状態",

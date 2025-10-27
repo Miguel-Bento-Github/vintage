@@ -113,11 +113,13 @@
     "filters": "Filters",
     "clearAll": "Clear All",
     "inStockOnly": "In Stock Only",
+    "productType": "Product Type",
     "era": "Era",
     "category": "Category",
     "condition": "Condition",
     "priceRange": "Price Range",
     "size": "Size",
+    "selectProductTypeFirst": "Select a product type to see categories",
     "priceRanges": {
       "under50": "Under $50",
       "50to100": "$50 - $100",

@@ -10,6 +10,7 @@ import { Era, Category, Condition, ProductType, Product } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorState from '@/components/ErrorState';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
+import RichTextEditor from '@/components/RichTextEditor';
 
 interface ProductFormData {
   productType: ProductType | '';
@@ -628,15 +629,9 @@ export default function EditProductPage() {
               >
                 Description <span className="text-red-500">*</span>
               </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Describe the item, its history, unique features..."
-                required
+              <RichTextEditor
+                content={formData.description}
+                onChange={(html) => setFormData({ ...formData, description: html })}
               />
             </div>
 

@@ -54,10 +54,50 @@ function ShopLoading() {
 
 export default async function ShopPage() {
   const products = await getProducts();
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dreamazul.com';
+
+  // Helper to strip HTML tags from descriptions
+  const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+  // ItemList Schema for product collection
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: products
+      .filter((p) => p.inStock)
+      .slice(0, 20) // Limit to top 20 products for performance
+      .map((product, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'Product',
+          name: `${product.brand} ${product.title}`,
+          url: `${baseUrl}/product/${product.id}`,
+          image: product.images && product.images.length > 0 ? product.images[0] : '',
+          description: stripHtml(product.description),
+          offers: {
+            '@type': 'Offer',
+            price: product.price.toFixed(2),
+            priceCurrency: 'EUR',
+            availability: product.inStock
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/SoldOut',
+            itemCondition: 'https://schema.org/UsedCondition',
+          },
+        },
+      })),
+  };
 
   return (
-    <Suspense fallback={<ShopLoading />}>
-      <ShopClient initialProducts={products} />
-    </Suspense>
+    <>
+      {/* Schema.org JSON-LD for ItemList */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
+      <Suspense fallback={<ShopLoading />}>
+        <ShopClient initialProducts={products} />
+      </Suspense>
+    </>
   );
 }
