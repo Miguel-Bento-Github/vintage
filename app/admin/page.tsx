@@ -124,7 +124,7 @@ export default function AdminDashboard() {
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">
-                ${revenue?.toFixed(2) || '0.00'}
+                €{revenue?.toFixed(2) || '0.00'}
               </p>
               <p className="text-sm text-gray-500 mt-1">
                 All time
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
                       {order.customerInfo.name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${order.total.toFixed(2)}
+                      €{order.total.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
