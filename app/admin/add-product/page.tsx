@@ -3,25 +3,19 @@
 import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { addProduct } from '@/services/productService';
-import { ERAS, CATEGORIES, CONDITIONS } from '@/lib/constants';
-import { Era, Category, Condition } from '@/types';
+import { ERAS, CATEGORIES_BY_TYPE, CONDITIONS, PRODUCT_TYPES } from '@/lib/constants';
+import { Era, Category, Condition, ProductType } from '@/types';
 import Image from 'next/image';
 
 interface ProductFormData {
+  productType: ProductType | '';
   title: string;
   description: string;
   brand: string;
   era: Era | '';
   category: Category | '';
   sizeLabel: string;
-  measurements: {
-    chest: string;
-    waist: string;
-    hips: string;
-    length: string;
-    shoulders: string;
-    sleeves: string;
-  };
+  specifications: Record<string, string>;  // Generic key-value pairs
   condition: Condition | '';
   conditionNotes: string;
   price: string;
@@ -29,21 +23,28 @@ interface ProductFormData {
   featured: boolean;
 }
 
+// Specification fields based on product type
+const SPECIFICATION_FIELDS: Record<ProductType, string[]> = {
+  'Clothing': ['chest', 'waist', 'hips', 'length', 'shoulders', 'sleeves'],
+  'Furniture': ['height', 'width', 'depth', 'weight'],
+  'Jewelry': ['material', 'stone', 'size', 'weight'],
+  'Vinyl Records': ['format', 'rpm', 'label', 'year'],
+  'Electronics': ['model', 'year', 'condition', 'working'],
+  'Books': ['author', 'publisher', 'year', 'isbn'],
+  'Art': ['artist', 'medium', 'dimensions', 'year'],
+  'Collectibles': ['manufacturer', 'year', 'edition', 'quantity'],
+  'Other': [],
+};
+
 const INITIAL_FORM_DATA: ProductFormData = {
+  productType: 'Clothing',  // Default to Clothing
   title: '',
   description: '',
   brand: '',
   era: '',
   category: '',
   sizeLabel: '',
-  measurements: {
-    chest: '',
-    waist: '',
-    hips: '',
-    length: '',
-    shoulders: '',
-    sleeves: '',
-  },
+  specifications: {},
   condition: '',
   conditionNotes: '',
   price: '',
@@ -75,13 +76,21 @@ export default function AddProductPage() {
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else if (name.startsWith('measurements.')) {
-      const measurementKey = name.split('.')[1];
+    } else if (name === 'productType') {
+      // Reset specifications and category when product type changes
       setFormData((prev) => ({
         ...prev,
-        measurements: {
-          ...prev.measurements,
-          [measurementKey]: value,
+        productType: value as ProductType,
+        category: '', // Reset category
+        specifications: {},
+      }));
+    } else if (name.startsWith('specifications.')) {
+      const specKey = name.split('.')[1];
+      setFormData((prev) => ({
+        ...prev,
+        specifications: {
+          ...prev.specifications,
+          [specKey]: value,
         },
       }));
     } else {
@@ -172,51 +181,48 @@ export default function AddProductPage() {
     }
 
     // Validate required dropdown fields
-    if (!formData.era || !formData.category || !formData.condition) {
-      setError('Please select era, category, and condition');
+    if (!formData.productType || !formData.era || !formData.category || !formData.condition) {
+      setError('Please select product type, era, category, and condition');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Prepare measurements - filter out empty values
-      const measurements: Record<string, number> = {};
-      if (formData.measurements.chest) {
-        measurements.chest = parseFloat(formData.measurements.chest);
-      }
-      if (formData.measurements.waist) {
-        measurements.waist = parseFloat(formData.measurements.waist);
-      }
-      if (formData.measurements.hips) {
-        measurements.hips = parseFloat(formData.measurements.hips);
-      }
-      if (formData.measurements.length) {
-        measurements.length = parseFloat(formData.measurements.length);
-      }
-      if (formData.measurements.shoulders) {
-        measurements.shoulders = parseFloat(formData.measurements.shoulders);
-      }
-      if (formData.measurements.sleeves) {
-        measurements.sleeves = parseFloat(formData.measurements.sleeves);
-      }
+      // Prepare specifications - filter out empty values and parse numbers
+      const specifications: Record<string, string | number> = {};
+      Object.entries(formData.specifications).forEach(([key, value]) => {
+        if (value && value.trim()) {
+          // Strip common unit suffixes (cm, in, inches, ") before parsing
+          const cleanedValue = value.trim().replace(/\s*(cm|in|inches|")\s*$/i, '');
+          const numValue = parseFloat(cleanedValue);
+          specifications[key] = isNaN(numValue) ? value.trim() : numValue;
+        }
+      });
 
       // TypeScript now knows these are not empty strings due to the check above
+      const productType: ProductType = formData.productType;
       const era: Era = formData.era;
       const category: Category = formData.category;
       const condition: Condition = formData.condition;
 
       // Prepare product data
       const productData = {
+        productType,
         title: formData.title.trim(),
         description: formData.description.trim(),
         brand: formData.brand.trim(),
         era,
         category,
-        size: {
-          label: formData.sizeLabel.trim(),
-          measurements,
-        },
+        // Only include size if sizeLabel is provided
+        ...(formData.sizeLabel.trim() && {
+          size: {
+            label: formData.sizeLabel.trim(),
+            specifications: Object.keys(specifications).length > 0 ? specifications : undefined,
+          },
+        }),
+        // Include top-level specifications if any
+        ...(Object.keys(specifications).length > 0 && { specifications }),
         condition,
         conditionNotes: formData.conditionNotes.trim(),
         price: parseFloat(formData.price),
@@ -290,6 +296,33 @@ export default function AddProductPage() {
           </h2>
 
           <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="productType"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
+                Product Type <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="productType"
+                name="productType"
+                value={formData.productType}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                <option value="">Select product type</option>
+                {PRODUCT_TYPES.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 text-sm text-gray-500">
+                Select the type of vintage item you&apos;re adding
+              </p>
+            </div>
+
             <div>
               <label
                 htmlFor="title"
@@ -386,13 +419,17 @@ export default function AddProductPage() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
+                  disabled={!formData.productType}
                 >
-                  <option value="">Select category</option>
-                  {CATEGORIES.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
+                  <option value="">
+                    {formData.productType ? 'Select category' : 'Select product type first'}
+                  </option>
+                  {formData.productType &&
+                    CATEGORIES_BY_TYPE[formData.productType].map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -417,128 +454,45 @@ export default function AddProductPage() {
           </div>
         </div>
 
-        {/* Measurements */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Measurements (cm)
-          </h2>
+        {/* Specifications */}
+        {formData.productType && SPECIFICATION_FIELDS[formData.productType].length > 0 && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Specifications (Optional)
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Add relevant details for this {formData.productType.toLowerCase()} item
+            </p>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div>
-              <label
-                htmlFor="measurements.chest"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Chest
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                id="measurements.chest"
-                name="measurements.chest"
-                value={formData.measurements.chest}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="22"
-              />
-            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {SPECIFICATION_FIELDS[formData.productType].map((field) => {
+                // Determine if this field is a measurement that needs cm indicator
+                const isMeasurement = ['chest', 'waist', 'hips', 'length', 'shoulders', 'sleeves', 'height', 'width', 'depth', 'dimensions', 'size'].includes(field);
 
-            <div>
-              <label
-                htmlFor="measurements.waist"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Waist
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                id="measurements.waist"
-                name="measurements.waist"
-                value={formData.measurements.waist}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="18"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="measurements.hips"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Hips
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                id="measurements.hips"
-                name="measurements.hips"
-                value={formData.measurements.hips}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="20"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="measurements.length"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Length
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                id="measurements.length"
-                name="measurements.length"
-                value={formData.measurements.length}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="28"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="measurements.shoulders"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Shoulders
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                id="measurements.shoulders"
-                name="measurements.shoulders"
-                value={formData.measurements.shoulders}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="17"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="measurements.sleeves"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Sleeves
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                id="measurements.sleeves"
-                name="measurements.sleeves"
-                value={formData.measurements.sleeves}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="24"
-              />
+                return (
+                  <div key={field}>
+                    <label
+                      htmlFor={`specifications.${field}`}
+                      className="block text-sm font-medium text-gray-700 mb-2 capitalize"
+                    >
+                      {field}
+                      {isMeasurement && <span className="text-gray-500 text-xs ml-1">(cm)</span>}
+                    </label>
+                    <input
+                      type="text"
+                      id={`specifications.${field}`}
+                      name={`specifications.${field}`}
+                      value={formData.specifications[field] || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder={isMeasurement ? `e.g., 91 (cm)` : `Enter ${field}`}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Condition & Pricing */}
         <div className="bg-white rounded-lg shadow p-6">

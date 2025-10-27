@@ -24,6 +24,7 @@ const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
     const data = doc.data();
     return {
       id: doc.id,
+      productType: data.productType || 'Clothing', // Default to Clothing for existing products
       title: data.title,
       description: data.description,
       brand: data.brand,
@@ -37,6 +38,7 @@ const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
       inStock: data.inStock,
       featured: data.featured,
       tags: data.tags,
+      specifications: data.specifications,
       createdAt: timestampToISO(data.createdAt) || '',
       updatedAt: timestampToISO(data.updatedAt) || '',
       soldAt: data.soldAt ? timestampToISO(data.soldAt) : undefined,

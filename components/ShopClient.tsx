@@ -175,7 +175,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     }
 
     if (selectedSizes.length > 0) {
-      filtered = filtered.filter((p) => selectedSizes.includes(p.size.label));
+      filtered = filtered.filter((p) => p.size && selectedSizes.includes(p.size.label));
     }
 
     if (selectedConditions.length > 0) {
@@ -563,7 +563,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
                       </h3>
                       <div className="flex items-center justify-between">
                         <Price amount={product.price} className="text-xl font-bold text-gray-900" />
-                        <p className="text-sm text-gray-500">{product.size.label}</p>
+                        {product.size && <p className="text-sm text-gray-500">{product.size.label}</p>}
                       </div>
                     </div>
                   </Link>
