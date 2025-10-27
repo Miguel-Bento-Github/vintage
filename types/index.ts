@@ -45,6 +45,17 @@ export function timestampToISO(timestamp: FirebaseTimestamp | null | undefined |
 // ENUMS & CONSTANTS
 // ============================================================================
 
+export type ProductType =
+  | 'Clothing'
+  | 'Furniture'
+  | 'Jewelry'
+  | 'Vinyl Records'
+  | 'Electronics'
+  | 'Books'
+  | 'Art'
+  | 'Collectibles'
+  | 'Other';
+
 export type Era = '1950s' | '1960s' | '1970s' | '1980s' | '1990s' | '2000s';
 
 export type Category =
@@ -71,35 +82,38 @@ export type OrderStatus =
 // PRODUCT TYPES
 // ============================================================================
 
-export interface ProductMeasurements {
-  chest?: number;      // in inches
-  waist?: number;      // in inches
-  hips?: number;       // in inches
-  length?: number;     // in inches
-  shoulders?: number;  // in inches
-  sleeves?: number;    // in inches
-}
+/**
+ * Flexible specifications for any product type
+ * Examples:
+ * - Clothing: { chest: 22, waist: 18, sleeves: 24 }
+ * - Furniture: { height: 36, width: 48, depth: 24 }
+ * - Jewelry: { material: "14k gold", stoneType: "diamond", ringSize: 7 }
+ * - Vinyl: { format: "LP", rpm: 33, label: "Columbia" }
+ */
+export type ProductSpecifications = Record<string, string | number>;
 
 export interface ProductSize {
-  label: string;                    // e.g., "M", "32x34", "10"
-  measurements?: ProductMeasurements;
+  label: string;                      // e.g., "M", "32x34", "10"
+  specifications?: ProductSpecifications;
 }
 
 export interface Product {
   id: string;
+  productType: ProductType;           // Type of vintage item
   title: string;
   description: string;
   brand: string;
   era: Era;
   category: Category;
-  size: ProductSize;
+  size?: ProductSize;                 // Optional - not all items have size
   condition: Condition;
   conditionNotes?: string;
   price: number;
-  images: string[];                 // Array of image URLs
+  images: string[];                   // Array of image URLs
   inStock: boolean;
   featured: boolean;
-  tags: string[];                   // e.g., ["vintage", "denim", "levi's"]
+  tags: string[];                     // e.g., ["vintage", "denim", "levi's"]
+  specifications?: ProductSpecifications;  // Generic key-value specs
   createdAt: Timestamp;
   updatedAt: Timestamp;
   soldAt?: Timestamp;
