@@ -200,6 +200,55 @@ export default function EditProductPage() {
     });
   };
 
+  const moveExistingImage = (fromIndex: number, toIndex: number) => {
+    setExistingImages((prev) => {
+      const newImages = [...prev];
+      const [movedImage] = newImages.splice(fromIndex, 1);
+      newImages.splice(toIndex, 0, movedImage);
+      return newImages;
+    });
+  };
+
+  const moveNewImage = (fromIndex: number, toIndex: number) => {
+    setNewImages((prev) => {
+      const newImages = [...prev];
+      const [movedImage] = newImages.splice(fromIndex, 1);
+      newImages.splice(toIndex, 0, movedImage);
+      return newImages;
+    });
+    setNewImagePreviews((prev) => {
+      const newPreviews = [...prev];
+      const [movedPreview] = newPreviews.splice(fromIndex, 1);
+      newPreviews.splice(toIndex, 0, movedPreview);
+      return newPreviews;
+    });
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number, type: 'existing' | 'new') => {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', JSON.stringify({ index, type }));
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, toIndex: number, type: 'existing' | 'new') => {
+    e.preventDefault();
+    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+    const fromIndex = data.index;
+    const fromType = data.type;
+
+    if (fromType === type && fromIndex !== toIndex) {
+      if (type === 'existing') {
+        moveExistingImage(fromIndex, toIndex);
+      } else {
+        moveNewImage(fromIndex, toIndex);
+      }
+    }
+  };
+
   const validateForm = (): boolean => {
     if (!formData.title.trim()) {
       setError('Title is required');
@@ -849,17 +898,30 @@ export default function EditProductPage() {
           {/* Existing Images */}
           {existingImages.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">
-                Current Images (click to remove)
+              <h3 className="text-sm font-medium text-gray-700 mb-2">
+                Current Images
               </h3>
+              <p className="text-sm text-gray-600 mb-3">
+                Drag images to reorder. Click to mark for deletion. The first image will be the main product image.
+              </p>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {existingImages.map((img, index) => (
                   <div
                     key={index}
-                    className="relative group cursor-pointer"
-                    onClick={() => toggleExistingImage(index)}
+                    className="relative group cursor-move"
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, index, 'existing')}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, index, 'existing')}
                   >
-                    <div className="relative aspect-square">
+                    <div
+                      className={`relative aspect-square border-2 ${
+                        img.markedForDeletion
+                          ? 'border-red-400'
+                          : 'border-transparent hover:border-blue-400'
+                      } rounded-md transition-colors`}
+                      onClick={() => toggleExistingImage(index)}
+                    >
                       <Image
                         src={img.url}
                         alt={`Existing ${index + 1}`}
@@ -868,6 +930,11 @@ export default function EditProductPage() {
                           img.markedForDeletion ? 'opacity-30' : ''
                         }`}
                       />
+                      {index === 0 && !img.markedForDeletion && (
+                        <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-md font-semibold">
+                          Main
+                        </div>
+                      )}
                       {img.markedForDeletion && (
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
@@ -875,7 +942,23 @@ export default function EditProductPage() {
                           </div>
                         </div>
                       )}
+                      {!img.markedForDeletion && (
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 rounded-md pointer-events-none">
+                          <svg
+                            className="w-8 h-8 text-white drop-shadow-lg"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                          </svg>
+                        </div>
+                      )}
                     </div>
+                    <p className="text-center text-xs text-gray-500 mt-1">#{index + 1}</p>
                   </div>
                 ))}
               </div>
@@ -903,22 +986,45 @@ export default function EditProductPage() {
 
             {newImagePreviews.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">New Images</h3>
+                <h3 className="text-sm font-medium text-gray-700 mb-2">New Images</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Drag to reorder. These will be added after existing images.
+                </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                   {newImagePreviews.map((preview, index) => (
-                    <div key={index} className="relative group">
-                      <div className="relative aspect-square">
+                    <div
+                      key={index}
+                      className="relative group cursor-move"
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index, 'new')}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, index, 'new')}
+                    >
+                      <div className="relative aspect-square border-2 border-transparent hover:border-blue-400 rounded-md transition-colors">
                         <Image
                           src={preview}
                           alt={`New preview ${index + 1}`}
                           fill
                           className="object-cover rounded-md"
                         />
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 rounded-md pointer-events-none">
+                          <svg
+                            className="w-8 h-8 text-white drop-shadow-lg"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                          </svg>
+                        </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => removeNewImage(index)}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                         aria-label="Remove image"
                       >
                         <svg
@@ -933,6 +1039,9 @@ export default function EditProductPage() {
                           <path d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
+                      <p className="text-center text-xs text-gray-500 mt-1">
+                        #{existingImages.filter((img) => !img.markedForDeletion).length + index + 1}
+                      </p>
                     </div>
                   ))}
                 </div>
