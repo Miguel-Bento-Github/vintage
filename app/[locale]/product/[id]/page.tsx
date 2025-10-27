@@ -11,6 +11,7 @@ import AddToCartButton from './AddToCartButton';
 import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
 import ShippingCalculator from '@/components/ShippingCalculator';
+import { formatMeasurement, isMeasurementField } from '@/lib/measurements';
 
 export const revalidate = 600;
 
@@ -156,11 +157,11 @@ export default async function ProductPage({ params }: PageProps) {
         name: 'Era',
         value: product.era,
       },
-      {
+      ...(product.size ? [{
         '@type': 'PropertyValue',
         name: 'Size',
         value: product.size.label,
-      },
+      }] : []),
       {
         '@type': 'PropertyValue',
         name: 'Condition',
@@ -294,8 +295,8 @@ export default async function ProductPage({ params }: PageProps) {
                 <p className="text-gray-700 leading-relaxed">{product.description}</p>
               </div>
 
-              {/* Measurements */}
-              {product.size.measurements && Object.keys(product.size.measurements).length > 0 && (
+              {/* Specifications */}
+              {product.size?.specifications && Object.keys(product.size.specifications).length > 0 && (
                 <div className="mb-6">
                   <h3 className="font-semibold text-gray-900 mb-3">{t('measurements')}</h3>
                   <div className="bg-gray-50 rounded-lg p-4">
@@ -307,14 +308,21 @@ export default async function ProductPage({ params }: PageProps) {
                             {product.size.label}
                           </td>
                         </tr>
-                        {Object.entries(product.size.measurements).map(([key, value]) => (
-                          <tr key={key}>
-                            <td className="py-2 text-gray-600 capitalize">{key}</td>
-                            <td className="py-2 text-gray-900 font-medium text-right">
-                              {value}&quot;
-                            </td>
-                          </tr>
-                        ))}
+                        {Object.entries(product.size.specifications).map(([key, value]) => {
+                          // Format measurement fields based on locale, display others as-is
+                          const displayValue = typeof value === 'number' && isMeasurementField(key)
+                            ? formatMeasurement(value, locale)
+                            : value;
+
+                          return (
+                            <tr key={key}>
+                              <td className="py-2 text-gray-600 capitalize">{key}</td>
+                              <td className="py-2 text-gray-900 font-medium text-right">
+                                {displayValue}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -357,7 +365,7 @@ export default async function ProductPage({ params }: PageProps) {
                     brand: product.brand,
                     era: product.era,
                     category: product.category,
-                    size: product.size.label,
+                    size: product.size?.label || 'N/A',
                     price: product.price,
                     imageUrl: product.images[0] || '',
                     inStock: product.inStock,
