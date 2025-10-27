@@ -7,7 +7,16 @@ import { SerializedProduct, timestampToISO } from '@/types';
 import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
 
-export const revalidate = 300;
+// Generate static pages for all locales at build time
+export function generateStaticParams() {
+  return [
+    { locale: 'en' },
+    { locale: 'es' },
+    { locale: 'fr' },
+    { locale: 'nl' },
+    { locale: 'pt' },
+  ];
+}
 
 const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
   const productsRef = collection(db, 'products');
