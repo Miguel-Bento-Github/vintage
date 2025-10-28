@@ -7,8 +7,7 @@ import { ERAS, CATEGORIES_BY_TYPE, CONDITIONS, PRODUCT_TYPES } from '@/lib/const
 import { Era, Category, Condition, ProductType, ProductTranslations } from '@/types';
 import Image from 'next/image';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
-import RichTextEditor from '@/components/RichTextEditor';
-import ProductTranslationEditor from '@/components/admin/ProductTranslationEditor';
+import UnifiedProductContentEditor from '@/components/admin/UnifiedProductContentEditor';
 
 interface ProductFormData {
   productType: ProductType | '';
@@ -416,38 +415,6 @@ export default function AddProductPage() {
               </p>
             </div>
 
-            <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-semibold text-gray-900 mb-2"
-              >
-                Title <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., Vintage Levi's 501 Jeans"
-                required
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-semibold text-gray-900 mb-2"
-              >
-                Description <span className="text-red-500">*</span>
-              </label>
-              <RichTextEditor
-                content={formData.description}
-                onChange={(html) => setFormData({ ...formData, description: html })}
-              />
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
@@ -630,26 +597,20 @@ export default function AddProductPage() {
                 />
               </div>
             </div>
-
-            <div>
-              <label
-                htmlFor="conditionNotes"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Condition Notes
-              </label>
-              <textarea
-                id="conditionNotes"
-                name="conditionNotes"
-                value={formData.conditionNotes}
-                onChange={handleInputChange}
-                rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Any flaws, repairs, or notable details about the condition..."
-              />
-            </div>
           </div>
         </div>
+
+        {/* Product Content (multilingual) */}
+        <UnifiedProductContentEditor
+          baseTitle={formData.title}
+          baseDescription={formData.description}
+          baseConditionNotes={formData.conditionNotes}
+          onBaseTitleChange={(value) => setFormData({ ...formData, title: value })}
+          onBaseDescriptionChange={(value) => setFormData({ ...formData, description: value })}
+          onBaseConditionNotesChange={(value) => setFormData({ ...formData, conditionNotes: value })}
+          translations={translations}
+          onTranslationsChange={setTranslations}
+        />
 
         {/* Images */}
         <div className="bg-white rounded-lg shadow p-6">
@@ -786,15 +747,6 @@ export default function AddProductPage() {
             </div>
           </div>
         </div>
-
-        {/* Translations */}
-        <ProductTranslationEditor
-          translations={translations}
-          baseTitle={formData.title}
-          baseDescription={formData.description}
-          baseConditionNotes={formData.conditionNotes || undefined}
-          onChange={setTranslations}
-        />
 
         {/* Form Actions */}
         <div className="flex items-center justify-between">
