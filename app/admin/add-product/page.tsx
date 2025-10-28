@@ -505,6 +505,18 @@ export default function AddProductPage() {
           </div>
         </div>
 
+        {/* Product Content (multilingual) */}
+        <UnifiedProductContentEditor
+          baseTitle={formData.title}
+          baseDescription={formData.description}
+          baseConditionNotes={formData.conditionNotes}
+          onBaseTitleChange={(value) => setFormData({ ...formData, title: value })}
+          onBaseDescriptionChange={(value) => setFormData({ ...formData, description: value })}
+          onBaseConditionNotesChange={(value) => setFormData({ ...formData, conditionNotes: value })}
+          translations={translations}
+          onTranslationsChange={setTranslations}
+        />
+
         {/* Specifications */}
         {formData.productType && SPECIFICATION_FIELDS[formData.productType].length > 0 && (
           <div className="bg-white rounded-lg shadow p-6">
@@ -599,18 +611,6 @@ export default function AddProductPage() {
             </div>
           </div>
         </div>
-
-        {/* Product Content (multilingual) */}
-        <UnifiedProductContentEditor
-          baseTitle={formData.title}
-          baseDescription={formData.description}
-          baseConditionNotes={formData.conditionNotes}
-          onBaseTitleChange={(value) => setFormData({ ...formData, title: value })}
-          onBaseDescriptionChange={(value) => setFormData({ ...formData, description: value })}
-          onBaseConditionNotesChange={(value) => setFormData({ ...formData, conditionNotes: value })}
-          translations={translations}
-          onTranslationsChange={setTranslations}
-        />
 
         {/* Images */}
         <div className="bg-white rounded-lg shadow p-6">
