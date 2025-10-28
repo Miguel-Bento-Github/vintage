@@ -47,7 +47,9 @@ export default function UnifiedProductContentEditor({
 }: UnifiedProductContentEditorProps) {
   const [selectedLocale, setSelectedLocale] = useState<Locale>(defaultLocale);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isTranslatingAll, setIsTranslatingAll] = useState(false);
   const [translationError, setTranslationError] = useState<string | null>(null);
+  const [translationProgress, setTranslationProgress] = useState<string>('');
 
   const handleTranslationChange = (
     locale: Locale,
@@ -125,6 +127,68 @@ export default function UnifiedProductContentEditor({
     }
   };
 
+  const handleTranslateAll = async () => {
+    if (!baseTitle || !baseDescription) {
+      setTranslationError('Please fill in the English title and description first');
+      return;
+    }
+
+    setIsTranslatingAll(true);
+    setTranslationError(null);
+    setTranslationProgress('');
+
+    const targetLocales = locales.filter((l) => l !== defaultLocale);
+    const updatedTranslations = { ...translations };
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (let i = 0; i < targetLocales.length; i++) {
+      const targetLang = targetLocales[i];
+      setTranslationProgress(`Translating to ${localeNames[targetLang]}... (${i + 1}/${targetLocales.length})`);
+
+      try {
+        const response = await fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: baseTitle,
+            description: baseDescription,
+            conditionNotes: baseConditionNotes,
+            targetLang,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          updatedTranslations[targetLang] = {
+            title: data.translation.title,
+            description: data.translation.description,
+            ...(data.translation.conditionNotes && { conditionNotes: data.translation.conditionNotes }),
+          };
+          successCount++;
+        } else {
+          console.error(`Translation failed for ${targetLang}:`, data.error);
+          errorCount++;
+        }
+      } catch (error) {
+        console.error(`Translation error for ${targetLang}:`, error);
+        errorCount++;
+      }
+    }
+
+    onTranslationsChange(updatedTranslations);
+    setTranslationProgress('');
+
+    if (errorCount > 0) {
+      setTranslationError(
+        `Completed with ${successCount} successful and ${errorCount} failed translations. Check console for details.`
+      );
+    }
+
+    setIsTranslatingAll(false);
+  };
+
   const currentTranslation = translations[selectedLocale] || {};
   const isBaseLocale = selectedLocale === defaultLocale;
 
@@ -136,10 +200,85 @@ export default function UnifiedProductContentEditor({
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">Product Content</h2>
-        <p className="text-sm text-gray-600">
-          Add your product content in multiple languages. Start with English, then translate to other languages.
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Product Content</h2>
+            <p className="text-sm text-gray-600">
+              Add your product content in multiple languages. Start with English, then translate to other languages.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleTranslateAll}
+            disabled={isTranslatingAll || !baseTitle || !baseDescription}
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm font-medium transition-all shadow-md hover:shadow-lg"
+          >
+            {isTranslatingAll ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Translating...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
+                  />
+                </svg>
+                Translate All Languages
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Translation Progress */}
+        {translationProgress && (
+          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="flex items-center">
+              <svg
+                className="animate-spin h-5 w-5 text-blue-600 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              <p className="text-sm font-medium text-blue-900">{translationProgress}</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Language Tabs */}
