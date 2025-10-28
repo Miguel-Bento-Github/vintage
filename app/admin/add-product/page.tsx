@@ -4,10 +4,11 @@ import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { addProduct } from '@/services/productService';
 import { ERAS, CATEGORIES_BY_TYPE, CONDITIONS, PRODUCT_TYPES } from '@/lib/constants';
-import { Era, Category, Condition, ProductType } from '@/types';
+import { Era, Category, Condition, ProductType, ProductTranslations } from '@/types';
 import Image from 'next/image';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
 import RichTextEditor from '@/components/RichTextEditor';
+import ProductTranslationEditor from '@/components/admin/ProductTranslationEditor';
 
 interface ProductFormData {
   productType: ProductType | '';
@@ -57,6 +58,7 @@ const INITIAL_FORM_DATA: ProductFormData = {
 export default function AddProductPage() {
   const router = useRouter();
   const [formData, setFormData] = useState<ProductFormData>(INITIAL_FORM_DATA);
+  const [translations, setTranslations] = useState<ProductTranslations>({});
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -256,6 +258,8 @@ export default function AddProductPage() {
           .filter((tag) => tag.length > 0),
         featured: formData.featured,
         inStock: true,
+        // Include translations if any exist
+        ...(Object.keys(translations).length > 0 && { translations }),
       };
 
       const result = await addProduct(productData, images);
@@ -267,6 +271,7 @@ export default function AddProductPage() {
 
       setSuccess(true);
       setFormData(INITIAL_FORM_DATA);
+      setTranslations({});
       setImages([]);
       imagePreviews.forEach((url) => URL.revokeObjectURL(url));
       setImagePreviews([]);
@@ -781,6 +786,15 @@ export default function AddProductPage() {
             </div>
           </div>
         </div>
+
+        {/* Translations */}
+        <ProductTranslationEditor
+          translations={translations}
+          baseTitle={formData.title}
+          baseDescription={formData.description}
+          baseConditionNotes={formData.conditionNotes || undefined}
+          onChange={setTranslations}
+        />
 
         {/* Form Actions */}
         <div className="flex items-center justify-between">

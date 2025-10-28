@@ -1,5 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 import type { Timestamp as AdminTimestamp } from 'firebase-admin/firestore';
+import type { Locale } from '@/i18n';
 
 // Plain timestamp object structure from Firestore
 export interface PlainTimestamp {
@@ -97,6 +98,19 @@ export interface ProductSize {
   specifications?: ProductSpecifications;
 }
 
+/**
+ * Translations for product content in different locales
+ * Base language (English) is stored in the main product fields
+ * Additional translations are optional and stored here
+ */
+export interface ProductTranslation {
+  title?: string;
+  description?: string;
+  conditionNotes?: string;
+}
+
+export type ProductTranslations = Partial<Record<Locale, ProductTranslation>>;
+
 export interface Product {
   id: string;
   productType: ProductType;           // Type of vintage item
@@ -114,6 +128,7 @@ export interface Product {
   featured: boolean;
   tags: string[];                     // e.g., ["vintage", "denim", "levi's"]
   specifications?: ProductSpecifications;  // Generic key-value specs
+  translations?: ProductTranslations; // Optional translations for title, description, conditionNotes
   createdAt: Timestamp;
   updatedAt: Timestamp;
   soldAt?: Timestamp;

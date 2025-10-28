@@ -6,11 +6,12 @@ import Image from 'next/image';
 import { useProduct, useUpdateProduct, useDeleteProduct } from '@/hooks/useProducts';
 import { uploadProductImages, deleteProductImage, addProduct } from '@/services/productService';
 import { ERAS, CATEGORIES_BY_TYPE, CONDITIONS, PRODUCT_TYPES } from '@/lib/constants';
-import { Era, Category, Condition, ProductType, Product } from '@/types';
+import { Era, Category, Condition, ProductType, Product, ProductTranslations } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorState from '@/components/ErrorState';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
 import RichTextEditor from '@/components/RichTextEditor';
+import ProductTranslationEditor from '@/components/admin/ProductTranslationEditor';
 
 interface ProductFormData {
   productType: ProductType | '';
@@ -74,6 +75,7 @@ export default function EditProductPage() {
     featured: false,
     inStock: true,
   });
+  const [translations, setTranslations] = useState<ProductTranslations>({});
 
   // Image state
   const [existingImages, setExistingImages] = useState<ExistingImage[]>([]);
@@ -111,6 +113,8 @@ export default function EditProductPage() {
         featured: product.featured,
         inStock: product.inStock,
       });
+
+      setTranslations(product.translations || {});
 
       setExistingImages(
         product.images.map((url) => ({ url, markedForDeletion: false }))
@@ -351,6 +355,8 @@ export default function EditProductPage() {
         featured: formData.featured,
         inStock: formData.inStock,
         images: finalImages,
+        // Include translations if any exist
+        ...(Object.keys(translations).length > 0 && { translations }),
       };
 
       // Update product using mutation
@@ -1097,6 +1103,15 @@ export default function EditProductPage() {
             </div>
           </div>
         </div>
+
+        {/* Translations */}
+        <ProductTranslationEditor
+          translations={translations}
+          baseTitle={formData.title}
+          baseDescription={formData.description}
+          baseConditionNotes={formData.conditionNotes || undefined}
+          onChange={setTranslations}
+        />
 
         {/* Form Actions */}
         <div className="bg-white rounded-lg shadow p-6">

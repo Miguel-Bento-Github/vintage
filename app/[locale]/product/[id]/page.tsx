@@ -12,6 +12,8 @@ import { getTranslations } from 'next-intl/server';
 import ProductPrice from '@/components/ProductPrice';
 import ShippingCalculator from '@/components/ShippingCalculator';
 import { formatMeasurement, isMeasurementField } from '@/lib/measurements';
+import { getTranslatedProduct } from '@/lib/productTranslations';
+import { toLocale } from '@/i18n';
 
 export const revalidate = 600;
 
@@ -75,7 +77,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { id } = await params;
+  const { id, locale: localeParam } = await params;
   const product = await getProduct(id);
 
   if (!product) {
@@ -84,15 +86,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  // Get translated product for metadata
+  const locale = toLocale(localeParam);
+  const translatedProduct = getTranslatedProduct(product, locale);
+
   // SEO-optimized title with long-tail keywords
-  const seoTitle = `${product.brand} ${product.title} ${product.era} - Vintage ${product.category} | Vintage Store`;
+  const seoTitle = `${translatedProduct.brand} ${translatedProduct.title} ${translatedProduct.era} - Vintage ${translatedProduct.category} | Vintage Store`;
 
   // Strip HTML tags for SEO descriptions
   const stripHtml = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-  const plainDescription = stripHtml(product.description);
+  const plainDescription = stripHtml(translatedProduct.description);
 
   // Rich description with keywords
-  const seoDescription = `${product.condition} condition ${product.era} ${product.brand} ${product.title}. ${plainDescription.slice(0, 120)}... Authentic vintage ${product.category.toLowerCase()}. ${product.inStock ? 'In stock and ready to ship.' : 'Sold out.'}`;
+  const seoDescription = `${translatedProduct.condition} condition ${translatedProduct.era} ${translatedProduct.brand} ${translatedProduct.title}. ${plainDescription.slice(0, 120)}... Authentic vintage ${translatedProduct.category.toLowerCase()}. ${translatedProduct.inStock ? 'In stock and ready to ship.' : 'Sold out.'}`;
 
   const imageUrl = product.images && product.images.length > 0 ? product.images[0] : '';
 
@@ -100,25 +106,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: seoTitle,
     description: seoDescription,
     keywords: [
-      `vintage ${product.brand.toLowerCase()}`,
-      `${product.era} ${product.category.toLowerCase()}`,
-      `vintage ${product.category.toLowerCase()}`,
-      product.title.toLowerCase(),
-      `${product.brand.toLowerCase()} ${product.title.toLowerCase()}`,
+      `vintage ${translatedProduct.brand.toLowerCase()}`,
+      `${translatedProduct.era} ${translatedProduct.category.toLowerCase()}`,
+      `vintage ${translatedProduct.category.toLowerCase()}`,
+      translatedProduct.title.toLowerCase(),
+      `${translatedProduct.brand.toLowerCase()} ${translatedProduct.title.toLowerCase()}`,
       'authentic vintage',
       'vintage fashion',
-      product.era,
+      translatedProduct.era,
     ],
     openGraph: {
-      title: `${product.brand} ${product.title}`,
+      title: `${translatedProduct.brand} ${translatedProduct.title}`,
       description: plainDescription,
-      images: imageUrl ? [{ url: imageUrl, alt: `${product.brand} ${product.title}` }] : [],
+      images: imageUrl ? [{ url: imageUrl, alt: `${translatedProduct.brand} ${translatedProduct.title}` }] : [],
       siteName: 'Vintage Store',
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.brand} ${product.title}`,
+      title: `${translatedProduct.brand} ${translatedProduct.title}`,
       description: plainDescription.slice(0, 160),
       images: imageUrl ? [imageUrl] : [],
     },
@@ -129,14 +135,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ProductPage({ params }: PageProps) {
-  const { id, locale } = await params;
+  const { id, locale: localeParam } = await params;
   const product = await getProduct(id);
 
   if (!product) {
     notFound();
   }
 
+  // Get translations for current locale
+  const locale = toLocale(localeParam);
+  const translatedProduct = getTranslatedProduct(product, locale);
+
   const similarProducts = await getSimilarProducts(product);
+  const translatedSimilarProducts = similarProducts.map(p => getTranslatedProduct(p, locale));
+
   const t = await getTranslations('product');
   const tCommon = await getTranslations('common');
 
@@ -149,8 +161,8 @@ export default async function ProductPage({ params }: PageProps) {
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: `${product.brand} ${product.title}`,
-    description: stripHtml(product.description),
+    name: `${translatedProduct.brand} ${translatedProduct.title}`,
+    description: stripHtml(translatedProduct.description),
     sku: product.id,
     brand: {
       '@type': 'Brand',
@@ -253,7 +265,7 @@ export default async function ProductPage({ params }: PageProps) {
       {
         '@type': 'ListItem',
         position: 4,
-        name: `${product.brand} ${product.title}`,
+        name: `${translatedProduct.brand} ${translatedProduct.title}`,
         item: `${baseUrl}/product/${id}`,
       },
     ],
@@ -291,14 +303,14 @@ export default async function ProductPage({ params }: PageProps) {
               <li>/</li>
               <li>
                 <Link
-                  href={`/${locale}/shop?category=${product.category}`}
+                  href={`/${locale}/shop?category=${translatedProduct.category}`}
                   className="hover:text-gray-700"
                 >
-                  {product.category}
+                  {translatedProduct.category}
                 </Link>
               </li>
               <li>/</li>
-              <li className="text-gray-900 font-medium truncate max-w-[150px] sm:max-w-none">{product.title}</li>
+              <li className="text-gray-900 font-medium truncate max-w-[150px] sm:max-w-none">{translatedProduct.title}</li>
             </ol>
           </nav>
 
@@ -306,26 +318,26 @@ export default async function ProductPage({ params }: PageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
             {/* Left: Image Gallery */}
             <div>
-              <ProductGallery images={product.images} title={product.title} />
+              <ProductGallery images={translatedProduct.images} title={translatedProduct.title} />
             </div>
 
             {/* Right: Product Details */}
             <div>
               {/* Brand */}
-              <p className="text-sm text-gray-500 font-medium mb-2">{product.brand}</p>
+              <p className="text-sm text-gray-500 font-medium mb-2">{translatedProduct.brand}</p>
 
               {/* Title */}
               <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-                {product.title}
+                {translatedProduct.title}
               </h1>
 
               {/* Price and Era */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-6">
-                <ProductPrice amount={product.price} className="text-2xl sm:text-3xl font-bold text-gray-900" />
+                <ProductPrice amount={translatedProduct.price} className="text-2xl sm:text-3xl font-bold text-gray-900" />
                 <span className="px-4 py-1 bg-amber-700 text-white text-sm font-semibold rounded-full">
-                  {product.era}
+                  {translatedProduct.era}
                 </span>
-                {!product.inStock && (
+                {!translatedProduct.inStock && (
                   <span className="px-4 py-1 bg-gray-900 text-white text-sm font-semibold rounded-full">
                     {t('sold')}
                   </span>
@@ -336,7 +348,7 @@ export default async function ProductPage({ params }: PageProps) {
               <div className="mb-6">
                 <div
                   className="text-gray-700 leading-relaxed prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
+                  dangerouslySetInnerHTML={{ __html: translatedProduct.description }}
                 />
               </div>
 
@@ -378,18 +390,18 @@ export default async function ProductPage({ params }: PageProps) {
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-900 mb-2">{t('condition')}</h3>
                 <p className="text-gray-700 mb-1">
-                  <span className="font-medium">{product.condition}</span>
+                  <span className="font-medium">{translatedProduct.condition}</span>
                 </p>
-                {product.conditionNotes && (
-                  <p className="text-sm text-gray-600 italic">{product.conditionNotes}</p>
+                {translatedProduct.conditionNotes && (
+                  <p className="text-sm text-gray-600 italic">{translatedProduct.conditionNotes}</p>
                 )}
               </div>
 
               {/* Tags */}
-              {product.tags && product.tags.length > 0 && (
+              {translatedProduct.tags && translatedProduct.tags.length > 0 && (
                 <div className="mb-6">
                   <div className="flex flex-wrap gap-2">
-                    {product.tags.map((tag) => (
+                    {translatedProduct.tags.map((tag) => (
                       <span
                         key={tag}
                         className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
@@ -405,15 +417,15 @@ export default async function ProductPage({ params }: PageProps) {
               <div className="mb-6">
                 <AddToCartButton
                   product={{
-                    id: product.id,
-                    title: product.title,
-                    brand: product.brand,
-                    era: product.era,
-                    category: product.category,
-                    size: product.size?.label || 'N/A',
-                    price: product.price,
-                    imageUrl: product.images[0] || '',
-                    inStock: product.inStock,
+                    id: translatedProduct.id,
+                    title: translatedProduct.title,
+                    brand: translatedProduct.brand,
+                    era: translatedProduct.era,
+                    category: translatedProduct.category,
+                    size: translatedProduct.size?.label || 'N/A',
+                    price: translatedProduct.price,
+                    imageUrl: translatedProduct.images[0] || '',
+                    inStock: translatedProduct.inStock,
                   }}
                 />
               </div>
@@ -464,11 +476,11 @@ export default async function ProductPage({ params }: PageProps) {
           </div>
 
           {/* Similar Items */}
-          {similarProducts.length > 0 && (
+          {translatedSimilarProducts.length > 0 && (
             <div className="border-t pt-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('similarItems')}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {similarProducts.map((similarProduct) => (
+                {translatedSimilarProducts.map((similarProduct) => (
                   <Link
                     key={similarProduct.id}
                     href={`/${locale}/product/${similarProduct.id}`}
