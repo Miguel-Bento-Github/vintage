@@ -442,21 +442,81 @@ export default async function ProductPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Care Instructions */}
+          {/* Care Instructions & Return Policy */}
           <div className="border-t pt-12 mb-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('careInstructions')}</h2>
-                <div className="prose prose-sm text-gray-700">
-                  <ul className="space-y-2">
-                    <li>{t('care1')}</li>
-                    <li>{t('care2')}</li>
-                    <li>{t('care3')}</li>
-                    <li>{t('care4')}</li>
-                    <li>{t('care5')}</li>
-                  </ul>
+              {/* Care Instructions - Product Type Specific */}
+              {product.productType === 'Clothing' && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('careInstructions')}</h2>
+                  <div className="prose prose-sm text-gray-700">
+                    <ul className="space-y-2">
+                      <li>{t('care1')}</li>
+                      <li>{t('care2')}</li>
+                      <li>{t('care3')}</li>
+                      <li>{t('care4')}</li>
+                      <li>{t('care5')}</li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {product.productType === 'Vinyl Records' && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('careInstructions')}</h2>
+                  <div className="prose prose-sm text-gray-700">
+                    <ul className="space-y-2">
+                      <li>{t('vinylCare1')}</li>
+                      <li>{t('vinylCare2')}</li>
+                      <li>{t('vinylCare3')}</li>
+                      <li>{t('vinylCare4')}</li>
+                      <li>{t('vinylCare5')}</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {product.productType === 'Furniture' && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('careInstructions')}</h2>
+                  <div className="prose prose-sm text-gray-700">
+                    <ul className="space-y-2">
+                      <li>{t('furnitureCare1')}</li>
+                      <li>{t('furnitureCare2')}</li>
+                      <li>{t('furnitureCare3')}</li>
+                      <li>{t('furnitureCare4')}</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {product.productType === 'Jewelry' && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('careInstructions')}</h2>
+                  <div className="prose prose-sm text-gray-700">
+                    <ul className="space-y-2">
+                      <li>{t('jewelryCare1')}</li>
+                      <li>{t('jewelryCare2')}</li>
+                      <li>{t('jewelryCare3')}</li>
+                      <li>{t('jewelryCare4')}</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Generic care for other product types */}
+              {!['Clothing', 'Vinyl Records', 'Furniture', 'Jewelry'].includes(product.productType) && (
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('careInstructions')}</h2>
+                  <div className="prose prose-sm text-gray-700">
+                    <ul className="space-y-2">
+                      <li>{t('genericCare1')}</li>
+                      <li>{t('genericCare2')}</li>
+                      <li>{t('genericCare3')}</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('returnPolicy')}</h2>

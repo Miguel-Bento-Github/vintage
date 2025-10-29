@@ -3,6 +3,8 @@
 import { CheckoutFormData, CheckoutFormErrors } from '@/types/checkout';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useShippingQuote } from '@/hooks/useShipping';
+import { useCurrency } from '@/hooks/useCurrency';
+import { formatPrice, convertPrice, Currency, getExchangeRates } from '@/lib/currency';
 import CountryCombobox from '@/components/CountryCombobox';
 
 interface CustomerInfoFormProps {
@@ -22,6 +24,7 @@ export default function CustomerInfoForm({
 }: CustomerInfoFormProps) {
   const t = useTranslations('checkout');
   const tCommon = useTranslations('common');
+  const { currency } = useCurrency();
 
   // Fetch real-time shipping quote with TanStack Query
   const { data: shippingQuote, isLoading: isLoadingQuote } = useShippingQuote(
@@ -183,31 +186,47 @@ export default function CustomerInfoForm({
             </div>
           )}
 
-          {!isLoadingQuote && shippingQuote && (
-            <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">
-                    <span className="font-medium">Shipping:</span>{' '}
-                    ${shippingQuote.cost.toFixed(2)} via {shippingQuote.carrier}
-                  </p>
-                  <p className="text-xs text-gray-700 mt-1">
-                    {shippingQuote.service} • Delivery: {shippingQuote.estimatedDays}
-                  </p>
+          {!isLoadingQuote && shippingQuote && (() => {
+            // Convert shipping cost to user's selected currency
+            const rates = getExchangeRates();
+            let costInEUR = shippingQuote.cost;
+
+            // If shipping cost is in USD, convert to EUR first (base currency)
+            if (shippingQuote.currency === 'USD') {
+              const usdToEurRate = rates.USD;
+              costInEUR = shippingQuote.cost / usdToEurRate; // Convert USD to EUR
+            }
+
+            // Convert from EUR to target currency
+            const convertedCost = convertPrice(costInEUR, currency as Currency);
+            const formattedPrice = formatPrice(costInEUR, currency as Currency, convertedCost);
+
+            return (
+              <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-900">
+                      <span className="font-medium">Shipping:</span>{' '}
+                      {formattedPrice} via {shippingQuote.carrier}
+                    </p>
+                    <p className="text-xs text-gray-700 mt-1">
+                      {shippingQuote.service} • Delivery: {shippingQuote.estimatedDays}
+                    </p>
+                  </div>
+                  {shippingQuote.source === 'api' && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-700 text-white font-medium">
+                      ✓ Live rate
+                    </span>
+                  )}
+                  {shippingQuote.source === 'static' && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-200 text-gray-700">
+                      Estimate
+                    </span>
+                  )}
                 </div>
-                {shippingQuote.source === 'api' && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-700 text-white font-medium">
-                    ✓ Live rate
-                  </span>
-                )}
-                {shippingQuote.source === 'static' && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-200 text-gray-700">
-                    Estimate
-                  </span>
-                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       </div>
 
