@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Return the converted image
-    return new NextResponse(imageBuffer, {
+    return new NextResponse(new Uint8Array(imageBuffer), {
       headers: {
         'Content-Type': 'image/webp',
         'Content-Disposition': `attachment; filename="${file.name.replace(/\.[^/.]+$/, '')}.webp"`,

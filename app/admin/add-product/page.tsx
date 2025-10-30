@@ -371,10 +371,10 @@ export default function AddProductPage() {
   };
 
   return (
-    <div className="max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Add New Product</h1>
-        <p className="text-gray-600 mt-2">
+    <div className="max-w-4xl px-4 sm:px-6">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Add New Product</h1>
+        <p className="text-sm sm:text-base text-gray-600 mt-2">
           Upload a new vintage item to your inventory
         </p>
       </div>
@@ -417,10 +417,10 @@ export default function AddProductPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
         {/* Basic Information */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Basic Information
           </h2>
 
@@ -556,15 +556,15 @@ export default function AddProductPage() {
 
         {/* Specifications */}
         {formData.productType && SPECIFICATION_FIELDS[formData.productType].length > 0 && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
               Specifications (Optional)
             </h2>
             <p className="text-sm text-gray-600 mb-4">
               Add relevant details for this {formData.productType.toLowerCase()} item
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {SPECIFICATION_FIELDS[formData.productType].map((field) => {
                 // Determine if this field is a measurement that needs cm indicator
                 const isMeasurement = ['chest', 'waist', 'hips', 'length', 'shoulders', 'sleeves', 'height', 'width', 'depth', 'dimensions', 'size'].includes(field);
@@ -595,8 +595,8 @@ export default function AddProductPage() {
         )}
 
         {/* Condition & Pricing */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Condition & Pricing
           </h2>
 
@@ -650,8 +650,8 @@ export default function AddProductPage() {
         </div>
 
         {/* Images */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Images <span className="text-red-500">*</span>
           </h2>
 
@@ -661,8 +661,11 @@ export default function AddProductPage() {
                 htmlFor="images"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Upload Images (Max 5, JPG/PNG/WebP/HEIC - automatically converted to WebP)
+                Upload Images (Max 5)
               </label>
+              <p className="text-xs text-gray-500 mb-2">
+                JPG/PNG/WebP/HEIC - automatically converted to WebP
+              </p>
               <input
                 type="file"
                 id="images"
@@ -675,10 +678,10 @@ export default function AddProductPage() {
 
             {imagePreviews.length > 0 && (
               <div>
-                <p className="text-sm text-gray-600 mb-3">
+                <p className="text-xs sm:text-sm text-gray-600 mb-3">
                   Drag images to reorder them. The first image will be the main product image.
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
                   {imagePreviews.map((preview, index) => (
                     <div
                       key={index}
@@ -742,8 +745,8 @@ export default function AddProductPage() {
         </div>
 
         {/* Tags & Options */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Tags & Options
           </h2>
 
@@ -786,12 +789,12 @@ export default function AddProductPage() {
         </div>
 
         {/* Form Actions */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <button
             type="button"
             onClick={handlePreview}
             disabled={isSubmitting}
-            className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="w-full sm:w-auto px-6 py-2.5 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             <svg
               className="w-5 h-5 mr-2"
@@ -808,19 +811,19 @@ export default function AddProductPage() {
             Preview
           </button>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               type="button"
               onClick={resetForm}
               disabled={isSubmitting}
-              className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto px-6 py-2.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Reset
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {isSubmitting ? (
                 <>

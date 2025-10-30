@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useProduct, useUpdateProduct, useDeleteProduct } from '@/hooks/useProducts';
 import { uploadProductImages, deleteProductImage, addProduct } from '@/services/productService';
 import { ERAS, CATEGORIES_BY_TYPE, CONDITIONS, PRODUCT_TYPES } from '@/lib/constants';
-import { Era, Category, Condition, ProductType, Product, ProductTranslations } from '@/types';
+import { Era, Category, Condition, ProductType, ProductTranslations } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorState from '@/components/ErrorState';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
@@ -583,10 +583,10 @@ export default function EditProductPage() {
   }
 
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-4xl px-4 sm:px-6">
       {/* Header with breadcrumb */}
-      <div className="mb-8">
-        <nav className="text-sm text-gray-500 mb-2">
+      <div className="mb-6 sm:mb-8">
+        <nav className="text-xs sm:text-sm text-gray-500 mb-2">
           <button
             onClick={() => router.push('/admin/products')}
             className="hover:text-gray-700"
@@ -594,18 +594,18 @@ export default function EditProductPage() {
             Products
           </button>
           <span className="mx-2">/</span>
-          <span className="text-gray-900">Edit {product.title}</span>
+          <span className="text-gray-900 truncate max-w-[200px] sm:max-w-none inline-block align-bottom">Edit {product.title}</span>
         </nav>
 
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
-            <p className="text-gray-600 mt-2">Update product information and images</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Edit Product</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">Update product information and images</p>
           </div>
 
           <button
             onClick={() => router.push('/admin/products')}
-            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+            className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 text-sm sm:text-base"
           >
             Back to Products
           </button>
@@ -650,10 +650,10 @@ export default function EditProductPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
         {/* Basic Information */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Basic Information
           </h2>
 
@@ -786,15 +786,15 @@ export default function EditProductPage() {
 
         {/* Specifications */}
         {formData.productType && SPECIFICATION_FIELDS[formData.productType].length > 0 && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
               Specifications (Optional)
             </h2>
             <p className="text-sm text-gray-600 mb-4">
               Add relevant details for this {formData.productType.toLowerCase()} item
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {SPECIFICATION_FIELDS[formData.productType].map((field) => {
                 const isMeasurement = ['chest', 'waist', 'hips', 'length', 'shoulders', 'sleeves', 'height', 'width', 'depth', 'dimensions', 'size'].includes(field);
 
@@ -824,8 +824,8 @@ export default function EditProductPage() {
         )}
 
         {/* Condition & Pricing */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Condition & Pricing
           </h2>
 
@@ -879,8 +879,8 @@ export default function EditProductPage() {
         </div>
 
         {/* Images */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Images <span className="text-red-500">*</span>
           </h2>
 
@@ -890,10 +890,10 @@ export default function EditProductPage() {
               <h3 className="text-sm font-medium text-gray-700 mb-2">
                 Current Images
               </h3>
-              <p className="text-sm text-gray-600 mb-3">
+              <p className="text-xs sm:text-sm text-gray-600 mb-3">
                 Drag images to reorder. Click to mark for deletion. The first image will be the main product image.
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
                 {existingImages.map((img, index) => (
                   <div
                     key={index}
@@ -961,8 +961,11 @@ export default function EditProductPage() {
                 htmlFor="images"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Add New Images (Max 5 total, JPG/PNG/WebP/HEIC - automatically converted to WebP)
+                Add New Images (Max 5 total)
               </label>
+              <p className="text-xs text-gray-500 mb-2">
+                JPG/PNG/WebP/HEIC - automatically converted to WebP
+              </p>
               <input
                 type="file"
                 id="images"
@@ -976,10 +979,10 @@ export default function EditProductPage() {
             {newImagePreviews.length > 0 && (
               <div>
                 <h3 className="text-sm font-medium text-gray-700 mb-2">New Images</h3>
-                <p className="text-sm text-gray-600 mb-3">
+                <p className="text-xs sm:text-sm text-gray-600 mb-3">
                   Drag to reorder. These will be added after existing images.
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
                   {newImagePreviews.map((preview, index) => (
                     <div
                       key={index}
@@ -1040,8 +1043,8 @@ export default function EditProductPage() {
         </div>
 
         {/* Tags & Options */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Tags & Options
           </h2>
 
@@ -1103,15 +1106,15 @@ export default function EditProductPage() {
         </div>
 
         {/* Form Actions */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <div className="space-y-4">
             {/* Primary Actions */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <button
                 type="button"
                 onClick={handlePreview}
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                className="w-full sm:w-auto px-6 py-2.5 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 <svg
                   className="w-5 h-5 mr-2"
@@ -1128,19 +1131,19 @@ export default function EditProductPage() {
                 Preview
               </button>
 
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button
                   type="button"
                   onClick={() => router.push('/admin/products')}
                   disabled={isSubmitting}
-                  className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-6 py-2.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || updateProductMutation.isPending}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {isSubmitting || updateProductMutation.isPending ? (
                     <>
