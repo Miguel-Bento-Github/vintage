@@ -1,9 +1,10 @@
 import { render } from '@react-email/components';
 import { sendEmailSafely } from '../resend';
-import { EmailType, getFromAddress } from './config';
+import { EmailType, getFromAddress, EMAIL_CONFIG } from './config';
 import { adminDb } from '../firebase-admin';
 import { Order, EmailHistoryEntry } from '@/types';
 import OrderConfirmation from '@/emails/templates/OrderConfirmation';
+import AdminOrderNotification from '@/emails/templates/AdminOrderNotification';
 import ShippingNotification from '@/emails/templates/ShippingNotification';
 import DeliveryConfirmation from '@/emails/templates/DeliveryConfirmation';
 import CancellationEmail from '@/emails/templates/CancellationEmail';
@@ -69,6 +70,58 @@ export async function sendOrderConfirmationEmail(
 
     await updateOrderEmailHistory(order.id, emailHistoryEntry);
 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Send admin order notification email
+ * Triggered when a new order is placed
+ */
+export async function sendAdminOrderNotification(
+  order: Order
+): Promise<SendEmailResult> {
+  try {
+    // Check if admin email is configured
+    if (!EMAIL_CONFIG.adminEmail) {
+      console.warn('Admin email not configured, skipping admin notification');
+      return {
+        success: false,
+        error: 'Admin email not configured',
+      };
+    }
+
+    // Render email template
+    const emailHtml = await render(
+      AdminOrderNotification({ order })
+    );
+
+    // Send email via Resend
+    const result = await sendEmailSafely({
+      to: EMAIL_CONFIG.adminEmail,
+      subject: `New Order: ${order.orderNumber} - €${order.total.toFixed(2)}`,
+      html: emailHtml,
+      from: getFromAddress('orders'),
+      replyTo: order.customerInfo.email, // Reply goes to customer
+    });
+
+    // Log success/failure (don't store in order history as this is internal)
+    if (result.success) {
+      console.log(`Admin notification sent for order ${order.orderNumber}`);
+    } else {
+      console.error(`Failed to send admin notification for order ${order.orderNumber}:`, result.error);
+    }
+
+    return {
+      success: result.success,
+      emailId: result.data?.id,
+      error: result.error ? String(result.error) : undefined,
+    };
+  } catch (error) {
+    console.error('Failed to send admin order notification:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

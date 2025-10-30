@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createOrderAdmin } from '@/services/adminOrderService';
 import { CustomerInfo, OrderItem } from '@/types';
-import { sendOrderConfirmationEmail } from '@/lib/email/orderEmails';
+import { sendOrderConfirmationEmail, sendAdminOrderNotification } from '@/lib/email/orderEmails';
 import { toLocale } from '@/i18n';
 
 interface CreateOrderRequest {
@@ -76,11 +76,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send order confirmation email in user's language (async, don't wait)
+    // Send emails (async, don't wait for completion)
     if (result.data) {
       const emailLocale = toLocale(result.data.locale);
+
+      // Send customer confirmation email
       sendOrderConfirmationEmail(result.data, emailLocale).catch((error) => {
         console.error('Failed to send order confirmation email:', error);
+        // Don't fail order creation if email fails
+      });
+
+      // Send admin notification email
+      sendAdminOrderNotification(result.data).catch((error) => {
+        console.error('Failed to send admin notification email:', error);
         // Don't fail order creation if email fails
       });
     }

@@ -5,6 +5,12 @@
 
 export const EMAIL_CONFIG = {
   /**
+   * Admin notification email address
+   * Set via ADMIN_EMAIL environment variable
+   */
+  adminEmail: process.env.ADMIN_EMAIL || 'admin@dreamazul.com',
+
+  /**
    * From addresses for different email types
    */
   from: {
@@ -118,6 +124,7 @@ export function getUnsubscribeUrl(userEmail: string, token?: string): string {
  */
 export enum EmailType {
   ORDER_CONFIRMATION = 'order_confirmation',
+  ADMIN_ORDER_NOTIFICATION = 'admin_order_notification',
   SHIPPING_NOTIFICATION = 'shipping_notification',
   DELIVERY_CONFIRMATION = 'delivery_confirmation',
   CANCELLATION = 'cancellation',
