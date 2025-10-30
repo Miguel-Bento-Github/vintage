@@ -102,17 +102,21 @@ export default function AddProductPage() {
     }
   };
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
 
     if (files.length === 0) return;
 
     // Validate file types
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    const invalidFiles = files.filter((file) => !validTypes.includes(file.type));
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+    const invalidFiles = files.filter((file) => {
+      const isValidType = validTypes.includes(file.type);
+      const isHeicByExtension = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+      return !isValidType && !isHeicByExtension;
+    });
 
     if (invalidFiles.length > 0) {
-      setError('Please upload only JPG, PNG, or WebP images');
+      setError('Please upload only JPG, PNG, WebP, or HEIC images');
       return;
     }
 
@@ -122,12 +126,45 @@ export default function AddProductPage() {
       return;
     }
 
-    setImages(files);
+    setIsSubmitting(true);
+    setError('Converting images...');
 
-    // Create preview URLs
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews(previews);
-    setError('');
+    try {
+      // Convert all images to WebP
+      const convertedFiles = await Promise.all(
+        files.map(async (file) => {
+          const formData = new FormData();
+          formData.append('image', file);
+
+          const response = await fetch('/api/convert-image', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to convert ${file.name}`);
+          }
+
+          const blob = await response.blob();
+          const webpFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.webp'), {
+            type: 'image/webp',
+          });
+
+          return webpFile;
+        })
+      );
+
+      setImages(convertedFiles);
+
+      // Create preview URLs
+      const previews = convertedFiles.map((file) => URL.createObjectURL(file));
+      setImagePreviews(previews);
+      setError('');
+    } catch (error) {
+      setError(`Image conversion failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const removeImage = (index: number) => {
@@ -624,12 +661,12 @@ export default function AddProductPage() {
                 htmlFor="images"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Upload Images (Max 5, JPG/PNG/WebP)
+                Upload Images (Max 5, JPG/PNG/WebP/HEIC - automatically converted to WebP)
               </label>
               <input
                 type="file"
                 id="images"
-                accept="image/jpeg,image/jpg,image/png,image/webp"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                 multiple
                 onChange={handleImageChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
