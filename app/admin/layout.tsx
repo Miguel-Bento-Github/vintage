@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
@@ -26,6 +26,7 @@ export default function AdminLayout({
   const { user, isAdmin, loading, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Skip auth check for login page
   const isLoginPage = pathname === '/admin/login';
@@ -81,115 +82,186 @@ export default function AdminLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <QueryProvider>
           <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-sm text-gray-600 mt-1">{user.email}</p>
-        </div>
+            {/* Mobile overlay */}
+            {sidebarOpen && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                onClick={() => setSidebarOpen(false)}
+              />
+            )}
 
-        <nav className="mt-6">
-          <Link
-            href="/admin"
-            className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-          >
-            <svg
-              className="h-5 w-5 mr-3"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+            {/* Sidebar */}
+            <aside
+              className={`
+                fixed lg:static inset-y-0 left-0 z-50
+                w-64 bg-white shadow-md
+                transform transition-transform duration-300 ease-in-out
+                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+              `}
             >
-              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            Dashboard
-          </Link>
+              <div className="h-full flex flex-col">
+                {/* Header */}
+                <div className="p-6 flex items-start justify-between">
+                  <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
+                    <p className="text-sm text-gray-600 mt-1">{user.email}</p>
+                  </div>
+                  {/* Close button for mobile */}
+                  <button
+                    onClick={() => setSidebarOpen(false)}
+                    className="lg:hidden text-gray-500 hover:text-gray-700"
+                    aria-label="Close sidebar"
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
 
-          <Link
-            href="/admin/products"
-            className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-          >
-            <svg
-              className="h-5 w-5 mr-3"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            Products
-          </Link>
+                {/* Navigation */}
+                <nav className="flex-1 mt-6">
+                  <Link
+                    href="/admin"
+                    onClick={() => setSidebarOpen(false)}
+                    className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  >
+                    <svg
+                      className="h-5 w-5 mr-3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Dashboard
+                  </Link>
 
-          <Link
-            href="/admin/add-product"
-            className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-          >
-            <svg
-              className="h-5 w-5 mr-3"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M12 4v16m8-8H4" />
-            </svg>
-            Add Product
-          </Link>
+                  <Link
+                    href="/admin/products"
+                    onClick={() => setSidebarOpen(false)}
+                    className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  >
+                    <svg
+                      className="h-5 w-5 mr-3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    Products
+                  </Link>
 
-          <Link
-            href="/admin/orders"
-            className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-          >
-            <svg
-              className="h-5 w-5 mr-3"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            Orders
-          </Link>
+                  <Link
+                    href="/admin/add-product"
+                    onClick={() => setSidebarOpen(false)}
+                    className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  >
+                    <svg
+                      className="h-5 w-5 mr-3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Product
+                  </Link>
 
-          <div className="mt-auto pt-6 px-6">
-            <button
-              type="button"
-              onClick={handleSignOut}
-              className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
-            >
-              <svg
-                className="h-5 w-5 mr-3"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Sign Out
-            </button>
-          </div>
-        </nav>
-      </aside>
+                  <Link
+                    href="/admin/orders"
+                    onClick={() => setSidebarOpen(false)}
+                    className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  >
+                    <svg
+                      className="h-5 w-5 mr-3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Orders
+                  </Link>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="p-8">
-          {children}
-        </div>
-      </main>
+                  <div className="mt-auto pt-6 px-6">
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
+                    >
+                      <svg
+                        className="h-5 w-5 mr-3"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Sign Out
+                    </button>
+                  </div>
+                </nav>
+              </div>
+            </aside>
+
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {/* Mobile header with hamburger */}
+              <header className="lg:hidden bg-white shadow-sm">
+                <div className="flex items-center justify-between px-4 py-3">
+                  <button
+                    onClick={() => setSidebarOpen(true)}
+                    className="text-gray-500 hover:text-gray-700"
+                    aria-label="Open sidebar"
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                  <h2 className="text-lg font-semibold text-gray-900">Admin Panel</h2>
+                  <div className="w-6" /> {/* Spacer for alignment */}
+                </div>
+              </header>
+
+              {/* Main content area */}
+              <main className="flex-1 overflow-y-auto">
+                <div className="p-4 sm:p-6 lg:p-8">
+                  {children}
+                </div>
+              </main>
+            </div>
           </div>
         </QueryProvider>
       </body>
