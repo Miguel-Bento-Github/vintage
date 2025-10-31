@@ -9,8 +9,16 @@ export default function Footer() {
   const t = useTranslations();
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="relative bg-gray-900 text-gray-300 overflow-hidden">
+      {/* Vintage flowers pattern background */}
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          backgroundImage: `url('/patterns/flowers.png')`,
+          backgroundRepeat: 'repeat',
+        }}
+      />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* About */}
           <div>
@@ -155,10 +163,10 @@ export default function Footer() {
             <p>&copy; {new Date().getFullYear()} Dream Azul. All rights reserved.</p>
             <Link
               href="/admin"
-              className="text-gray-500 hover:text-gray-300 transition-colors text-xs"
+              className="text-gray-500 hover:text-gray-300 transition-colors text-2xl"
               aria-label="Admin Login"
             >
-              Admin
+              🎃
             </Link>
           </div>
         </div>
