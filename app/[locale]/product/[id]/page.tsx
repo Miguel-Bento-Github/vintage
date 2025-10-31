@@ -426,6 +426,7 @@ export default async function ProductPage({ params }: PageProps) {
                     price: translatedProduct.price,
                     imageUrl: translatedProduct.images[0] || '',
                     inStock: translatedProduct.inStock,
+                    weightGrams: translatedProduct.weightGrams,
                   }}
                 />
               </div>
@@ -438,7 +439,10 @@ export default async function ProductPage({ params }: PageProps) {
               </div>
 
               {/* Shipping Calculator */}
-              <ShippingCalculator className="mb-6" />
+              <ShippingCalculator
+                productWeight={translatedProduct.weightGrams}
+                className="mb-6"
+              />
             </div>
           </div>
 

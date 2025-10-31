@@ -47,13 +47,18 @@ export default function CheckoutPage() {
   }, [items, router, locale]);
 
   // Use TanStack Query to create payment intent
+  // Include formData.country in the query key so it refetches when country changes
   const { data: paymentIntentData, isLoading, error: queryError } = useQuery({
-    queryKey: ['payment-intent', items, currency],
+    queryKey: ['payment-intent', items, currency, formData.country],
     queryFn: async () => {
       const response = await fetch('/api/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, currency }),
+        body: JSON.stringify({
+          items,
+          currency,
+          shippingCountry: formData.country || 'NL', // Default to Netherlands if no country selected yet
+        }),
       });
 
       if (!response.ok) {

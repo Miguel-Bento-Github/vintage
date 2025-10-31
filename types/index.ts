@@ -129,6 +129,11 @@ export interface Product {
   tags: string[];                     // e.g., ["vintage", "denim", "levi's"]
   specifications?: ProductSpecifications;  // Generic key-value specs
   translations?: ProductTranslations; // Optional translations for title, description, conditionNotes
+  // Shipping dimensions and weight
+  weightGrams?: number;               // Weight in grams for shipping calculations
+  lengthCm?: number;                  // Length in cm (optional for volumetric weight)
+  widthCm?: number;                   // Width in cm (optional for volumetric weight)
+  heightCm?: number;                  // Height in cm (optional for volumetric weight)
   createdAt: Timestamp;
   updatedAt: Timestamp;
   soldAt?: Timestamp;
@@ -173,6 +178,7 @@ export interface OrderItem {
   size: string;
   price: number;
   imageUrl: string;
+  weightGrams?: number;               // Weight for shipping calculation
 }
 
 export interface EmailHistoryEntry {
@@ -255,6 +261,7 @@ export interface CartItem {
   imageUrl: string;
   inStock: boolean;
   isDeleted?: boolean; // Flag for deleted products
+  weightGrams?: number;               // Weight for shipping calculation
 }
 
 export interface Cart {

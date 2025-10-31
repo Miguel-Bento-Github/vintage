@@ -4,10 +4,11 @@ import { CartItem } from '@/types';
 import { Currency, convertPrice } from '@/lib/currency';
 import { getStripeAmount, getStripeCurrency, isStripeSupportedCurrency } from '@/lib/stripeHelpers';
 import { getExchangeRatesServer } from '@/lib/exchangeRatesServer';
+import { calculateShipping } from '@/lib/shipping';
 
 export async function POST(request: NextRequest) {
   try {
-    const { items, currency = 'EUR' }: { items: CartItem[]; currency?: Currency } = await request.json();
+    const { items, currency = 'EUR', shippingCountry }: { items: CartItem[]; currency?: Currency; shippingCountry?: string } = await request.json();
 
     // Validate items
     if (!items || items.length === 0) {
@@ -33,16 +34,24 @@ export async function POST(request: NextRequest) {
     const subtotalInEUR = items.reduce((sum, item) => sum + item.price, 0);
     const subtotal = convertPrice(subtotalInEUR, currency, exchangeRates);
 
+    // Calculate total weight for shipping
+    const totalWeightGrams = items.reduce((sum, item) => sum + (item.weightGrams || 500), 0); // Default 500g if no weight specified
+
+    // Calculate shipping based on destination country and weight
+    // Default to Netherlands (NL) if no country specified
+    const destinationCountry = shippingCountry || 'NL';
+    const shippingCostInEUR = calculateShipping(destinationCountry, totalWeightGrams);
+    const shippingCost = convertPrice(shippingCostInEUR, currency, exchangeRates);
+
     // Free shipping threshold: €100 or equivalent
     const shippingThreshold = convertPrice(100, currency, exchangeRates);
-    const shippingCost = convertPrice(10, currency, exchangeRates);
     const shipping = subtotal >= shippingThreshold ? 0 : shippingCost;
     const total = subtotal + shipping;
 
     // Validate minimum amount for Stripe
     // Stripe requires at least €0.50 (or equivalent) in the settlement currency
     const minimumInEUR = 0.50;
-    const totalInEUR = subtotalInEUR + (shipping > 0 ? 10 : 0); // Convert shipping back to EUR
+    const totalInEUR = subtotalInEUR + (shipping > 0 ? shippingCostInEUR : 0);
 
     if (totalInEUR < minimumInEUR) {
       return NextResponse.json(
@@ -74,6 +83,8 @@ export async function POST(request: NextRequest) {
         total: total.toFixed(2),
         currency: currency, // Store the currency for order creation
         taxExemptReason: 'second_hand_goods', // For record-keeping
+        shippingCountry: destinationCountry, // Store destination for order records
+        totalWeightGrams: totalWeightGrams.toString(), // Store weight for shipping records
       },
     });
 

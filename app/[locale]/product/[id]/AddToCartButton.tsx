@@ -17,6 +17,7 @@ interface AddToCartButtonProps {
     price: number;
     imageUrl: string;
     inStock: boolean;
+    weightGrams?: number;
   };
 }
 
@@ -42,6 +43,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       price: product.price,
       imageUrl: product.imageUrl,
       inStock: product.inStock,
+      weightGrams: product.weightGrams,
     });
 
     // Track analytics

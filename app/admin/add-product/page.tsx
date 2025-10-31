@@ -23,6 +23,11 @@ interface ProductFormData {
   price: string;
   tags: string;
   featured: boolean;
+  // Shipping fields
+  weightGrams: string;
+  lengthCm: string;
+  widthCm: string;
+  heightCm: string;
 }
 
 // Specification fields based on product type
@@ -52,6 +57,10 @@ const INITIAL_FORM_DATA: ProductFormData = {
   price: '',
   tags: '',
   featured: false,
+  weightGrams: '',
+  lengthCm: '',
+  widthCm: '',
+  heightCm: '',
 };
 
 export default function AddProductPage() {
@@ -294,6 +303,11 @@ export default function AddProductPage() {
           .filter((tag) => tag.length > 0),
         featured: formData.featured,
         inStock: true,
+        // Include shipping dimensions if provided
+        ...(formData.weightGrams && { weightGrams: parseFloat(formData.weightGrams) }),
+        ...(formData.lengthCm && { lengthCm: parseFloat(formData.lengthCm) }),
+        ...(formData.widthCm && { widthCm: parseFloat(formData.widthCm) }),
+        ...(formData.heightCm && { heightCm: parseFloat(formData.heightCm) }),
         // Include translations if any exist
         ...(Object.keys(translations).length > 0 && { translations }),
       };
@@ -643,6 +657,99 @@ export default function AddProductPage() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="99.99"
                   required
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Shipping Information */}
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+            Shipping Information
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Add weight and dimensions for accurate shipping cost calculation. Weight is especially important.
+          </p>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="weightGrams"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Weight (grams) <span className="text-amber-600">*recommended</span>
+                </label>
+                <input
+                  type="number"
+                  step="1"
+                  id="weightGrams"
+                  name="weightGrams"
+                  value={formData.weightGrams}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., 500"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Used for shipping cost calculation. Defaults to 500g if not specified.
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="lengthCm"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Length (cm)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="lengthCm"
+                  name="lengthCm"
+                  value={formData.lengthCm}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., 30"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="widthCm"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Width (cm)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="widthCm"
+                  name="widthCm"
+                  value={formData.widthCm}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., 25"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="heightCm"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Height (cm)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  id="heightCm"
+                  name="heightCm"
+                  value={formData.heightCm}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., 5"
                 />
               </div>
             </div>

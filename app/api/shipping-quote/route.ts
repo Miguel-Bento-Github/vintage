@@ -164,9 +164,11 @@ function getDeliveryEstimate(carrier: string, countryCode: string): string {
  * Helper: Get shipping zone from country code
  */
 function getZoneFromCountry(countryCode: string): string {
-  if (countryCode === 'ES' || countryCode === 'NL') return 'domestic';
+  // Only Netherlands is domestic (base location)
+  if (countryCode === 'NL') return 'domestic';
 
-  const euCountries = ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB', 'NO', 'CH', 'IS'];
+  // European countries (including Spain)
+  const euCountries = ['ES', 'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'PL', 'PT', 'RO', 'SK', 'SI', 'SE', 'GB', 'NO', 'CH', 'IS'];
   if (euCountries.includes(countryCode)) return 'europe';
 
   if (['US', 'CA', 'MX'].includes(countryCode)) return 'north-america';

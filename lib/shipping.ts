@@ -93,10 +93,11 @@ const DELIVERY_ESTIMATES: Record<ShippingZone, string> = {
 
 // Comprehensive country list with shipping zones
 export const SUPPORTED_COUNTRIES: Country[] = [
-  // Domestic
-  { code: 'ES', name: 'Spain', zone: 'domestic' },
+  // Domestic - Netherlands (base location)
+  { code: 'NL', name: 'Netherlands', zone: 'domestic' },
 
   // Europe - EU Countries
+  { code: 'ES', name: 'Spain', zone: 'europe' },
   { code: 'AT', name: 'Austria', zone: 'europe' },
   { code: 'BE', name: 'Belgium', zone: 'europe' },
   { code: 'BG', name: 'Bulgaria', zone: 'europe' },
@@ -116,7 +117,6 @@ export const SUPPORTED_COUNTRIES: Country[] = [
   { code: 'LT', name: 'Lithuania', zone: 'europe' },
   { code: 'LU', name: 'Luxembourg', zone: 'europe' },
   { code: 'MT', name: 'Malta', zone: 'europe' },
-  { code: 'NL', name: 'Netherlands', zone: 'europe' },
   { code: 'PL', name: 'Poland', zone: 'europe' },
   { code: 'PT', name: 'Portugal', zone: 'europe' },
   { code: 'RO', name: 'Romania', zone: 'europe' },
@@ -185,7 +185,7 @@ export function getShippingZone(countryCode: string): ShippingZone {
  * Calculate shipping cost based on country and optional weight
  * @param countryCode - ISO 3166-1 alpha-2 country code
  * @param weightInGrams - Optional weight in grams for weight-based calculation
- * @returns Shipping cost in USD
+ * @returns Shipping cost in EUR
  */
 export function calculateShipping(
   countryCode: string,
@@ -269,7 +269,7 @@ export function getCountryName(countryCode: string): string {
 /**
  * Format shipping cost for display
  */
-export function formatShippingCost(cost: number, currencyCode = 'USD'): string {
+export function formatShippingCost(cost: number, currencyCode = 'EUR'): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currencyCode,
