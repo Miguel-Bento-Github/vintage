@@ -8,6 +8,7 @@ import { Era, Category, Condition, ProductType, ProductTranslations } from '@/ty
 import Image from 'next/image';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
 import UnifiedProductContentEditor from '@/components/admin/UnifiedProductContentEditor';
+import { Timestamp } from 'firebase/firestore';
 
 interface ProductFormData {
   productType: ProductType | '';
@@ -317,8 +318,8 @@ export default function AddProductPage() {
         ...(formData.heightCm && { heightCm: parseFloat(formData.heightCm) }),
         // Include discount if provided
         ...(formData.discountPrice && { discountPrice: parseFloat(formData.discountPrice) }),
-        ...(formData.discountStartDate && { discountStartDate: new Date(formData.discountStartDate) }),
-        ...(formData.discountEndDate && { discountEndDate: new Date(formData.discountEndDate) }),
+        ...(formData.discountStartDate && { discountStartDate: Timestamp.fromDate(new Date(formData.discountStartDate)) }),
+        ...(formData.discountEndDate && { discountEndDate: Timestamp.fromDate(new Date(formData.discountEndDate)) }),
         // Include translations if any exist
         ...(Object.keys(translations).length > 0 && { translations }),
       };

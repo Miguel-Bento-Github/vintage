@@ -11,6 +11,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorState from '@/components/ErrorState';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
 import UnifiedProductContentEditor from '@/components/admin/UnifiedProductContentEditor';
+import { Timestamp } from 'firebase/firestore';
 
 interface ProductFormData {
   productType: ProductType | '';
@@ -132,8 +133,8 @@ export default function EditProductPage() {
         widthCm: product.widthCm?.toString() || '',
         heightCm: product.heightCm?.toString() || '',
         discountPrice: product.discountPrice?.toString() || '',
-        discountStartDate: product.discountStartDate ? new Date(product.discountStartDate).toISOString().slice(0, 16) : '',
-        discountEndDate: product.discountEndDate ? new Date(product.discountEndDate).toISOString().slice(0, 16) : '',
+        discountStartDate: product.discountStartDate ? product.discountStartDate.toDate().toISOString().slice(0, 16) : '',
+        discountEndDate: product.discountEndDate ? product.discountEndDate.toDate().toISOString().slice(0, 16) : '',
       });
 
       setTranslations(product.translations || {});
@@ -421,8 +422,8 @@ export default function EditProductPage() {
         ...(formData.heightCm && { heightCm: parseFloat(formData.heightCm) }),
         // Include discount if provided
         ...(formData.discountPrice && { discountPrice: parseFloat(formData.discountPrice) }),
-        ...(formData.discountStartDate && { discountStartDate: new Date(formData.discountStartDate) }),
-        ...(formData.discountEndDate && { discountEndDate: new Date(formData.discountEndDate) }),
+        ...(formData.discountStartDate && { discountStartDate: Timestamp.fromDate(new Date(formData.discountStartDate)) }),
+        ...(formData.discountEndDate && { discountEndDate: Timestamp.fromDate(new Date(formData.discountEndDate)) }),
         // Include translations if any exist
         ...(Object.keys(translations).length > 0 && { translations }),
       };

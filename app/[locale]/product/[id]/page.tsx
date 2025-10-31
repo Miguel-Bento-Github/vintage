@@ -433,8 +433,8 @@ export default async function ProductPage({ params }: PageProps) {
                     inStock: translatedProduct.inStock,
                     weightGrams: translatedProduct.weightGrams,
                     discountPrice: translatedProduct.discountPrice,
-                    discountStartDate: translatedProduct.discountStartDate,
-                    discountEndDate: translatedProduct.discountEndDate,
+                    discountStartDate: translatedProduct.discountStartDate ? translatedProduct.discountStartDate.toDate().toISOString() : undefined,
+                    discountEndDate: translatedProduct.discountEndDate ? translatedProduct.discountEndDate.toDate().toISOString() : undefined,
                   }}
                 />
               </div>

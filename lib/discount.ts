@@ -1,9 +1,19 @@
-import { Product, SerializedProduct } from '@/types';
+// Discount calculation utilities
+
+/**
+ * Minimal product data needed for discount calculations
+ */
+export interface DiscountableProduct {
+  price: number;
+  discountPrice?: number;
+  discountStartDate?: string | { toDate(): Date };
+  discountEndDate?: string | { toDate(): Date };
+}
 
 /**
  * Check if a product's discount is currently active
  */
-export function isDiscountActive(product: Product | SerializedProduct): boolean {
+export function isDiscountActive(product: DiscountableProduct): boolean {
   // Must have a discount price
   if (!product.discountPrice || product.discountPrice >= product.price) {
     return false;
@@ -39,7 +49,7 @@ export function isDiscountActive(product: Product | SerializedProduct): boolean 
 /**
  * Get the effective price for a product (discounted if active, otherwise regular)
  */
-export function getEffectivePrice(product: Product | SerializedProduct): number {
+export function getEffectivePrice(product: DiscountableProduct): number {
   if (isDiscountActive(product) && product.discountPrice) {
     return product.discountPrice;
   }
