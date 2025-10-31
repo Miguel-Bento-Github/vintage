@@ -5,7 +5,7 @@ import { collection, getDocs, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { SerializedProduct, timestampToISO } from "@/types";
 import { getTranslations } from "next-intl/server";
-import ProductPrice from "@/components/ProductPrice";
+import VintageProductCard from "@/components/VintageProductCard";
 
 // Generate static pages for all locales at build time
 export function generateStaticParams() {
@@ -126,36 +126,9 @@ export default async function HomePage({
           </div>
 
           {featuredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {featuredProducts.map((product) => (
-                <Link
-                  key={product.id}
-                  href={`/${locale}/product/${product.id}`}
-                  className="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="relative aspect-[3/4] bg-gray-100">
-                    <Image
-                      src={product.images[0]}
-                      alt={`${product.brand} ${product.title} - ${product.era} vintage ${product.category}`}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      loading="eager"
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <p className="text-xs text-amber-700 font-semibold mb-1">
-                      {product.era}
-                    </p>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {product.title}
-                    </h3>
-                    <ProductPrice
-                      amount={product.price}
-                      className="text-xl font-bold text-gray-900"
-                    />
-                  </div>
-                </Link>
+                <VintageProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (

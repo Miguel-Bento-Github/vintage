@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { SerializedProduct } from '@/types';
 import {
@@ -17,8 +15,7 @@ import {
 import { ProductType } from '@/types';
 import { useLocale } from 'next-intl';
 import { useTranslations } from '@/hooks/useTranslations';
-import Price from '@/components/Price';
-import { isDiscountActive, getEffectivePrice, formatDiscountPercentage } from '@/lib/discount';
+import VintageProductCard from '@/components/VintageProductCard';
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 type PriceRange = 'under-50' | '50-100' | '100-200' | '200-plus';
@@ -613,65 +610,14 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
             </div>
 
             {filteredAndSortedProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredAndSortedProducts.map((product) => (
-                  <Link
+                  <VintageProductCard
                     key={product.id}
-                    href={`/${locale}/product/${product.id}`}
-                    className="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
-                  >
-                    <div className="relative aspect-[3/4] bg-gray-100">
-                      {!product.inStock ? (
-                        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-                          <span className="text-white text-2xl font-bold">{tCommon('sold')}</span>
-                        </div>
-                      ) : product.images && product.images.length > 0 && product.images[0] ? (
-                        <Image
-                          src={product.images[0]}
-                          alt={`${product.brand} ${product.title} - ${product.era} vintage ${product.category}`}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          loading="lazy"
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-400 text-sm">{tCommon('noImage')}</span>
-                        </div>
-                      )}
-                      <div className="absolute top-2 right-2">
-                        <span className="px-3 py-1 bg-amber-700 text-white text-xs font-semibold rounded-full">
-                          {product.era}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <p className="text-xs text-gray-500 font-medium mb-1">
-                        {product.brand}
-                      </p>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                        {product.title}
-                      </h3>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {isDiscountActive(product) ? (
-                            <>
-                              <span className="text-gray-500 line-through text-sm">
-                                <Price amount={product.price} />
-                              </span>
-                              <Price amount={getEffectivePrice(product)} className="text-xl font-bold text-red-600" />
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                {formatDiscountPercentage(product.price, getEffectivePrice(product))}
-                              </span>
-                            </>
-                          ) : (
-                            <Price amount={product.price} className="text-xl font-bold text-gray-900" />
-                          )}
-                        </div>
-                        {product.size && <p className="text-sm text-gray-500">{product.size.label}</p>}
-                      </div>
-                    </div>
-                  </Link>
+                    product={product}
+                    showDiscount={true}
+                    showSize={true}
+                  />
                 ))}
               </div>
             ) : (
