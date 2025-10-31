@@ -6,6 +6,7 @@ import { Era, Category } from '@/types';
 import { trackAddToCart } from '@/services/analyticsService';
 import { useTranslations } from '@/hooks/useTranslations';
 import { getEffectivePrice } from '@/lib/discount';
+import VintageButton from '@/components/VintageButton';
 
 interface AddToCartButtonProps {
   product: {
@@ -62,39 +63,35 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
 
   if (!product.inStock) {
     return (
-      <button
+      <VintageButton
         type="button"
         disabled
-        className="w-full py-4 px-6 bg-gray-300 text-gray-500 rounded-lg font-semibold text-lg cursor-not-allowed"
+        variant="disabled"
       >
         {t('soldOut')}
-      </button>
+      </VintageButton>
     );
   }
 
   if (isInCart) {
     return (
-      <button
+      <VintageButton
         type="button"
         disabled
-        className="w-full py-4 px-6 bg-gray-600 text-white rounded-lg font-semibold text-lg cursor-not-allowed"
+        variant="disabled"
       >
         {t('alreadyInCart')}
-      </button>
+      </VintageButton>
     );
   }
 
   return (
-    <button
+    <VintageButton
       type="button"
       onClick={handleAddToCart}
-      className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-colors ${
-        showAdded
-          ? 'bg-green-600 text-white'
-          : 'bg-amber-700 text-white hover:bg-amber-800'
-      }`}
+      variant={showAdded ? 'success' : 'primary'}
     >
       {showAdded ? `✓ ${t('addedToCart')}` : t('addToCart')}
-    </button>
+    </VintageButton>
   );
 }

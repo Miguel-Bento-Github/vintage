@@ -15,6 +15,7 @@ import OrderReview from '@/components/checkout/OrderReview';
 import PaymentForm from '@/components/checkout/PaymentForm';
 import { useLocale } from 'next-intl';
 import { useTranslations } from '@/hooks/useTranslations';
+import VintageButton from '@/components/VintageButton';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -120,13 +121,13 @@ export default function CheckoutPage() {
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <h2 className="text-xl font-bold text-red-800 mb-2">{t('checkoutError')}</h2>
             <p className="text-red-700 mb-4">{error}</p>
-            <button
+            <VintageButton
               type="button"
               onClick={() => router.push(`/${locale}/cart`)}
-              className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+              variant="danger"
             >
               {t('returnToCart')}
-            </button>
+            </VintageButton>
           </div>
         </div>
       </div>

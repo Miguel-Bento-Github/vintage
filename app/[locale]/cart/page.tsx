@@ -8,6 +8,7 @@ import { useCartValidation } from '@/hooks/useCartValidation';
 import { useLocale } from 'next-intl';
 import { useTranslations } from '@/hooks/useTranslations';
 import Price from '@/components/Price';
+import VintageButton from '@/components/VintageButton';
 
 export default function CartPage() {
   const router = useRouter();
@@ -60,12 +61,9 @@ export default function CartPage() {
           <p className="text-gray-600 mb-8">
             {t('emptyCartDescription')}
           </p>
-          <Link
-            href={`/${locale}/shop`}
-            className="inline-block bg-amber-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-amber-800 transition-colors"
-          >
+          <VintageButton href={`/${locale}/shop`}>
             {t('continueShopping')}
-          </Link>
+          </VintageButton>
         </div>
       </div>
     );
@@ -295,18 +293,15 @@ export default function CartPage() {
                 </p>
               </div>
 
-              <button
+              <VintageButton
                 type="button"
                 onClick={() => router.push(`/${locale}/checkout`)}
                 disabled={hasUnavailableItems}
-                className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-colors ${
-                  hasUnavailableItems
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-amber-700 text-white hover:bg-amber-800'
-                }`}
+                fullWidth
+                className="py-4 px-6 text-lg"
               >
                 {t('proceedToCheckout')}
-              </button>
+              </VintageButton>
 
               {hasUnavailableItems && (
                 <p className="text-sm text-red-600 mt-3 text-center">
