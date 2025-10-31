@@ -184,29 +184,42 @@ export default async function HomePage({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-            {Object.entries(CATEGORY_IMAGES).map(([category, imageUrl]) => (
-              <Link
-                key={category}
-                href={`/${locale}/shop?category=${category}`}
-                className="group relative aspect-square rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-              >
-                <Image
-                  src={imageUrl}
-                  alt={`Shop vintage ${category.toLowerCase()}`}
-                  fill
-                  sizes="(max-width: 768px) 50vw, 33vw"
-                  loading="lazy"
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 group-hover:from-black/70 transition-colors" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-                  <h3 className="text-white text-xl sm:text-2xl font-bold">
-                    {category}
-                  </h3>
-                </div>
-              </Link>
-            ))}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 auto-rows-[200px]">
+            {Object.entries(CATEGORY_IMAGES).map(([category, imageUrl], index) => {
+              // Pattern: Jacket(2), Dress(1), LP(2), Chair(2), Necklace(1), Accessories(2)
+              // This makes: Col1: 2+1=3, Col2: 1+2=3, Col3: 2+2=4 -> Need Col3: 2+1=3
+              // Index: 0,1,2,3,4,5 -> Rows: 2,1,2,2,1,1
+              let rowSpan = 2;
+              if (index === 1 || index === 4 || index === 5) {
+                rowSpan = 1;
+              }
+
+              return (
+                <Link
+                  key={category}
+                  href={`/${locale}/shop?category=${category}`}
+                  className="group relative rounded-lg overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all border-4 border-amber-900/30"
+                  style={{ gridRow: `span ${rowSpan}` }}
+                >
+                  <Image
+                    src={imageUrl}
+                    alt={`Shop vintage ${category.toLowerCase()}`}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    loading="lazy"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 group-hover:from-black/70 transition-colors" />
+                  {/* Vintage inner frame border */}
+                  <div className="absolute inset-2 border-2 border-amber-100/20 pointer-events-none rounded" />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+                    <h3 className="text-white text-xl sm:text-2xl font-bold">
+                      {category}
+                    </h3>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
