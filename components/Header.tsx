@@ -15,7 +15,7 @@ export default function Header() {
   return (
     <header className="border-b border-gray-200 bg-white/95 sticky top-0 z-40 backdrop-blur-sm shadow-sm text-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex items-center h-16">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center">
             <Image
@@ -28,7 +28,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-8 ml-8">
             <Link href={`/${locale}`} className="hover:text-gray-900 transition-colors">
               {t('home')}
             </Link>
@@ -38,7 +38,7 @@ export default function Header() {
           </nav>
 
           {/* Right Side: Currency Selector, Language Switcher, Cart Icon and Mobile Menu */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 ml-auto">
             <CurrencySelector />
             <LanguageSwitcher />
             <CartIcon />
