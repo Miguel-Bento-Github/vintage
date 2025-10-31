@@ -86,40 +86,40 @@ export default function Footer() {
               <p className="text-xs text-gray-400 mb-3">We Accept</p>
               <div className="flex flex-wrap gap-3 items-center">
                 {/* Credit Cards */}
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/Visa.svg" alt="Visa" fill className="object-contain" />
                 </div>
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/Mastercard.svg" alt="Mastercard" fill className="object-contain" />
                 </div>
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/Amex.svg" alt="Amex" fill className="object-contain" />
                 </div>
 
                 {/* Digital Wallets */}
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/ApplePay.svg" alt="Apple Pay" fill className="object-contain" />
                 </div>
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/GooglePay.svg" alt="Google Pay" fill className="object-contain" />
                 </div>
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/PayPal.svg" alt="PayPal" fill className="object-contain" />
                 </div>
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/AmazonPay.svg" alt="Amazon Pay" fill className="object-contain" />
                 </div>
 
                 {/* European Bank Methods */}
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/Ideal.svg" alt="iDEAL" fill className="object-contain" />
                 </div>
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/Bancontact.svg" alt="Bancontact" fill className="object-contain" />
                 </div>
 
                 {/* Buy Now Pay Later */}
-                <div className="w-[50px] h-[32px] rounded overflow-hidden border border-gray-700/30 shadow-inner relative">
+                <div className="w-[50px] h-[32px] relative">
                   <Image src="/payment-icons/Klarna.svg" alt="Klarna" fill className="object-contain" />
                 </div>
               </div>
