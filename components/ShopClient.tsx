@@ -125,9 +125,13 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   };
 
   const toggleCategory = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
-    );
+    setSelectedCategories((prev) => {
+      const isSelected = prev.some(c => c.toLowerCase() === category.toLowerCase());
+      if (isSelected) {
+        return prev.filter((c) => c.toLowerCase() !== category.toLowerCase());
+      }
+      return [...prev, category];
+    });
   };
 
   const togglePriceRange = (range: PriceRange) => {
@@ -177,11 +181,15 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     }
 
     if (selectedEras.length > 0) {
-      filtered = filtered.filter((p) => selectedEras.includes(p.era));
+      filtered = filtered.filter((p) =>
+        selectedEras.some(era => era.toLowerCase() === p.era.toLowerCase())
+      );
     }
 
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter((p) => selectedCategories.includes(p.category));
+      filtered = filtered.filter((p) =>
+        selectedCategories.some(cat => cat.toLowerCase() === p.category.toLowerCase())
+      );
     }
 
     if (selectedPriceRanges.length > 0) {
@@ -199,7 +207,9 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     }
 
     if (selectedConditions.length > 0) {
-      filtered = filtered.filter((p) => selectedConditions.includes(p.condition));
+      filtered = filtered.filter((p) =>
+        selectedConditions.some(cond => cond.toLowerCase() === p.condition.toLowerCase())
+      );
     }
 
     if (inStockOnly) {
@@ -376,7 +386,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
                 <label key={category} className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={selectedCategories.includes(category)}
+                    checked={selectedCategories.some(c => c.toLowerCase() === category.toLowerCase())}
                     onChange={() => toggleCategory(category)}
                     className="w-4 h-4 text-amber-700 border-gray-300 rounded focus:ring-amber-500"
                   />
