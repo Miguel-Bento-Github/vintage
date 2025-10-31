@@ -227,7 +227,7 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedImage(index);
-                    updateImageInUrl(index);
+                    setTimeout(() => updateImageInUrl(index), 0);
                   }}
                   className={`relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden ${
                     selectedImage === index ? 'ring-2 ring-amber-700' : ''
