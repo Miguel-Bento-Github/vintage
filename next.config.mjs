@@ -6,8 +6,8 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   // Image optimization configuration
   images: {
-    // Use modern image formats for better compression
-    formats: ['image/avif', 'image/webp'],
+    // Use WebP for fast loading (images are pre-converted to WebP on upload)
+    formats: ['image/webp'],
 
     // Device-specific sizes for responsive images
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
@@ -41,6 +41,9 @@ const nextConfig = {
 
     // Minimize layout shift with strict dimensions
     unoptimized: false,
+
+    // Increase cache duration for optimized images (1 year)
+    minimumCacheTTL: 31536000,
   },
 
   // Production optimizations
@@ -59,6 +62,21 @@ const nextConfig = {
     'http://192.168.1.53:5577',
     'http://192.168.1.53:3000',
   ],
+
+  // Add cache headers for better performance
+  async headers() {
+    return [
+      {
+        source: '/_next/image(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
