@@ -18,6 +18,7 @@ import { ProductType } from '@/types';
 import { useLocale } from 'next-intl';
 import { useTranslations } from '@/hooks/useTranslations';
 import Price from '@/components/Price';
+import { isDiscountActive, getEffectivePrice, formatDiscountPercentage } from '@/lib/discount';
 
 type SortOption = 'newest' | 'price-asc' | 'price-desc';
 type PriceRange = 'under-50' | '50-100' | '100-200' | '200-plus';
@@ -644,7 +645,21 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
                         {product.title}
                       </h3>
                       <div className="flex items-center justify-between">
-                        <Price amount={product.price} className="text-xl font-bold text-gray-900" />
+                        <div className="flex items-center gap-2">
+                          {isDiscountActive(product) ? (
+                            <>
+                              <span className="text-gray-500 line-through text-sm">
+                                <Price amount={product.price} />
+                              </span>
+                              <Price amount={getEffectivePrice(product)} className="text-xl font-bold text-red-600" />
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                {formatDiscountPercentage(product.price, getEffectivePrice(product))}
+                              </span>
+                            </>
+                          ) : (
+                            <Price amount={product.price} className="text-xl font-bold text-gray-900" />
+                          )}
+                        </div>
                         {product.size && <p className="text-sm text-gray-500">{product.size.label}</p>}
                       </div>
                     </div>

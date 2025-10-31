@@ -5,6 +5,7 @@ import { useCart } from '@/hooks/useCart';
 import { Era, Category } from '@/types';
 import { trackAddToCart } from '@/services/analyticsService';
 import { useTranslations } from '@/hooks/useTranslations';
+import { getEffectivePrice } from '@/lib/discount';
 
 interface AddToCartButtonProps {
   product: {
@@ -18,6 +19,9 @@ interface AddToCartButtonProps {
     imageUrl: string;
     inStock: boolean;
     weightGrams?: number;
+    discountPrice?: number;
+    discountStartDate?: string;
+    discountEndDate?: string;
   };
 }
 
@@ -33,6 +37,9 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       return; // Already in cart
     }
 
+    // Use effective price (discounted if active, otherwise regular)
+    const effectivePrice = getEffectivePrice(product);
+
     addToCart({
       productId: product.id,
       title: product.title,
@@ -40,14 +47,14 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       era: product.era,
       category: product.category,
       size: product.size,
-      price: product.price,
+      price: effectivePrice, // Use discounted price if active
       imageUrl: product.imageUrl,
       inStock: product.inStock,
       weightGrams: product.weightGrams,
     });
 
-    // Track analytics
-    trackAddToCart(product.id, product.title, product.price, product.brand);
+    // Track analytics with effective price
+    trackAddToCart(product.id, product.title, effectivePrice, product.brand);
 
     setShowAdded(true);
     setTimeout(() => setShowAdded(false), 2000);

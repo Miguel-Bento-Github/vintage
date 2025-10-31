@@ -134,16 +134,22 @@ export interface Product {
   lengthCm?: number;                  // Length in cm (optional for volumetric weight)
   widthCm?: number;                   // Width in cm (optional for volumetric weight)
   heightCm?: number;                  // Height in cm (optional for volumetric weight)
+  // Discount pricing
+  discountPrice?: number;             // Optional discounted price
+  discountStartDate?: Timestamp;      // When discount becomes active
+  discountEndDate?: Timestamp;        // When discount expires
   createdAt: Timestamp;
   updatedAt: Timestamp;
   soldAt?: Timestamp;
 }
 
 // Serialized product for client components (timestamps as ISO strings)
-export interface SerializedProduct extends Omit<Product, 'createdAt' | 'updatedAt' | 'soldAt'> {
+export interface SerializedProduct extends Omit<Product, 'createdAt' | 'updatedAt' | 'soldAt' | 'discountStartDate' | 'discountEndDate'> {
   createdAt: string;
   updatedAt: string;
   soldAt?: string;
+  discountStartDate?: string;
+  discountEndDate?: string;
 }
 
 // Type for creating a new product (without auto-generated fields)

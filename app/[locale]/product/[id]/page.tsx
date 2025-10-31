@@ -14,6 +14,7 @@ import ShippingCalculator from '@/components/ShippingCalculator';
 import { formatMeasurement, isMeasurementField } from '@/lib/measurements';
 import { getTranslatedProduct } from '@/lib/productTranslations';
 import { toLocale } from '@/i18n';
+import { isDiscountActive, getEffectivePrice } from '@/lib/discount';
 
 export const revalidate = 600;
 
@@ -333,7 +334,11 @@ export default async function ProductPage({ params }: PageProps) {
 
               {/* Price and Era */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-6">
-                <ProductPrice amount={translatedProduct.price} className="text-2xl sm:text-3xl font-bold text-gray-900" />
+                <ProductPrice
+                  amount={getEffectivePrice(translatedProduct)}
+                  originalAmount={isDiscountActive(translatedProduct) ? translatedProduct.price : undefined}
+                  className="text-2xl sm:text-3xl font-bold text-gray-900"
+                />
                 <span className="px-4 py-1 bg-amber-700 text-white text-sm font-semibold rounded-full">
                   {translatedProduct.era}
                 </span>
@@ -427,6 +432,9 @@ export default async function ProductPage({ params }: PageProps) {
                     imageUrl: translatedProduct.images[0] || '',
                     inStock: translatedProduct.inStock,
                     weightGrams: translatedProduct.weightGrams,
+                    discountPrice: translatedProduct.discountPrice,
+                    discountStartDate: translatedProduct.discountStartDate,
+                    discountEndDate: translatedProduct.discountEndDate,
                   }}
                 />
               </div>
@@ -576,7 +584,11 @@ export default async function ProductPage({ params }: PageProps) {
                       <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                         {similarProduct.title}
                       </h3>
-                      <ProductPrice amount={similarProduct.price} className="text-xl font-bold text-gray-900" />
+                      <ProductPrice
+                        amount={getEffectivePrice(similarProduct)}
+                        originalAmount={isDiscountActive(similarProduct) ? similarProduct.price : undefined}
+                        className="text-xl font-bold text-gray-900"
+                      />
                     </div>
                   </Link>
                 ))}

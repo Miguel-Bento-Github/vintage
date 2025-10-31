@@ -32,13 +32,17 @@ interface ProductFormData {
   lengthCm: string;
   widthCm: string;
   heightCm: string;
+  // Discount fields
+  discountPrice: string;
+  discountStartDate: string;
+  discountEndDate: string;
 }
 
 // Specification fields based on product type
 const SPECIFICATION_FIELDS: Record<ProductType, string[]> = {
   'Clothing': ['chest', 'waist', 'hips', 'length', 'shoulders', 'sleeves'],
-  'Furniture': ['height', 'width', 'depth', 'weight'],
-  'Jewelry': ['material', 'stone', 'size', 'weight'],
+  'Furniture': ['height', 'width', 'depth'],
+  'Jewelry': ['material', 'stone', 'size'],
   'Vinyl Records': ['format', 'rpm', 'label', 'year'],
   'Electronics': ['model', 'year', 'condition', 'working'],
   'Books': ['author', 'publisher', 'year', 'isbn'],
@@ -82,6 +86,9 @@ export default function EditProductPage() {
     lengthCm: '',
     widthCm: '',
     heightCm: '',
+    discountPrice: '',
+    discountStartDate: '',
+    discountEndDate: '',
   });
   const [translations, setTranslations] = useState<ProductTranslations>({});
 
@@ -124,6 +131,9 @@ export default function EditProductPage() {
         lengthCm: product.lengthCm?.toString() || '',
         widthCm: product.widthCm?.toString() || '',
         heightCm: product.heightCm?.toString() || '',
+        discountPrice: product.discountPrice?.toString() || '',
+        discountStartDate: product.discountStartDate ? new Date(product.discountStartDate).toISOString().slice(0, 16) : '',
+        discountEndDate: product.discountEndDate ? new Date(product.discountEndDate).toISOString().slice(0, 16) : '',
       });
 
       setTranslations(product.translations || {});
@@ -409,6 +419,10 @@ export default function EditProductPage() {
         ...(formData.lengthCm && { lengthCm: parseFloat(formData.lengthCm) }),
         ...(formData.widthCm && { widthCm: parseFloat(formData.widthCm) }),
         ...(formData.heightCm && { heightCm: parseFloat(formData.heightCm) }),
+        // Include discount if provided
+        ...(formData.discountPrice && { discountPrice: parseFloat(formData.discountPrice) }),
+        ...(formData.discountStartDate && { discountStartDate: new Date(formData.discountStartDate) }),
+        ...(formData.discountEndDate && { discountEndDate: new Date(formData.discountEndDate) }),
         // Include translations if any exist
         ...(Object.keys(translations).length > 0 && { translations }),
       };
@@ -893,6 +907,96 @@ export default function EditProductPage() {
                 />
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Discount Pricing */}
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
+            Discount Pricing (Optional)
+          </h2>
+          <p className="text-sm text-gray-600 mb-4">
+            Set a discounted price with optional start and end dates for sales or promotions.
+          </p>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label
+                  htmlFor="discountPrice"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Discount Price (€)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  id="discountPrice"
+                  name="discountPrice"
+                  value={formData.discountPrice}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., 79.99"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Must be lower than regular price (€{formData.price || '0.00'})
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="discountStartDate"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  Start Date
+                </label>
+                <input
+                  type="datetime-local"
+                  id="discountStartDate"
+                  name="discountStartDate"
+                  value={formData.discountStartDate}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  When discount becomes active
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="discountEndDate"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
+                  End Date
+                </label>
+                <input
+                  type="datetime-local"
+                  id="discountEndDate"
+                  name="discountEndDate"
+                  value={formData.discountEndDate}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  When discount expires
+                </p>
+              </div>
+            </div>
+
+            {/* Discount Preview */}
+            {formData.discountPrice && parseFloat(formData.discountPrice) > 0 && parseFloat(formData.discountPrice) < parseFloat(formData.price || '0') && (
+              <div className="bg-green-50 border border-green-200 rounded-md p-3">
+                <p className="text-sm font-medium text-green-900">
+                  Discount Preview:
+                  <span className="ml-2 line-through text-gray-500">€{parseFloat(formData.price || '0').toFixed(2)}</span>
+                  <span className="ml-2 text-green-700 font-bold">€{parseFloat(formData.discountPrice).toFixed(2)}</span>
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    -{Math.round(((parseFloat(formData.price || '0') - parseFloat(formData.discountPrice)) / parseFloat(formData.price || '1')) * 100)}%
+                  </span>
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
