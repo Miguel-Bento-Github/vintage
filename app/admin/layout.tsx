@@ -129,6 +129,42 @@ export default function AdminLayout({
                 {/* Navigation */}
                 <nav className="flex-1 mt-6">
                   <Link
+                    href="/en"
+                    onClick={() => setSidebarOpen(false)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  >
+                    <svg
+                      className="h-5 w-5 mr-3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span>View Store</span>
+                    <svg
+                      className="h-4 w-4 ml-auto"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </Link>
+
+                  <div className="px-6 py-2">
+                    <div className="border-t border-gray-200"></div>
+                  </div>
+
+                  <Link
                     href="/admin"
                     onClick={() => setSidebarOpen(false)}
                     className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
@@ -142,7 +178,7 @@ export default function AdminLayout({
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     Dashboard
                   </Link>
