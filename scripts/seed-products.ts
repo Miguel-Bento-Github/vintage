@@ -64,6 +64,7 @@ const sampleProducts = [
     category: 'Coat',
     sizeLabel: 'L',
     condition: 'Excellent',
+    weightGrams: 1800,
     specifications: {
       chest: 44,
       shoulders: 19,
@@ -87,6 +88,7 @@ const sampleProducts = [
     category: 'Jacket',
     sizeLabel: 'M',
     condition: 'Good',
+    weightGrams: 650,
     specifications: {
       chest: 40,
       shoulders: 17,
@@ -110,6 +112,7 @@ const sampleProducts = [
     category: 'Shirt',
     sizeLabel: 'M',
     condition: 'Excellent',
+    weightGrams: 450,
     specifications: {
       chest: 40,
       shoulders: 18,
@@ -136,6 +139,7 @@ const sampleProducts = [
     category: 'Cabinet',
     sizeLabel: 'N/A',
     condition: 'Excellent',
+    weightGrams: 45000,
     specifications: {
       width: 200,
       depth: 45,
@@ -160,6 +164,7 @@ const sampleProducts = [
     category: 'Chair',
     sizeLabel: 'Standard',
     condition: 'Excellent',
+    weightGrams: 38000,
     specifications: {
       width: 83,
       depth: 85,
@@ -237,6 +242,7 @@ const sampleProducts = [
     category: 'Ring',
     sizeLabel: '6.5',
     condition: 'Excellent',
+    weightGrams: 3,
     specifications: {
       material: 'Platinum',
       stone: 'Diamond',
@@ -262,6 +268,7 @@ const sampleProducts = [
     category: 'Bracelet',
     sizeLabel: 'One Size',
     condition: 'Excellent',
+    weightGrams: 42,
     specifications: {
       material: 'Sterling Silver',
       stone: 'Turquoise',
@@ -287,6 +294,7 @@ const sampleProducts = [
     category: 'Audio',
     sizeLabel: 'N/A',
     condition: 'Excellent',
+    weightGrams: 580,
     specifications: {
       model: 'WM-D6C',
       year: '1991',
@@ -311,6 +319,7 @@ const sampleProducts = [
     category: 'Computer',
     sizeLabel: 'N/A',
     condition: 'Good',
+    weightGrams: 15800,
     specifications: {
       model: 'iMac G3',
       year: '1998',
@@ -338,6 +347,7 @@ const sampleProducts = [
     category: 'Reference',
     sizeLabel: 'N/A',
     condition: 'Good',
+    weightGrams: 900,
     specifications: {
       publisher: 'Portola Institute',
       year: '1971',
@@ -364,6 +374,7 @@ const sampleProducts = [
     category: 'Painting',
     sizeLabel: '48" x 36"',
     condition: 'Excellent',
+    weightGrams: 4500,
     specifications: {
       artist: 'Robert Hansen',
       medium: 'Oil on Canvas',
@@ -391,6 +402,7 @@ const sampleProducts = [
     category: 'Toy',
     sizeLabel: '3.75"',
     condition: 'Good',
+    weightGrams: 350,
     specifications: {
       manufacturer: 'Kenner',
       year: '1977',
