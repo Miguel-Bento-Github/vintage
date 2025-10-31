@@ -5,7 +5,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { SerializedProduct } from '@/types';
-import { ERAS, CATEGORIES_BY_TYPE, CONDITIONS, PRODUCT_TYPES } from '@/lib/constants';
+import {
+  ERAS,
+  CATEGORIES_BY_TYPE,
+  CONDITIONS,
+  PRODUCT_TYPES,
+  Era,
+  Condition,
+  Category,
+} from '@/lib/constants';
 import { ProductType } from '@/types';
 import { useLocale } from 'next-intl';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -35,19 +43,15 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   const t = useTranslations('shop');
   const tCommon = useTranslations('common');
 
-  const normalizeValue = (value: string) => {
-    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-  };
-
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [selectedProductTypes, setSelectedProductTypes] = useState<ProductType[]>(
     (searchParams.get('productType')?.split(',').filter(Boolean) as ProductType[]) || []
   );
-  const [selectedEras, setSelectedEras] = useState<string[]>(
-    searchParams.get('era')?.split(',').filter(Boolean).map(normalizeValue) || []
+  const [selectedEras, setSelectedEras] = useState<Era[]>(
+    (searchParams.get('era')?.split(',').filter(Boolean) as Era[]) || []
   );
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    searchParams.get('category')?.split(',').filter(Boolean).map(normalizeValue) || []
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>(
+    (searchParams.get('category')?.split(',').filter(Boolean) as Category[]) || []
   );
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<PriceRange[]>(
     (searchParams.get('price')?.split(',').filter(Boolean) || []) as PriceRange[]
@@ -55,8 +59,8 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   const [selectedSizes, setSelectedSizes] = useState<string[]>(
     searchParams.get('size')?.split(',').filter(Boolean).map((s) => s.toUpperCase()) || []
   );
-  const [selectedConditions, setSelectedConditions] = useState<string[]>(
-    searchParams.get('condition')?.split(',').filter(Boolean).map(normalizeValue) || []
+  const [selectedConditions, setSelectedConditions] = useState<Condition[]>(
+    (searchParams.get('condition')?.split(',').filter(Boolean) as Condition[]) || []
   );
   const [inStockOnly, setInStockOnly] = useState(searchParams.get('inStock') === 'true');
   const [sortBy, setSortBy] = useState<SortOption>(
@@ -118,20 +122,16 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     setSelectedCategories([]);
   };
 
-  const toggleEra = (era: string) => {
+  const toggleEra = (era: Era) => {
     setSelectedEras((prev) =>
       prev.includes(era) ? prev.filter((e) => e !== era) : [...prev, era]
     );
   };
 
-  const toggleCategory = (category: string) => {
-    setSelectedCategories((prev) => {
-      const isSelected = prev.some(c => c.toLowerCase() === category.toLowerCase());
-      if (isSelected) {
-        return prev.filter((c) => c.toLowerCase() !== category.toLowerCase());
-      }
-      return [...prev, category];
-    });
+  const toggleCategory = (category: Category) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
+    );
   };
 
   const togglePriceRange = (range: PriceRange) => {
@@ -146,7 +146,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     );
   };
 
-  const toggleCondition = (condition: string) => {
+  const toggleCondition = (condition: Condition) => {
     setSelectedConditions((prev) =>
       prev.includes(condition) ? prev.filter((c) => c !== condition) : [...prev, condition]
     );
@@ -181,12 +181,14 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
     }
 
     if (selectedEras.length > 0) {
+      // Case-insensitive comparison for backward compatibility with existing data
       filtered = filtered.filter((p) =>
         selectedEras.some(era => era.toLowerCase() === p.era.toLowerCase())
       );
     }
 
     if (selectedCategories.length > 0) {
+      // Case-insensitive comparison for backward compatibility with existing data
       filtered = filtered.filter((p) =>
         selectedCategories.some(cat => cat.toLowerCase() === p.category.toLowerCase())
       );
@@ -387,7 +389,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
                   <input
                     type="checkbox"
                     checked={selectedCategories.some(c => c.toLowerCase() === category.toLowerCase())}
-                    onChange={() => toggleCategory(category)}
+                    onChange={() => toggleCategory(category as Category)}
                     className="w-4 h-4 text-amber-700 border-gray-300 rounded focus:ring-amber-500"
                   />
                   <span className="text-sm text-gray-700">{category}</span>
