@@ -1,29 +1,29 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { cache } from 'react';
-import { collection, getDocs, query, where, limit } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { SerializedProduct, timestampToISO } from '@/types';
-import { getTranslations } from 'next-intl/server';
-import ProductPrice from '@/components/ProductPrice';
+import Image from "next/image";
+import Link from "next/link";
+import { cache } from "react";
+import { collection, getDocs, query, where, limit } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { SerializedProduct, timestampToISO } from "@/types";
+import { getTranslations } from "next-intl/server";
+import ProductPrice from "@/components/ProductPrice";
 
 // Generate static pages for all locales at build time
 export function generateStaticParams() {
   return [
-    { locale: 'en' },
-    { locale: 'es' },
-    { locale: 'fr' },
-    { locale: 'nl' },
-    { locale: 'pt' },
+    { locale: "en" },
+    { locale: "es" },
+    { locale: "fr" },
+    { locale: "nl" },
+    { locale: "pt" },
   ];
 }
 
 const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
-  const productsRef = collection(db, 'products');
+  const productsRef = collection(db, "products");
   const q = query(
     productsRef,
-    where('featured', '==', true),
-    where('inStock', '==', true),
+    where("featured", "==", true),
+    where("inStock", "==", true),
     limit(8)
   );
 
@@ -33,7 +33,7 @@ const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
     const data = doc.data();
     return {
       id: doc.id,
-      productType: data.productType || 'Clothing', // Default to Clothing for existing products
+      productType: data.productType || "Clothing", // Default to Clothing for existing products
       title: data.title,
       description: data.description,
       brand: data.brand,
@@ -48,8 +48,8 @@ const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
       featured: data.featured,
       tags: data.tags,
       specifications: data.specifications,
-      createdAt: timestampToISO(data.createdAt) || '',
-      updatedAt: timestampToISO(data.updatedAt) || '',
+      createdAt: timestampToISO(data.createdAt) || "",
+      updatedAt: timestampToISO(data.updatedAt) || "",
       soldAt: data.soldAt ? timestampToISO(data.soldAt) : undefined,
     };
   });
@@ -58,15 +58,24 @@ const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
 });
 
 const CATEGORY_IMAGES: Record<string, string> = {
-  Jacket: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=600&fit=crop',
-  Dress: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=600&fit=crop',
-  LP: 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=800&h=600&fit=crop',
-  Chair: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop',
-  Necklace: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=800&h=600&fit=crop',
-  Accessories: 'https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&h=600&fit=crop',
+  Jacket:
+    "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=600&fit=crop",
+  Dress:
+    "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=600&fit=crop",
+  LP: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=800&h=600&fit=crop",
+  Chair:
+    "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&h=600&fit=crop",
+  Necklace:
+    "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=800&h=600&fit=crop",
+  Accessories:
+    "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&h=600&fit=crop",
 };
 
-export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
   const { locale } = await params;
   const featuredProducts = await getFeaturedProducts();
   const t = await getTranslations();
@@ -74,20 +83,30 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-amber-50 to-orange-50 py-20 sm:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-br from-amber-50 to-orange-50 py-20 sm:py-32 overflow-hidden">
+        {/* Vintage flowers pattern background */}
+        <div
+          className="absolute inset-0 opacity-100"
+          style={{
+            backgroundImage: `url('/patterns/flowers.png')`,
+            backgroundRepeat: 'repeat',
+          }}
+        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 tracking-tight mb-6">
-              {t('homepage.hero.title')}
+              {t("homepage.hero.title")}
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto mb-8">
-              {t('homepage.hero.subtitle')}
+              {t("homepage.hero.subtitle")}
             </p>
             <Link
               href={`/${locale}/shop`}
               className="inline-flex items-center justify-center px-16 py-8 bg-gradient-to-b from-amber-600 to-amber-800 text-white rounded-[50%] font-extrabold text-lg border-4 border-amber-900 shadow-[0_4px_0_0_rgba(120,53,15,0.4),inset_0_2px_0_0_rgba(255,255,255,0.2)] hover:shadow-[0_2px_0_0_rgba(120,53,15,0.4),inset_0_2px_0_0_rgba(255,255,255,0.2)] hover:translate-y-[2px] transition-all duration-150 relative overflow-hidden"
             >
-              <span className="relative z-10">{t('homepage.hero.shopNow')}</span>
+              <span className="relative z-10">
+                {t("homepage.hero.shopNow")}
+              </span>
               <span className="absolute inset-0 rounded-[50%] border-2 border-white/20 pointer-events-none"></span>
             </Link>
           </div>
@@ -95,14 +114,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              {t('homepage.featured.title')}
+              {t("homepage.featured.title")}
             </h2>
             <p className="text-gray-600 text-lg">
-              {t('homepage.categories.description')}
+              {t("homepage.categories.description")}
             </p>
           </div>
 
@@ -131,19 +150,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                     <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                       {product.title}
                     </h3>
-                    <ProductPrice amount={product.price} className="text-xl font-bold text-gray-900" />
+                    <ProductPrice
+                      amount={product.price}
+                      className="text-xl font-bold text-gray-900"
+                    />
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
             <div className="text-center py-12 text-gray-500">
-              <p>{t('shop.noProducts')}</p>
+              <p>{t("shop.noProducts")}</p>
               <Link
                 href={`/${locale}/shop`}
                 className="text-amber-700 hover:text-amber-800 font-semibold mt-2 inline-block"
               >
-                {t('homepage.featured.viewAll')} →
+                {t("homepage.featured.viewAll")} →
               </Link>
             </div>
           )}
@@ -151,14 +173,14 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              {t('homepage.categories.title')}
+              {t("homepage.categories.title")}
             </h2>
             <p className="text-gray-600 text-lg">
-              {t('homepage.categories.description')}
+              {t("homepage.categories.description")}
             </p>
           </div>
 
@@ -188,7 +210,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </div>
       </section>
-
     </div>
   );
 }

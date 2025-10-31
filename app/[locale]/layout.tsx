@@ -194,7 +194,7 @@ export default async function LocaleLayout({
           <QueryProvider>
             <CurrencyProvider>
               <CartProvider>
-                <div className="flex flex-col min-h-screen">
+                <div className="flex flex-col min-h-screen relative z-10">
                   <Header />
                   <main className="flex-grow">
                     {children}
