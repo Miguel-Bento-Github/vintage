@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
     const amount = getStripeAmount(total, currency);
 
     // Create payment intent
-    // Store all order data in metadata so we can create the order later
+    // Store essential order data in metadata (Stripe has 500 char limit per value)
+    // Full item details will be stored when creating the order
     // Note: Tax is $0.00 for second-hand goods - see /docs/tax-policy.md
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
@@ -75,8 +76,9 @@ export async function POST(request: NextRequest) {
         enabled: true,
       },
       metadata: {
-        // Store full item details for order creation
-        items: JSON.stringify(items),
+        // Store only product IDs (full details fetched from DB when creating order)
+        productIds: items.map(item => item.productId).join(','),
+        itemCount: items.length.toString(),
         subtotal: subtotal.toFixed(2),
         shipping: shipping.toFixed(2),
         tax: '0.00', // Second-hand goods tax-exempt
