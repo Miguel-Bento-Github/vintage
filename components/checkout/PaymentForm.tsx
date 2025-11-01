@@ -6,6 +6,7 @@ import { CartItem, CustomerInfo, OrderItem } from '@/types';
 import { CheckoutFormData } from '@/types/checkout';
 import { useTranslations } from '@/hooks/useTranslations';
 import VintageButton from '@/components/VintageButton';
+import { trackPurchase } from '@/services/analyticsService';
 
 interface PaymentFormProps {
   items: CartItem[];
@@ -132,7 +133,15 @@ export default function PaymentForm({
           // Still redirect to success page with payment intent ID
         }
 
-        const { orderId } = await response.json();
+        const { orderId, orderNumber } = await response.json();
+
+        // Track purchase analytics
+        trackPurchase(
+          orderId || paymentIntent.id,
+          orderNumber || orderId || paymentIntent.id,
+          finalTotal,
+          orderItems
+        );
 
         // Navigate to order confirmation - cart will be cleared there
         router.push(`/${locale}/order-confirmation/${orderId || paymentIntent.id}`);

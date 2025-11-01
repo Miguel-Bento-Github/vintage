@@ -1,5 +1,6 @@
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { track } from '@vercel/analytics';
 
 export interface AnalyticsEvent {
   event: 'page_view' | 'product_view' | 'add_to_cart' | 'purchase' | 'search';
@@ -74,6 +75,7 @@ export function trackAddToCart(
   price: number,
   brand?: string
 ): void {
+  // Track to Firestore
   trackEvent({
     event: 'add_to_cart',
     properties: {
@@ -83,6 +85,17 @@ export function trackAddToCart(
       brand,
     },
   });
+
+  // Track to Vercel Analytics
+  const trackData: Record<string, string | number> = {
+    productId,
+    productName,
+    price,
+  };
+  if (brand) {
+    trackData.brand = brand;
+  }
+  track('Add to Cart', trackData);
 }
 
 /**
@@ -94,6 +107,7 @@ export function trackPurchase(
   total: number,
   items: Array<{ productId: string; title: string; price: number }>
 ): void {
+  // Track to Firestore
   trackEvent({
     event: 'purchase',
     properties: {
@@ -103,6 +117,14 @@ export function trackPurchase(
       itemCount: items.length,
       items,
     },
+  });
+
+  // Track to Vercel Analytics
+  track('Purchase', {
+    orderId,
+    orderNumber,
+    total,
+    itemCount: items.length,
   });
 }
 
@@ -130,7 +152,7 @@ function getSessionId(): string {
   let sessionId = sessionStorage.getItem(SESSION_KEY);
 
   if (!sessionId) {
-    sessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    sessionId = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
     sessionStorage.setItem(SESSION_KEY, sessionId);
   }
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: "Dream Azul - Vintage Clothing, Furniture & Collectibles Online Shop | Utrecht, Netherlands",
@@ -71,6 +72,7 @@ export default function RootLayout({
     <>
       {children}
       <SpeedInsights />
+      <Analytics />
     </>
   );
 }
