@@ -53,7 +53,7 @@ export default function MobileMenu() {
                 >
                   <Dialog.Panel className="pointer-events-auto w-64">
                     {/* Vintage-styled compact menu */}
-                    <div className="relative bg-amber-50 rounded-t-lg shadow-2xl border-4 border-double border-amber-800/30">
+                    <div className="relative bg-amber-50/80 backdrop-blur-sm rounded-t-lg shadow-2xl border-4 border-double border-amber-800/30">
                       {/* Decorative corner elements */}
                       <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-amber-800/40"></div>
                       <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-amber-800/40"></div>
