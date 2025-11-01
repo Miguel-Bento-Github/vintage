@@ -81,7 +81,12 @@ export default function AdminLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <QueryProvider>
-          <div className="flex h-screen bg-gray-100">
+          <div className="flex h-screen relative" style={{
+            backgroundImage: `url('/patterns/flowers.png')`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '200px 200px',
+            opacity: 0.97,
+          }}>
             {/* Mobile overlay */}
             {sidebarOpen && (
               <div

@@ -57,6 +57,18 @@ interface ExistingImage {
   markedForDeletion: boolean;
 }
 
+const sections = [
+  { id: 'basic-info', label: 'Basic Information' },
+  { id: 'content', label: 'Product Content' },
+  { id: 'specifications', label: 'Specifications' },
+  { id: 'pricing', label: 'Condition & Pricing' },
+  { id: 'discount', label: 'Discount Pricing' },
+  { id: 'shipping', label: 'Shipping Information' },
+  { id: 'images', label: 'Images' },
+  { id: 'tags', label: 'Tags & Options' },
+  { id: 'actions', label: 'Form Actions' },
+];
+
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
@@ -105,11 +117,17 @@ export default function EditProductPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Track initial state for change detection
+  const [initialFormData, setInitialFormData] = useState<ProductFormData | null>(null);
+  const [initialTranslations, setInitialTranslations] = useState<ProductTranslations>({});
+  const [initialImages, setInitialImages] = useState<ExistingImage[]>([]);
 
   // Populate form when product loads
   useEffect(() => {
     if (product) {
-      setFormData({
+      const initialData = {
         productType: product.productType,
         title: product.title,
         description: product.description,
@@ -135,13 +153,19 @@ export default function EditProductPage() {
         discountPrice: product.discountPrice?.toString() || '',
         discountStartDate: product.discountStartDate ? product.discountStartDate.toDate().toISOString().slice(0, 16) : '',
         discountEndDate: product.discountEndDate ? product.discountEndDate.toDate().toISOString().slice(0, 16) : '',
-      });
+      };
 
-      setTranslations(product.translations || {});
+      const initialTrans = product.translations || {};
+      const initialImgs = product.images.map((url) => ({ url, markedForDeletion: false }));
 
-      setExistingImages(
-        product.images.map((url) => ({ url, markedForDeletion: false }))
-      );
+      setFormData(initialData);
+      setInitialFormData(initialData);
+
+      setTranslations(initialTrans);
+      setInitialTranslations(initialTrans);
+
+      setExistingImages(initialImgs);
+      setInitialImages(initialImgs);
     }
   }, [product]);
 
@@ -457,10 +481,15 @@ export default function EditProductPage() {
       setNewImages([]);
       setNewImagePreviews([]);
 
-      // Redirect after success
+      // Update initial state to reflect saved changes
+      setInitialFormData(formData);
+      setInitialTranslations(translations);
+      setInitialImages(existingImages.filter(img => !img.markedForDeletion));
+
+      // Hide success message after 3 seconds
       setTimeout(() => {
-        router.push('/admin/products');
-      }, 2000);
+        setSuccess(false);
+      }, 3000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update product');
     } finally {
@@ -583,6 +612,105 @@ export default function EditProductPage() {
     };
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Check if a section is complete
+  const isSectionComplete = (sectionId: string): boolean => {
+    switch (sectionId) {
+      case 'basic-info':
+        return !!(formData.productType && formData.brand && formData.era && formData.category);
+      case 'content':
+        return !!(formData.title.trim() && formData.description.trim());
+      case 'specifications':
+        // Specifications are optional, so always complete
+        return true;
+      case 'pricing':
+        return !!(formData.condition && formData.price && parseFloat(formData.price) > 0);
+      case 'discount':
+        // Discount is optional, so always complete
+        return true;
+      case 'shipping':
+        // Shipping is optional but recommended - consider complete if weight is filled
+        return !!formData.weightGrams;
+      case 'images':
+        const hasImages = existingImages.filter(img => !img.markedForDeletion).length + newImages.length > 0;
+        return hasImages;
+      case 'tags':
+        // Tags are optional, so always complete
+        return true;
+      case 'actions':
+        // Actions section is always available
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  // Check if a section has unsaved changes
+  const hasSectionChanges = (sectionId: string): boolean => {
+    if (!initialFormData) return false;
+
+    switch (sectionId) {
+      case 'basic-info':
+        return (
+          formData.productType !== initialFormData.productType ||
+          formData.brand !== initialFormData.brand ||
+          formData.era !== initialFormData.era ||
+          formData.category !== initialFormData.category ||
+          formData.sizeLabel !== initialFormData.sizeLabel
+        );
+      case 'content':
+        return (
+          formData.title !== initialFormData.title ||
+          formData.description !== initialFormData.description ||
+          formData.conditionNotes !== initialFormData.conditionNotes ||
+          JSON.stringify(translations) !== JSON.stringify(initialTranslations)
+        );
+      case 'specifications':
+        return JSON.stringify(formData.specifications) !== JSON.stringify(initialFormData.specifications);
+      case 'pricing':
+        return (
+          formData.condition !== initialFormData.condition ||
+          formData.price !== initialFormData.price
+        );
+      case 'discount':
+        return (
+          formData.discountPrice !== initialFormData.discountPrice ||
+          formData.discountStartDate !== initialFormData.discountStartDate ||
+          formData.discountEndDate !== initialFormData.discountEndDate
+        );
+      case 'shipping':
+        return (
+          formData.weightGrams !== initialFormData.weightGrams ||
+          formData.lengthCm !== initialFormData.lengthCm ||
+          formData.widthCm !== initialFormData.widthCm ||
+          formData.heightCm !== initialFormData.heightCm
+        );
+      case 'images':
+        const imagesChanged = JSON.stringify(existingImages) !== JSON.stringify(initialImages);
+        const hasNewImages = newImages.length > 0;
+        return imagesChanged || hasNewImages;
+      case 'tags':
+        return (
+          formData.tags !== initialFormData.tags ||
+          formData.featured !== initialFormData.featured ||
+          formData.inStock !== initialFormData.inStock
+        );
+      default:
+        return false;
+    }
+  };
+
+  // Check if there are any unsaved changes across all sections
+  const hasAnyChanges = (): boolean => {
+    return sections.some((section) => hasSectionChanges(section.id));
+  };
+
   // Loading state
   if (isLoading) {
     return (
@@ -616,7 +744,8 @@ export default function EditProductPage() {
   }
 
   return (
-    <div className="max-w-4xl px-4 sm:px-6">
+    <div className="flex max-w-full px-4 sm:px-6">
+      <div className={`max-w-4xl w-full ${isSidebarOpen ? 'mr-64' : ''}`}>
       {/* Header with breadcrumb */}
       <div className="mb-6 sm:mb-8">
         <nav className="text-xs sm:text-sm text-gray-500 mb-2">
@@ -672,11 +801,23 @@ export default function EditProductPage() {
 
           {success && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md shadow-lg">
-              <div className="flex items-start">
-                <svg className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span>Product updated successfully! Redirecting to products page...</span>
+              <div className="flex items-start justify-between">
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Product updated successfully!</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSuccess(false)}
+                  className="text-green-700 hover:text-green-900 ml-4"
+                  aria-label="Dismiss"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
               </div>
             </div>
           )}
@@ -685,7 +826,7 @@ export default function EditProductPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
         {/* Basic Information */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="basic-info" className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Basic Information
           </h2>
@@ -803,9 +944,10 @@ export default function EditProductPage() {
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Product Content (multilingual) */}
+        <section id="content">
         <UnifiedProductContentEditor
           baseTitle={formData.title}
           baseDescription={formData.description}
@@ -816,10 +958,11 @@ export default function EditProductPage() {
           translations={translations}
           onTranslationsChange={setTranslations}
         />
+        </section>
 
         {/* Specifications */}
         {formData.productType && SPECIFICATION_FIELDS[formData.productType].length > 0 && (
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <section id="specifications" className="bg-white rounded-lg shadow p-4 sm:p-6">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
               Specifications (Optional)
             </h2>
@@ -853,11 +996,11 @@ export default function EditProductPage() {
                 );
               })}
             </div>
-          </div>
+          </section>
         )}
 
         {/* Condition & Pricing */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="pricing" className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Condition & Pricing
           </h2>
@@ -909,10 +1052,10 @@ export default function EditProductPage() {
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Discount Pricing */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="discount" className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Discount Pricing (Optional)
           </h2>
@@ -999,10 +1142,10 @@ export default function EditProductPage() {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
         {/* Shipping Information */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="shipping" className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Shipping Information
           </h2>
@@ -1092,10 +1235,10 @@ export default function EditProductPage() {
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Images */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="images" className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Images <span className="text-red-500">*</span>
           </h2>
@@ -1256,10 +1399,10 @@ export default function EditProductPage() {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
         {/* Tags & Options */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="tags" className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Tags & Options
           </h2>
@@ -1319,12 +1462,12 @@ export default function EditProductPage() {
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Form Actions */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="actions" className="bg-white rounded-lg shadow p-4 sm:p-6">
           <div className="space-y-4">
-            {/* Primary Actions */}
+            {/* Quick Actions */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <button
                 type="button"
@@ -1347,51 +1490,17 @@ export default function EditProductPage() {
                 Preview
               </button>
 
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button
-                  type="button"
-                  onClick={() => router.push('/admin/products')}
-                  disabled={isSubmitting}
-                  className="w-full sm:w-auto px-6 py-2.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting || updateProductMutation.isPending}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  {isSubmitting || updateProductMutation.isPending ? (
-                    <>
-                      <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      Saving...
-                    </>
-                  ) : (
-                    'Save Changes'
-                  )}
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => router.push('/admin/products')}
+                disabled={isSubmitting}
+                className="w-full sm:w-auto px-6 py-2.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Back to Products
+              </button>
             </div>
 
-            {/* Secondary Actions */}
+            {/* Additional Actions */}
             <div className="border-t border-gray-200 pt-4">
               <h3 className="text-sm font-medium text-gray-700 mb-3">
                 Additional Actions
@@ -1426,7 +1535,7 @@ export default function EditProductPage() {
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </form>
 
       {/* Delete Confirmation Modal */}
@@ -1441,6 +1550,7 @@ export default function EditProductPage() {
             </p>
             <div className="flex items-center justify-end space-x-3">
               <button
+                type="button"
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={deleteProductMutation.isPending}
                 className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50"
@@ -1448,6 +1558,7 @@ export default function EditProductPage() {
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleDelete}
                 disabled={deleteProductMutation.isPending}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 flex items-center"
@@ -1497,6 +1608,7 @@ export default function EditProductPage() {
             </p>
             <div className="flex items-center justify-end space-x-3">
               <button
+                type="button"
                 onClick={() => setShowDuplicateConfirm(false)}
                 disabled={isSubmitting}
                 className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50"
@@ -1504,6 +1616,7 @@ export default function EditProductPage() {
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleDuplicate}
                 disabled={isSubmitting}
                 className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 flex items-center"
@@ -1546,6 +1659,172 @@ export default function EditProductPage() {
           product={getPreviewProduct()}
           onClose={() => setShowPreview(false)}
         />
+      )}
+      </div>
+
+      {/* Collapsible Right Sidebar */}
+      <aside
+        className={`fixed right-0 top-16 h-[calc(100vh-4rem)] bg-white border-l border-gray-200 shadow-lg transition-transform duration-300 ${
+          isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
+        } w-64 z-40`}
+      >
+        <div className="flex flex-col h-full">
+          {/* Sidebar Header */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900">Page Index</h3>
+              <button
+                type="button"
+                onClick={() => setIsSidebarOpen(false)}
+                className="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-100"
+                aria-label="Close sidebar"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Sidebar Links */}
+          <nav className="flex-1 p-4 overflow-y-auto">
+            <ul className="space-y-2">
+              {sections.map((section) => {
+                const isComplete = isSectionComplete(section.id);
+                const hasChanges = hasSectionChanges(section.id);
+
+                return (
+                  <li key={section.id}>
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection(section.id)}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors flex items-center justify-between group"
+                    >
+                      <span>{section.label}</span>
+                      <div className="flex items-center gap-1">
+                        {hasChanges && (
+                          <svg
+                            className="h-4 w-4 text-amber-500"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            title="Unsaved changes"
+                          >
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        {isComplete && !hasChanges && (
+                          <svg
+                            className="h-4 w-4 text-green-500"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            title="Complete"
+                          >
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          {/* Sidebar Footer with Save Button */}
+          <div className="p-4 border-t border-gray-200 bg-gray-50">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                const form = document.querySelector('form');
+                if (form) {
+                  form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                }
+              }}
+              disabled={isSubmitting || updateProductMutation.isPending || !hasAnyChanges()}
+              className="w-full px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-semibold shadow-sm"
+            >
+              {isSubmitting || updateProductMutation.isPending ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="h-5 w-5 mr-2"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path d="M5 13l4 4L19 7" />
+                  </svg>
+                  Save Changes
+                </>
+              )}
+            </button>
+            {hasAnyChanges() ? (
+              <p className="text-xs text-amber-600 mt-2 text-center">
+                You have unsaved changes
+              </p>
+            ) : (
+              <p className="text-xs text-gray-500 mt-2 text-center">
+                No unsaved changes
+              </p>
+            )}
+          </div>
+        </div>
+      </aside>
+
+      {/* Toggle Button (visible when sidebar is closed) */}
+      {!isSidebarOpen && (
+        <button
+          type="button"
+          onClick={() => setIsSidebarOpen(true)}
+          className="fixed right-4 top-20 bg-white border border-gray-200 shadow-lg rounded-lg p-2 hover:bg-gray-50 z-40"
+          aria-label="Open sidebar"
+        >
+          <svg
+            className="h-6 w-6 text-gray-700"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       )}
     </div>
   );
