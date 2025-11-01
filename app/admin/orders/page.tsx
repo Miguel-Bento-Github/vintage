@@ -350,7 +350,12 @@ export default function OrderManagementPage() {
       {/* Order Details Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border-4 border-double border-amber-800/30">
+            {/* Decorative corner elements */}
+            <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-amber-800/40"></div>
+            <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-amber-800/40"></div>
+            <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-amber-800/40"></div>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-amber-800/40"></div>
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">
                 Order Details - {selectedOrder.orderNumber}
