@@ -1664,23 +1664,25 @@ export default function EditProductPage() {
 
       {/* Collapsible Right Sidebar */}
       <aside
-        className={`fixed right-0 top-16 h-[calc(100vh-4rem)] bg-white border-l border-gray-200 shadow-lg transition-transform duration-300 ${
+        className={`fixed right-0 top-0 h-screen bg-amber-50/80 backdrop-blur-sm border-l-4 border-double border-amber-800/30 shadow-sm transition-transform duration-300 ${
           isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
         } w-64 z-40`}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900">Page Index</h3>
-              <button
-                type="button"
-                onClick={() => setIsSidebarOpen(false)}
-                className="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-100"
-                aria-label="Close sidebar"
-              >
+          <div className="p-6 flex items-start justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Page Index</h2>
+            </div>
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(false)}
+              className="text-gray-500 hover:text-gray-700"
+              aria-label="Close sidebar"
+            >
                 <svg
-                  className="h-5 w-5"
+                  className="h-6 w-6"
                   fill="none"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -1688,15 +1690,14 @@ export default function EditProductPage() {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path d="M6 18L18 6M6 6l12 12" />
+                  <path d="M9 5l7 7-7 7" />
                 </svg>
-              </button>
-            </div>
+            </button>
           </div>
 
           {/* Sidebar Links */}
-          <nav className="flex-1 p-4 overflow-y-auto">
-            <ul className="space-y-2">
+          <nav className="flex-1 mt-6">
+            <ul>
               {sections.map((section) => {
                 const isComplete = isSectionComplete(section.id);
                 const hasChanges = hasSectionChanges(section.id);
@@ -1706,7 +1707,7 @@ export default function EditProductPage() {
                     <button
                       type="button"
                       onClick={() => scrollToSection(section.id)}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors flex items-center justify-between group"
+                      className="w-full text-left px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-between"
                     >
                       <span>{section.label}</span>
                       <div className="flex items-center gap-1">
@@ -1739,7 +1740,7 @@ export default function EditProductPage() {
           </nav>
 
           {/* Sidebar Footer with Save Button */}
-          <div className="p-4 border-t border-gray-200 bg-gray-50">
+          <div className="mt-auto pt-6 px-6 pb-6">
             <button
               type="button"
               onClick={(e) => {
@@ -1810,7 +1811,7 @@ export default function EditProductPage() {
         <button
           type="button"
           onClick={() => setIsSidebarOpen(true)}
-          className="fixed right-4 top-20 bg-white border border-gray-200 shadow-lg rounded-lg p-2 hover:bg-gray-50 z-40"
+          className="fixed right-0 top-0 h-screen w-8 bg-amber-50/80 backdrop-blur-sm border-l-4 border-double border-amber-800/30 shadow-sm hover:w-12 transition-all duration-300 flex items-center justify-center z-40"
           aria-label="Open sidebar"
         >
           <svg
@@ -1822,7 +1823,7 @@ export default function EditProductPage() {
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path d="M4 6h16M4 12h16M4 18h16" />
+            <path d="M15 19l-7-7 7-7" />
           </svg>
         </button>
       )}
