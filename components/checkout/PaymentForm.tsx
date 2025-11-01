@@ -195,7 +195,7 @@ export default function PaymentForm({
         <button
           type="submit"
           disabled={!stripe || isProcessing}
-          className="flex-1 px-6 py-3 bg-vintage-brown text-white rounded-md hover:bg-vintage-brown-dark transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 px-6 py-3 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isProcessing ? t('processing') : t('completePayment')}
         </button>

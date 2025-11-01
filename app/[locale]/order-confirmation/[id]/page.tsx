@@ -66,8 +66,80 @@ export default function OrderConfirmationPage() {
             // Order already exists
             const data = await response.json();
             return data.order;
+          } else if (response.status === 404) {
+            // Order doesn't exist yet - this can happen if PaymentForm's order creation failed
+            // Create it from payment intent as fallback
+            console.log('Order not found, creating from payment intent metadata as fallback');
+
+            // Fetch the payment intent to get metadata and billing details
+            const piResponse = await fetch(`/api/payment-intent/${paymentIntentId}`);
+            if (!piResponse.ok) {
+              throw new Error('Failed to verify payment');
+            }
+
+            const { paymentIntent } = await piResponse.json();
+
+            // Extract data from payment intent
+            const items = JSON.parse(paymentIntent.metadata.items || '[]');
+
+            const subtotal = parseFloat(paymentIntent.metadata.subtotal || '0');
+            const shipping = parseFloat(paymentIntent.metadata.shipping || '0');
+            const finalTotal = paymentIntent.amount / 100;
+
+            // Get billing details from latest charge
+            let billingDetails;
+            if (paymentIntent.latest_charge?.billing_details) {
+              billingDetails = paymentIntent.latest_charge.billing_details;
+            } else if (paymentIntent.charges?.data?.[0]?.billing_details) {
+              billingDetails = paymentIntent.charges.data[0].billing_details;
+            } else {
+              throw new Error('Billing details not found in payment intent');
+            }
+
+            // Create customer info from billing details
+            const customerInfo = {
+              email: billingDetails.email || '',
+              name: billingDetails.name || '',
+              shippingAddress: {
+                street: billingDetails.address?.line1 || '',
+                city: billingDetails.address?.city || '',
+                state: billingDetails.address?.state || '',
+                postalCode: billingDetails.address?.postal_code || '',
+                country: billingDetails.address?.country || '',
+              },
+            };
+
+            // Create the order
+            const createResponse = await fetch('/api/create-order', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                paymentIntentId: paymentIntentId,
+                customerInfo,
+                items: items,
+                subtotal,
+                shipping,
+                tax: 0,
+                total: finalTotal,
+              }),
+            });
+
+            if (!createResponse.ok) {
+              const errorData = await createResponse.json();
+              throw new Error(errorData.error || 'Failed to create order');
+            }
+
+            const { orderId: newOrderId } = await createResponse.json();
+
+            // Fetch the newly created order
+            const orderResponse = await fetch(`/api/orders/${newOrderId || paymentIntentId}`);
+            if (!orderResponse.ok) {
+              throw new Error('Failed to fetch created order');
+            }
+            const orderData = await orderResponse.json();
+            return orderData.order;
           } else {
-            throw new Error('Order not found. Please contact support with your payment confirmation.');
+            throw new Error('Failed to fetch order details');
           }
       } else {
         // Regular order fetch by ID

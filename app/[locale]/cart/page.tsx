@@ -29,7 +29,7 @@ export default function CartPage() {
   // Show loading while validating
   if (isValidating && items.length > 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-700 mb-4"></div>
           <p className="text-gray-600">{t('validatingCart')}</p>
@@ -40,7 +40,7 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
           <div className="mb-6">
             <svg
@@ -70,7 +70,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('yourCart')}</h1>
 
@@ -297,7 +297,6 @@ export default function CartPage() {
                 type="button"
                 onClick={() => router.push(`/${locale}/checkout`)}
                 disabled={hasUnavailableItems}
-                fullWidth
                 className="py-4 px-6 text-lg"
               >
                 {t('proceedToCheckout')}

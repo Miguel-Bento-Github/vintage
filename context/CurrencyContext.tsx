@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useLocale } from 'next-intl';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { useLocale } from "next-intl";
 import {
   Currency,
   getCurrencyFromLocale,
   isValidCurrency,
   fetchExchangeRates,
-  setExchangeRates
-} from '@/lib/currency';
+  setExchangeRates,
+} from "@/lib/currency";
 
 interface CurrencyContextType {
   currency: Currency;
@@ -17,13 +23,15 @@ interface CurrencyContextType {
   exchangeRatesLoaded: boolean;
 }
 
-const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
+const CurrencyContext = createContext<CurrencyContextType | undefined>(
+  undefined
+);
 
-const CURRENCY_STORAGE_KEY = 'preferred-currency';
+const CURRENCY_STORAGE_KEY = "preferred-currency";
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
   const locale = useLocale();
-  const [currency, setCurrencyState] = useState<Currency>('EUR');
+  const [currency, setCurrencyState] = useState<Currency>("EUR");
   const [isLoading, setIsLoading] = useState(true);
   const [exchangeRatesLoaded, setExchangeRatesLoaded] = useState(false);
 
@@ -34,9 +42,8 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         const rates = await fetchExchangeRates();
         setExchangeRates(rates);
         setExchangeRatesLoaded(true);
-        console.log('✅ Live exchange rates loaded:', rates);
       } catch (error) {
-        console.error('Failed to load exchange rates:', error);
+        console.error("Failed to load exchange rates:", error);
         setExchangeRatesLoaded(false);
       }
     };
@@ -67,7 +74,9 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency, isLoading, exchangeRatesLoaded }}>
+    <CurrencyContext.Provider
+      value={{ currency, setCurrency, isLoading, exchangeRatesLoaded }}
+    >
       {children}
     </CurrencyContext.Provider>
   );
@@ -76,7 +85,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 export function useCurrency() {
   const context = useContext(CurrencyContext);
   if (context === undefined) {
-    throw new Error('useCurrency must be used within a CurrencyProvider');
+    throw new Error("useCurrency must be used within a CurrencyProvider");
   }
   return context;
 }

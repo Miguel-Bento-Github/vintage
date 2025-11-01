@@ -81,7 +81,7 @@ export default async function HomePage({
   const t = await getTranslations();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-amber-50 to-orange-50 py-20 sm:py-32 overflow-hidden">
         {/* Vintage flowers pattern background */}
@@ -89,7 +89,7 @@ export default async function HomePage({
           className="absolute inset-0 opacity-100"
           style={{
             backgroundImage: `url('/patterns/flowers.png')`,
-            backgroundRepeat: 'repeat',
+            backgroundRepeat: "repeat",
           }}
           aria-hidden="true"
         />
@@ -159,41 +159,49 @@ export default async function HomePage({
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 auto-rows-[200px]">
-            {Object.entries(CATEGORY_IMAGES).map(([category, imageUrl], index) => {
-              // Pattern: Jacket(2), Dress(1), LP(2), Chair(2), Necklace(1), Accessories(2)
-              // This makes: Col1: 2+1=3, Col2: 1+2=3, Col3: 2+2=4 -> Need Col3: 2+1=3
-              // Index: 0,1,2,3,4,5 -> Rows: 2,1,2,2,1,1
-              let rowSpan = 2;
-              if (index === 1 || index === 4 || index === 5) {
-                rowSpan = 1;
-              }
+            {Object.entries(CATEGORY_IMAGES).map(
+              ([category, imageUrl], index) => {
+                // Pattern: Jacket(2), Dress(1), LP(2), Chair(2), Necklace(1), Accessories(2)
+                // This makes: Col1: 2+1=3, Col2: 1+2=3, Col3: 2+2=4 -> Need Col3: 2+1=3
+                // Index: 0,1,2,3,4,5 -> Rows: 2,1,2,2,1,1
+                let rowSpan = 2;
+                if (index === 1 || index === 4 || index === 5) {
+                  rowSpan = 1;
+                }
 
-              return (
-                <Link
-                  key={category}
-                  href={`/${locale}/shop?category=${category}`}
-                  className="group relative rounded-lg overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all border-4 border-amber-900/30"
-                  style={{ gridRow: `span ${rowSpan}` }}
-                >
-                  <Image
-                    src={imageUrl}
-                    alt={`Shop vintage ${category.toLowerCase()}`}
-                    fill
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    loading="lazy"
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 group-hover:from-black/70 transition-colors" aria-hidden="true" />
-                  {/* Vintage inner frame border */}
-                  <div className="absolute inset-2 border-2 border-amber-100/20 pointer-events-none rounded" aria-hidden="true" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-                    <h3 className="text-white text-xl sm:text-2xl font-bold">
-                      {category}
-                    </h3>
-                  </div>
-                </Link>
-              );
-            })}
+                return (
+                  <Link
+                    key={category}
+                    href={`/${locale}/shop?category=${category}`}
+                    className="group relative rounded-lg overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all border-4 border-amber-900/30"
+                    style={{ gridRow: `span ${rowSpan}` }}
+                  >
+                    <Image
+                      src={imageUrl}
+                      alt={`Shop vintage ${category.toLowerCase()}`}
+                      fill
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                      loading="lazy"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div
+                      className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 group-hover:from-black/70 transition-colors"
+                      aria-hidden="true"
+                    />
+                    {/* Vintage inner frame border */}
+                    <div
+                      className="absolute inset-2 border-2 border-amber-100/20 pointer-events-none rounded"
+                      aria-hidden="true"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+                      <h3 className="text-white text-xl sm:text-2xl font-bold">
+                        {category}
+                      </h3>
+                    </div>
+                  </Link>
+                );
+              }
+            )}
           </div>
         </div>
       </section>
