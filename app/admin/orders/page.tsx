@@ -28,28 +28,28 @@ export default function OrderManagementPage() {
   const [carrier, setCarrier] = useState<string>('USPS');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  // Sync URL with modal state
+  // Open modal from URL on mount/orders load
   useEffect(() => {
     const orderId = searchParams.get('orderId');
-
-    if (selectedOrder) {
-      // Modal is open, ensure URL has orderId
-      if (orderId !== selectedOrder.id) {
-        router.replace(`/admin/orders?orderId=${selectedOrder.id}`, { scroll: false });
-      }
-    } else if (orderId) {
-      // Modal is closed but URL has orderId, open the modal
-      if (orders.length > 0) {
-        const order = orders.find(o => o.id === orderId);
-        if (order) {
-          setSelectedOrder(order);
-        } else {
-          // Order not found, clear URL
-          router.replace('/admin/orders', { scroll: false });
-        }
+    if (orderId && orders.length > 0 && !selectedOrder) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        setSelectedOrder(order);
       }
     }
-  }, [selectedOrder, searchParams, orders, router]);
+  }, [searchParams, orders]); // Don't include selectedOrder to avoid reopening
+
+  // Handle opening modal - updates URL
+  const openModal = (order: Order) => {
+    setSelectedOrder(order);
+    router.push(`/admin/orders?orderId=${order.id}`, { scroll: false });
+  };
+
+  // Handle modal close
+  const closeModal = () => {
+    setSelectedOrder(null);
+    router.push('/admin/orders', { scroll: false });
+  };
 
   // Error state from query or mutation
   const error = queryError
@@ -311,7 +311,7 @@ export default function OrderManagementPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={() => setSelectedOrder(order)}
+                        onClick={() => openModal(order)}
                         className="text-amber-700 hover:text-amber-800 font-medium"
                       >
                         {order.orderNumber}
@@ -349,22 +349,30 @@ export default function OrderManagementPage() {
 
       {/* Order Details Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center p-4 z-50">
-          <div className="relative bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border-4 border-double border-amber-800/30">
-            {/* Decorative corner elements */}
-            <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-amber-800/40"></div>
-            <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-amber-800/40"></div>
-            <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-amber-800/40"></div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-amber-800/40"></div>
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <div
+          className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center p-4 z-50"
+          onClick={(e) => {
+            // Close modal when clicking backdrop
+            if (e.target === e.currentTarget) {
+              closeModal();
+            }
+          }}
+        >
+          {/* Outer wrapper for decorative corners - fixed position */}
+          <div className="relative max-w-4xl w-full max-h-[90vh] bg-white rounded-lg shadow-2xl border-4 border-double border-amber-800/30 flex flex-col overflow-hidden">
+            {/* Decorative corner elements - stay fixed at modal corners */}
+            <div className="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-amber-800/40 pointer-events-none z-10"></div>
+            <div className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-amber-800/40 pointer-events-none z-10"></div>
+            <div className="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-amber-800/40 pointer-events-none z-10"></div>
+            <div className="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-amber-800/40 pointer-events-none z-10"></div>
+
+            {/* Header - fixed at top */}
+            <div className="flex-shrink-0 border-b border-gray-200 px-6 py-4 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">
                 Order Details - {selectedOrder.orderNumber}
               </h2>
               <button
-                onClick={() => {
-                  setSelectedOrder(null);
-                  router.replace('/admin/orders', { scroll: false });
-                }}
+                onClick={closeModal}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -373,7 +381,8 @@ export default function OrderManagementPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            {/* Scrollable content area */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Customer Info */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Customer Information</h3>
@@ -496,7 +505,7 @@ export default function OrderManagementPage() {
                       </select>
                     </div>
 
-                    {selectedOrder.status === 'shipped' && (
+                    {(orders.find(o => o.id === selectedOrder.id)?.status || selectedOrder.status) === 'shipped' && (
                       <div className="mt-3 space-y-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -605,9 +614,10 @@ export default function OrderManagementPage() {
               )}
             </div>
 
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4">
+            {/* Footer - fixed at bottom */}
+            <div className="flex-shrink-0 bg-white border-t border-gray-200 px-6 py-4">
               <button
-                onClick={() => setSelectedOrder(null)}
+                onClick={closeModal}
                 className="w-full px-6 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition"
               >
                 Close
