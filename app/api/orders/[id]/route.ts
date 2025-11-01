@@ -6,6 +6,7 @@ import { OrderStatus, Order, timestampToISO } from '@/types';
 import { sendShippingNotificationEmail, sendDeliveryConfirmationEmail, sendCancellationEmail, getCarrierTrackingUrl } from '@/lib/email/orderEmails';
 import { toLocale } from '@/i18n';
 import { verifyAdminAuth } from '@/lib/auth/apiAuth';
+import { markProductAvailable } from '@/services/productService';
 
 export async function GET(
   request: NextRequest,
@@ -208,6 +209,17 @@ export async function PATCH(
 
     // Send cancellation email if status changed to 'cancelled'
     if (status === 'cancelled' && order.status !== 'cancelled') {
+      // Restore product availability for all items in the order
+      orderForEmail.items.forEach(async (item) => {
+        try {
+          await markProductAvailable(item.productId);
+          console.log(`Restored availability for product ${item.productId} after order cancellation`);
+        } catch (error) {
+          console.error(`Failed to restore availability for product ${item.productId}:`, error);
+          // Don't fail status update if product update fails
+        }
+      });
+
       // Send email asynchronously (don't wait for it)
       sendCancellationEmail(orderForEmail, undefined, emailLocale).catch((error) => {
         console.error('Failed to send cancellation email:', error);

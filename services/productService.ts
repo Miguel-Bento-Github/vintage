@@ -417,6 +417,54 @@ export async function markProductSold(
 }
 
 /**
+ * Mark a product as available (e.g., after order cancellation)
+ * @param productId - Product document ID
+ * @returns Updated product
+ */
+export async function markProductAvailable(
+  productId: string
+): Promise<FirebaseServiceResponse<Product>> {
+  try {
+    const docRef = doc(db, 'products', productId);
+
+    // Check if product exists
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) {
+      return {
+        success: false,
+        error: 'Product not found',
+      };
+    }
+
+    // Update product as available
+    await updateDoc(docRef, {
+      inStock: true,
+      soldAt: null,
+      updatedAt: Timestamp.now(),
+    });
+
+    // Get updated product
+    const updatedSnap = await getDoc(docRef);
+    const updatedProduct: Product = {
+      id: updatedSnap.id,
+      ...updatedSnap.data(),
+    } as Product;
+
+    return {
+      success: true,
+      data: updatedProduct,
+    };
+  } catch (error) {
+    console.error('Error marking product as available:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to mark product as available',
+      code: (error as { code?: string }).code,
+    };
+  }
+}
+
+/**
  * Delete a product and its images
  * @param productId - Product document ID
  * @returns Success status
