@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { Elements } from '@stripe/react-stripe-js';
 import { getStripe } from '@/lib/stripe';
@@ -19,12 +19,14 @@ import VintageButton from '@/components/VintageButton';
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = useLocale();
   const t = useTranslations('checkout');
   const { items, getCartTotal } = useCart();
   const { currency } = useCurrency();
 
   const [step, setStep] = useState<CheckoutStep>(1);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const [formData, setFormData] = useState<CheckoutFormData>({
     email: '',
@@ -37,15 +39,69 @@ export default function CheckoutPage() {
   });
   const [formErrors, setFormErrors] = useState<CheckoutFormErrors>({});
 
+  // Restore form data and step from URL on mount
+  useEffect(() => {
+    if (isInitialized) return;
+
+    const urlStep = searchParams.get('step');
+    const urlEmail = searchParams.get('email');
+    const urlName = searchParams.get('name');
+    const urlStreet = searchParams.get('street');
+    const urlCity = searchParams.get('city');
+    const urlState = searchParams.get('state');
+    const urlPostalCode = searchParams.get('postalCode');
+    const urlCountry = searchParams.get('country');
+
+    // Restore step if valid
+    if (urlStep && (urlStep === '1' || urlStep === '2')) {
+      setStep(parseInt(urlStep) as CheckoutStep);
+    }
+
+    // Restore form data if present in URL
+    if (urlEmail || urlName || urlStreet || urlCity || urlState || urlPostalCode || urlCountry) {
+      setFormData({
+        email: urlEmail || '',
+        name: urlName || '',
+        street: urlStreet || '',
+        city: urlCity || '',
+        state: urlState || '',
+        postalCode: urlPostalCode || '',
+        country: urlCountry || '',
+      });
+    }
+
+    setIsInitialized(true);
+  }, [searchParams, isInitialized]);
+
+  // Update URL whenever form data or step changes
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    const params = new URLSearchParams();
+    params.set('step', step.toString());
+
+    // Add form data to URL if not empty
+    if (formData.email) params.set('email', formData.email);
+    if (formData.name) params.set('name', formData.name);
+    if (formData.street) params.set('street', formData.street);
+    if (formData.city) params.set('city', formData.city);
+    if (formData.state) params.set('state', formData.state);
+    if (formData.postalCode) params.set('postalCode', formData.postalCode);
+    if (formData.country) params.set('country', formData.country);
+
+    // Update URL without navigation
+    router.replace(`/${locale}/checkout?${params.toString()}`, { scroll: false });
+  }, [formData, step, locale, router, isInitialized]);
+
   // Calculate totals dynamically based on selected country (tax is $0.00 for second-hand goods)
   const { subtotal, shipping, total } = calculateCheckoutTotals(getCartTotal(), formData.country || undefined);
 
-  // Redirect if cart is empty
+  // Redirect if cart is empty (but only after initialization to avoid flickering)
   useEffect(() => {
-    if (items.length === 0) {
+    if (isInitialized && items.length === 0) {
       router.push(`/${locale}/cart`);
     }
-  }, [items, router, locale]);
+  }, [items, router, locale, isInitialized]);
 
   // Use TanStack Query to create payment intent
   // Include formData.country in the query key so it refetches when country changes
