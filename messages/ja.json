@@ -514,5 +514,18 @@
     "incorrectAddressTitle": "誤った住所",
     "incorrectAddressText": "お会計時に配送先住所が正しいことをご確認ください。お客様が提供された誤った住所に配送された荷物については責任を負いかねます。発送後の住所変更には追加料金が発生する場合があります。",
     "contactFooter": "配送に関するご質問はございますか？お問い合わせいただければ喜んでサポートいたします！"
+  },
+  "footer": {
+    "basedIn": "オランダ、ユトレヒトに拠点",
+    "customerService": "カスタマーサービス",
+    "taxPolicy": "税務方針",
+    "aboutUs": "会社概要",
+    "contact": "お問い合わせ",
+    "secureShoppingTitle": "安全なお買い物",
+    "weAccept": "お支払い方法",
+    "sslEncryption": "安全なSSL暗号化",
+    "buyerProtection": "購入者保護",
+    "worldwideShipping": "世界中に配送",
+    "rightsReserved": "全著作権所有"
   }
 }

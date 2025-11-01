@@ -514,5 +514,18 @@
     "incorrectAddressTitle": "Incorrect Address",
     "incorrectAddressText": "Please ensure your shipping address is correct at checkout. We cannot be responsible for packages shipped to incorrect addresses provided by the customer. Address changes after shipment may incur additional fees.",
     "contactFooter": "Have questions about shipping? Contact us and we'll be happy to help!"
+  },
+  "footer": {
+    "basedIn": "Based in Utrecht, Netherlands",
+    "customerService": "Customer Service",
+    "taxPolicy": "Tax Policy",
+    "aboutUs": "About Us",
+    "contact": "Contact",
+    "secureShoppingTitle": "Secure Shopping",
+    "weAccept": "We Accept",
+    "sslEncryption": "Secure SSL Encryption",
+    "buyerProtection": "Buyer Protection",
+    "worldwideShipping": "Worldwide Shipping",
+    "rightsReserved": "All rights reserved"
   }
 }

@@ -514,5 +514,18 @@
     "incorrectAddressTitle": "Dirección Incorrecta",
     "incorrectAddressText": "Asegúrese de que su dirección de envío sea correcta al momento de pagar. No podemos ser responsables de los paquetes enviados a direcciones incorrectas proporcionadas por el cliente. Los cambios de dirección después del envío pueden incurrir en tarifas adicionales.",
     "contactFooter": "¿Tiene preguntas sobre el envío? ¡Contáctenos y estaremos encantados de ayudarle!"
+  },
+  "footer": {
+    "basedIn": "Con sede en Utrecht, Países Bajos",
+    "customerService": "Servicio al Cliente",
+    "taxPolicy": "Política Fiscal",
+    "aboutUs": "Acerca de Nosotros",
+    "contact": "Contacto",
+    "secureShoppingTitle": "Compra Segura",
+    "weAccept": "Aceptamos",
+    "sslEncryption": "Encriptación SSL Segura",
+    "buyerProtection": "Protección al Comprador",
+    "worldwideShipping": "Envío Mundial",
+    "rightsReserved": "Todos los derechos reservados"
   }
 }

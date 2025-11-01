@@ -514,5 +514,18 @@
     "incorrectAddressTitle": "Falsche Adresse",
     "incorrectAddressText": "Bitte stellen Sie sicher, dass Ihre Versandadresse beim Checkout korrekt ist. Wir können nicht für Pakete verantwortlich sein, die an vom Kunden angegebene falsche Adressen versendet wurden. Adressänderungen nach dem Versand können zusätzliche Gebühren verursachen.",
     "contactFooter": "Haben Sie Fragen zum Versand? Kontaktieren Sie uns und wir helfen Ihnen gerne weiter!"
+  },
+  "footer": {
+    "basedIn": "Ansässig in Utrecht, Niederlande",
+    "customerService": "Kundenservice",
+    "taxPolicy": "Steuerpolitik",
+    "aboutUs": "Über Uns",
+    "contact": "Kontakt",
+    "secureShoppingTitle": "Sicheres Einkaufen",
+    "weAccept": "Wir Akzeptieren",
+    "sslEncryption": "Sichere SSL-Verschlüsselung",
+    "buyerProtection": "Käuferschutz",
+    "worldwideShipping": "Weltweiter Versand",
+    "rightsReserved": "Alle Rechte vorbehalten"
   }
 }
