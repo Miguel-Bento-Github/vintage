@@ -540,7 +540,6 @@ export default async function ProductPage({ params }: PageProps) {
                     <li>{t('return1')}</li>
                     <li>{t('return2')}</li>
                     <li>{t('return3')}</li>
-                    <li>{t('return4')}</li>
                   </ul>
                 </div>
               </div>

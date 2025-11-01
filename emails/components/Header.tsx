@@ -18,15 +18,22 @@ export default function Header({
 
   return (
     <Section style={styles.header}>
-      {/* Logo - PNG with transparent background */}
-      <Img
-        src={logoUrl || defaultLogoUrl}
-        alt={companyName}
-        width="50"
-        height="50"
-        style={styles.logo}
-      />
-      <Text style={styles.brandName}>{companyName}</Text>
+      <table width="100%" cellPadding="0" cellSpacing="0">
+        <tr>
+          <td style={styles.logoCell}>
+            <Img
+              src={logoUrl || defaultLogoUrl}
+              alt={companyName}
+              width="40"
+              height="40"
+              style={styles.logo}
+            />
+          </td>
+          <td style={styles.brandCell}>
+            <Text style={styles.brandName}>{companyName}</Text>
+          </td>
+        </tr>
+      </table>
     </Section>
   );
 }
@@ -34,13 +41,20 @@ export default function Header({
 const styles = {
   header: {
     backgroundColor: '#ffffff',
-    padding: '20px 24px',
-    textAlign: 'center' as const,
+    padding: '16px 24px',
     borderBottom: `1px solid ${EMAIL_CONFIG.templates.primaryColor}`,
   },
+  logoCell: {
+    width: '40px',
+    verticalAlign: 'middle',
+    paddingRight: '12px',
+  },
+  brandCell: {
+    verticalAlign: 'middle',
+  },
   logo: {
-    margin: '0 auto 8px',
     display: 'block',
+    margin: '0',
   },
   logoEmoji: {
     fontSize: '48px',
@@ -49,12 +63,12 @@ const styles = {
     lineHeight: '1',
   },
   brandName: {
-    fontSize: '22px',
+    fontSize: '20px',
     fontWeight: 700,
     color: EMAIL_CONFIG.templates.accentColor,
     margin: '0',
     fontFamily: 'Georgia, serif',
-    textAlign: 'center' as const,
+    lineHeight: '40px',
   },
   tagline: {
     fontSize: '13px',
