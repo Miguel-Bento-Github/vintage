@@ -426,9 +426,17 @@ export default function OrderManagementPage() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">
+                        <a
+                          href={`/en/product/${item.productId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-amber-700 hover:text-amber-800 hover:underline inline-flex items-center gap-1"
+                        >
                           {item.brand} - {item.title}
-                        </p>
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
                         <p className="text-sm text-gray-600">Size: {item.size}</p>
                         <p className="text-sm text-gray-600">{item.era}</p>
                       </div>
