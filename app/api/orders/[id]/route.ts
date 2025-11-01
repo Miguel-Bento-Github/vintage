@@ -14,20 +14,11 @@ export async function GET(
   try {
     const { id: orderId } = await params;
 
-    // Allow public access for payment intent lookups (order confirmation page)
-    // Require admin auth for order ID lookups (admin dashboard)
-    const isPaymentIntentLookup = orderId.startsWith('pi_');
-
-    if (!isPaymentIntentLookup) {
-      // Verify admin authentication for order ID lookups
-      const adminUid = await verifyAdminAuth(request);
-      if (!adminUid) {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        );
-      }
-    }
+    // Security model:
+    // - Anyone with the order ID or payment intent ID can view that specific order
+    //   (the ID acts as an unguessable token since Firestore IDs are random)
+    // - No authentication required for GET by specific ID
+    // - Admin auth only required for listing/querying all orders
 
     // Try to fetch by order ID first using Admin SDK
     const result = await getOrderAdmin(orderId);
