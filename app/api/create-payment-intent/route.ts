@@ -5,9 +5,28 @@ import { Currency, convertPrice } from '@/lib/currency';
 import { getStripeAmount, getStripeCurrency, isStripeSupportedCurrency } from '@/lib/stripeHelpers';
 import { getExchangeRatesServer } from '@/lib/exchangeRatesServer';
 import { calculateShipping } from '@/lib/shipping';
+import { checkRateLimit, getClientIdentifier, rateLimitConfigs } from '@/lib/rateLimit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const identifier = getClientIdentifier(request);
+    const rateLimit = checkRateLimit(identifier, rateLimitConfigs.createPaymentIntent);
+
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimit.limit.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': new Date(rateLimit.reset).toISOString(),
+            'Retry-After': Math.ceil((rateLimit.reset - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
     const { items, currency = 'EUR', shippingCountry }: { items: CartItem[]; currency?: Currency; shippingCountry?: string } = await request.json();
 
     // Validate items
@@ -66,8 +85,7 @@ export async function POST(request: NextRequest) {
     const amount = getStripeAmount(total, currency);
 
     // Create payment intent
-    // Store essential order data in metadata (Stripe has 500 char limit per value)
-    // Full item details will be stored when creating the order
+    // Store all order data in metadata so we can create the order later
     // Note: Tax is $0.00 for second-hand goods - see /docs/tax-policy.md
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
@@ -76,9 +94,8 @@ export async function POST(request: NextRequest) {
         enabled: true,
       },
       metadata: {
-        // Store only product IDs (full details fetched from DB when creating order)
-        productIds: items.map(item => item.productId).join(','),
-        itemCount: items.length.toString(),
+        // Store full item details for order creation
+        items: JSON.stringify(items),
         subtotal: subtotal.toFixed(2),
         shipping: shipping.toFixed(2),
         tax: '0.00', // Second-hand goods tax-exempt

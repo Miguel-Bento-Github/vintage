@@ -1,9 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
 import heicConvert from 'heic-convert';
+import { checkRateLimit, getClientIdentifier, rateLimitConfigs } from '@/lib/rateLimit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting (strict - expensive operation)
+    const identifier = getClientIdentifier(request);
+    const rateLimit = checkRateLimit(identifier, rateLimitConfigs.convertImage);
+
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimit.limit.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': new Date(rateLimit.reset).toISOString(),
+            'Retry-After': Math.ceil((rateLimit.reset - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
     const formData = await request.formData();
     const file = formData.get('image') as File;
 

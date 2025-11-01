@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSendCloudRate } from '@/lib/sendcloud';
 import { getShippingEstimate } from '@/lib/shipping';
+import { checkRateLimit, getClientIdentifier, rateLimitConfigs } from '@/lib/rateLimit';
 
 /**
  * POST /api/shipping-quote
@@ -29,6 +30,24 @@ import { getShippingEstimate } from '@/lib/shipping';
  */
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const identifier = getClientIdentifier(request);
+    const rateLimit = checkRateLimit(identifier, rateLimitConfigs.shippingQuote);
+
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimit.limit.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': new Date(rateLimit.reset).toISOString(),
+            'Retry-After': Math.ceil((rateLimit.reset - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
     const body = await request.json();
     const { countryCode, postalCode, weightGrams = 500 } = body;
 
