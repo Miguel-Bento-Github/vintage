@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "rm -rf .next && next dev --turbopack -p 5577",
-    "build": "next build",
-    "start": "next start -p 5577",
+    "build": "BUILD_DIR=.next-build next build",
+    "start": "BUILD_DIR=.next-build next start -p 6486",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "seed": "tsx scripts/seed-products.ts",

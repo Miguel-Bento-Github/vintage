@@ -4,6 +4,9 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Use separate build directory to avoid conflicts with dev server
+  distDir: process.env.BUILD_DIR || '.next',
+
   // Image optimization configuration
   images: {
     // Use WebP for fast loading (images are pre-converted to WebP on upload)
