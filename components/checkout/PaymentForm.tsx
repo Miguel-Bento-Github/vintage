@@ -5,7 +5,6 @@ import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { CartItem, CustomerInfo, OrderItem } from '@/types';
 import { CheckoutFormData } from '@/types/checkout';
 import { useTranslations } from '@/hooks/useTranslations';
-import VintageButton from '@/components/VintageButton';
 import { trackPurchase } from '@/services/analyticsService';
 
 interface PaymentFormProps {
@@ -193,13 +192,13 @@ export default function PaymentForm({
         >
           {tCommon('back')}
         </button>
-        <VintageButton
+        <button
           type="submit"
           disabled={!stripe || isProcessing}
-          className="flex-1"
+          className="flex-1 px-6 py-3 bg-vintage-brown text-white rounded-md hover:bg-vintage-brown-dark transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isProcessing ? t('processing') : t('completePayment')}
-        </VintageButton>
+        </button>
       </div>
 
       {/* Security Notice */}

@@ -12,16 +12,22 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Verify admin authentication
-    const adminUid = await verifyAdminAuth(request);
-    if (!adminUid) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
     const { id: orderId } = await params;
+
+    // Allow public access for payment intent lookups (order confirmation page)
+    // Require admin auth for order ID lookups (admin dashboard)
+    const isPaymentIntentLookup = orderId.startsWith('pi_');
+
+    if (!isPaymentIntentLookup) {
+      // Verify admin authentication for order ID lookups
+      const adminUid = await verifyAdminAuth(request);
+      if (!adminUid) {
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
+    }
 
     // Try to fetch by order ID first using Admin SDK
     const result = await getOrderAdmin(orderId);
