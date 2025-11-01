@@ -1,5 +1,6 @@
 import { initializeApp, getApps, cert, ServiceAccount } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
+import { getAuth, Auth } from 'firebase-admin/auth';
 
 /**
  * Firebase Admin SDK initialization
@@ -7,6 +8,7 @@ import { getFirestore, Firestore } from 'firebase-admin/firestore';
  */
 
 let adminDb: Firestore;
+let adminAuth: Auth;
 let isEmulatorConfigured = false;
 
 // Initialize Firebase Admin
@@ -26,8 +28,9 @@ if (!getApps().length) {
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   });
 
-  // Get Firestore instance
+  // Get Firestore and Auth instances
   adminDb = getFirestore();
+  adminAuth = getAuth();
 
   // Configure Firestore to use emulators in development
   // Must be called ONCE before any other Firestore operations
@@ -40,8 +43,9 @@ if (!getApps().length) {
     console.log('🔧 [Admin] Connected to Firebase emulators (Firestore: 3476)');
   }
 } else {
-  // App already initialized, just get the existing Firestore instance
+  // App already initialized, just get the existing instances
   adminDb = getFirestore();
+  adminAuth = getAuth();
 }
 
-export { adminDb };
+export { adminDb, adminAuth };

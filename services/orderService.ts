@@ -316,12 +316,27 @@ export async function updateOrderStatus(
   carrier?: string
 ): Promise<FirebaseServiceResponse<Order>> {
   try {
+    // Get auth token from Firebase Auth
+    const { getAuth } = await import('firebase/auth');
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'User not authenticated',
+      };
+    }
+
+    const token = await user.getIdToken();
+
     // Call API route to update order status
     // This ensures emails are sent server-side with proper authentication
     const response = await fetch(`/api/orders/${orderId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
         status,

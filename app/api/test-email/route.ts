@@ -10,8 +10,18 @@ import { EmailType } from '@/lib/email/config';
  *
  * Usage: POST /api/test-email
  * Body: { "to": "your-email@example.com", "name": "Your Name" }
+ *
+ * DISABLED IN PRODUCTION FOR SECURITY
  */
 export async function POST(request: NextRequest) {
+  // Disable in production to prevent email spam/abuse
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'This endpoint is disabled in production' },
+      { status: 403 }
+    );
+  }
+
   try {
     const body = await request.json();
     const { to, name } = body;

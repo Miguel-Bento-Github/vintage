@@ -5,12 +5,22 @@ import { Timestamp } from 'firebase-admin/firestore';
 import { OrderStatus, Order, timestampToISO } from '@/types';
 import { sendShippingNotificationEmail, sendDeliveryConfirmationEmail, sendCancellationEmail, getCarrierTrackingUrl } from '@/lib/email/orderEmails';
 import { toLocale } from '@/i18n';
+import { verifyAdminAuth } from '@/lib/auth/apiAuth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Verify admin authentication
+    const adminUid = await verifyAdminAuth(request);
+    if (!adminUid) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id: orderId } = await params;
 
     // Try to fetch by order ID first using Admin SDK
@@ -78,6 +88,15 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Verify admin authentication
+    const adminUid = await verifyAdminAuth(request);
+    if (!adminUid) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id: orderId } = await params;
     const body = await request.json();
     const { status, trackingNumber, carrier } = body as {
