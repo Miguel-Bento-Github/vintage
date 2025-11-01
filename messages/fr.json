@@ -218,6 +218,7 @@
     "paymentMethod": "Méthode de Paiement",
     "information": "Informations",
     "review": "Vérification",
+    "reviewAndPayment": "Vérification et Paiement",
     "reviewOrderDescription": "Veuillez vérifier votre commande avant le paiement",
     "orderItems": "Articles de la Commande",
     "shippingAddress": "Adresse de Livraison",

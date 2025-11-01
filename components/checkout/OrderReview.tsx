@@ -12,8 +12,8 @@ interface OrderReviewProps {
   subtotal: number;
   shipping: number;
   total: number;
-  onNext: () => void;
-  onBack: () => void;
+  onNext?: () => void;
+  onBack?: () => void;
 }
 
 export default function OrderReview({
@@ -115,22 +115,24 @@ export default function OrderReview({
         </div>
       </div>
 
-      <div className="flex gap-4 pt-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex-1 px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
-        >
-          {tCommon('back')}
-        </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="flex-1 px-6 py-3 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition font-medium"
-        >
-          {t('continueToPayment')}
-        </button>
-      </div>
+      {onNext && onBack && (
+        <div className="flex gap-4 pt-4">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex-1 px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+          >
+            {tCommon('back')}
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            className="flex-1 px-6 py-3 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition font-medium"
+          >
+            {t('continueToPayment')}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

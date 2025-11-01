@@ -218,6 +218,7 @@
     "paymentMethod": "Método de Pago",
     "information": "Información",
     "review": "Revisar",
+    "reviewAndPayment": "Revisar y Pagar",
     "reviewOrderDescription": "Por favor, revise su pedido antes del pago",
     "orderItems": "Artículos del Pedido",
     "shippingAddress": "Dirección de Envío",

@@ -218,6 +218,7 @@
     "paymentMethod": "お支払い方法",
     "information": "情報",
     "review": "確認",
+    "reviewAndPayment": "確認とお支払い",
     "reviewOrderDescription": "お支払い前にご注文内容をご確認ください",
     "orderItems": "ご注文商品",
     "shippingAddress": "配送先住所",

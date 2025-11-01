@@ -11,8 +11,7 @@ export default function CheckoutProgress({ currentStep }: CheckoutProgressProps)
 
   const steps = [
     { number: 1, label: t('information') },
-    { number: 2, label: t('review') },
-    { number: 3, label: t('payment') },
+    { number: 2, label: t('reviewAndPayment') },
   ];
 
   return (

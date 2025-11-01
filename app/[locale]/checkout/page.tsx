@@ -86,8 +86,6 @@ export default function CheckoutPage() {
       if (Object.keys(errors).length === 0) {
         setStep(2);
       }
-    } else if (step === 2) {
-      setStep(3);
     }
   };
 
@@ -149,11 +147,11 @@ export default function CheckoutPage() {
           <p className="mt-2 text-gray-600">{t('checkoutDescription')}</p>
         </div>
 
-        <div className="max-w-3xl mx-auto">
+        <div className={step === 1 ? "max-w-3xl mx-auto" : "max-w-7xl mx-auto"}>
           <CheckoutProgress currentStep={step} />
 
-          <div className="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
-            {step === 1 && (
+          {step === 1 && (
+            <div className="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
               <CustomerInfoForm
                 formData={formData}
                 formErrors={formErrors}
@@ -161,49 +159,53 @@ export default function CheckoutPage() {
                 onNext={handleNextStep}
                 onBack={handlePreviousStep}
               />
-            )}
+            </div>
+          )}
 
-            {step === 2 && (
-              <OrderReview
-                items={items}
-                formData={formData}
-                subtotal={subtotal}
-                shipping={shipping}
-                total={total}
-                onNext={handleNextStep}
-                onBack={handlePreviousStep}
-              />
-            )}
-
-            {step === 3 && (
-              <Elements
-                stripe={stripePromise}
-                options={{
-                  clientSecret,
-                  appearance: {
-                    theme: 'stripe',
-                    variables: {
-                      colorPrimary: '#92400e',
-                      colorBackground: '#ffffff',
-                      colorText: '#1f2937',
-                      colorDanger: '#dc2626',
-                      fontFamily: 'system-ui, sans-serif',
-                      borderRadius: '0.375rem',
-                    },
+          {step === 2 && (
+            <Elements
+              stripe={stripePromise}
+              options={{
+                clientSecret,
+                appearance: {
+                  theme: 'stripe',
+                  variables: {
+                    colorPrimary: '#92400e',
+                    colorBackground: '#ffffff',
+                    colorText: '#1f2937',
+                    colorDanger: '#dc2626',
+                    fontFamily: 'system-ui, sans-serif',
+                    borderRadius: '0.375rem',
                   },
-                }}
-              >
-                <PaymentForm
-                  items={items}
-                  formData={formData}
-                  subtotal={subtotal}
-                  shipping={shipping}
-                  total={total}
-                  onBack={handlePreviousStep}
-                />
-              </Elements>
-            )}
-          </div>
+                },
+              }}
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left column - Order Review */}
+                <div className="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
+                  <OrderReview
+                    items={items}
+                    formData={formData}
+                    subtotal={subtotal}
+                    shipping={shipping}
+                    total={total}
+                  />
+                </div>
+
+                {/* Right column - Payment Form */}
+                <div className="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
+                  <PaymentForm
+                    items={items}
+                    formData={formData}
+                    subtotal={subtotal}
+                    shipping={shipping}
+                    total={total}
+                    onBack={handlePreviousStep}
+                  />
+                </div>
+              </div>
+            </Elements>
+          )}
         </div>
       </div>
     </div>

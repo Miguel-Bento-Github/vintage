@@ -218,6 +218,7 @@
     "paymentMethod": "Payment Method",
     "information": "Information",
     "review": "Review",
+    "reviewAndPayment": "Review & Payment",
     "reviewOrderDescription": "Please review your order before payment",
     "orderItems": "Order Items",
     "shippingAddress": "Shipping Address",

@@ -218,6 +218,7 @@
     "paymentMethod": "Zahlungsmethode",
     "information": "Informationen",
     "review": "Überprüfung",
+    "reviewAndPayment": "Überprüfung & Zahlung",
     "reviewOrderDescription": "Bitte überprüfen Sie Ihre Bestellung vor der Zahlung",
     "orderItems": "Bestellartikel",
     "shippingAddress": "Lieferadresse",
