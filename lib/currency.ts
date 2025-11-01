@@ -62,7 +62,7 @@ export const CURRENCIES: Record<Currency, CurrencyInfo> = {
  * Map locales to their default currencies
  */
 const LOCALE_TO_CURRENCY: Record<Locale, Currency> = {
-  en: "USD",
+  en: "EUR",
   es: "EUR",
   fr: "EUR",
   de: "EUR",
@@ -73,7 +73,7 @@ const LOCALE_TO_CURRENCY: Record<Locale, Currency> = {
  * Get the default currency for a given locale
  */
 export function getCurrencyFromLocale(locale: Locale): Currency {
-  return LOCALE_TO_CURRENCY[locale] || "USD";
+  return LOCALE_TO_CURRENCY[locale] || "EUR";
 }
 
 /**
