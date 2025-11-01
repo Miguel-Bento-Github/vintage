@@ -178,6 +178,51 @@ export async function PATCH(
       updatedAt: orderData.updatedAt,
     };
 
+    // Update product availability based on final order status
+    // Rule: Products should be marked as sold for ALL statuses except cancelled
+    // This ensures products always reflect the correct availability regardless of status changes
+
+    if (status === 'cancelled' && order.status !== 'cancelled') {
+      // Order is being cancelled - restore product availability
+      for (const item of orderForEmail.items) {
+        try {
+          const productRef = adminDb.collection('products').doc(item.productId);
+          await productRef.update({
+            inStock: true,
+            soldAt: null,
+            updatedAt: Timestamp.now(),
+          });
+          console.log(`Restored availability for product ${item.productId} after order cancellation`);
+        } catch (error) {
+          console.error(`Failed to restore availability for product ${item.productId}:`, error);
+          // Don't fail status update if product update fails
+        }
+      }
+    } else if (status !== 'cancelled') {
+      // Order is active (pending, paid, shipped, delivered) - ensure products are marked as sold
+      for (const item of orderForEmail.items) {
+        try {
+          const productRef = adminDb.collection('products').doc(item.productId);
+          // Get current product state to check if it needs updating
+          const productSnap = await productRef.get();
+          const productData = productSnap.data();
+
+          // Only update if product is currently available (inStock: true)
+          if (productData && productData.inStock !== false) {
+            await productRef.update({
+              inStock: false,
+              soldAt: Timestamp.now(),
+              updatedAt: Timestamp.now(),
+            });
+            console.log(`Marked product ${item.productId} as sold (order status: ${status})`);
+          }
+        } catch (error) {
+          console.error(`Failed to mark product ${item.productId} as sold:`, error);
+          // Don't fail status update if product update fails
+        }
+      }
+    }
+
     // Send shipping notification email if status changed to 'shipped'
     if (status === 'shipped' && order.status !== 'shipped') {
       // Build tracking URL if we have tracking number and carrier
@@ -208,22 +253,6 @@ export async function PATCH(
 
     // Send cancellation email if status changed to 'cancelled'
     if (status === 'cancelled' && order.status !== 'cancelled') {
-      // Restore product availability for all items in the order
-      for (const item of orderForEmail.items) {
-        try {
-          const productRef = adminDb.collection('products').doc(item.productId);
-          await productRef.update({
-            inStock: true,
-            soldAt: null,
-            updatedAt: Timestamp.now(),
-          });
-          console.log(`Restored availability for product ${item.productId} after order cancellation`);
-        } catch (error) {
-          console.error(`Failed to restore availability for product ${item.productId}:`, error);
-          // Don't fail status update if product update fails
-        }
-      }
-
       // Send cancellation email (await to ensure it completes and logs to email history)
       try {
         const emailResult = await sendCancellationEmail(orderForEmail, undefined, emailLocale);

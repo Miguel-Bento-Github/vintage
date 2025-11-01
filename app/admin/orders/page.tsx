@@ -581,7 +581,7 @@ export default function OrderManagementPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Email History</h3>
                   <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                    {selectedOrder.emailHistory.map((email, index) => (
+                    {[...selectedOrder.emailHistory].reverse().map((email, index) => (
                       <div key={index} className="border-b border-gray-200 last:border-b-0 pb-3 last:pb-0">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
