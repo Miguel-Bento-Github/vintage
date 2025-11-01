@@ -4,6 +4,15 @@ import { useState, useRef, useEffect } from 'react';
 import { useCurrency } from '@/hooks/useCurrency';
 import { CURRENCIES, getSupportedCurrencies, Currency } from '@/lib/currency';
 
+const currencyFlags: Record<Currency, string> = {
+  EUR: '🇪🇺',
+  USD: '🇺🇸',
+  GBP: '🇬🇧',
+  JPY: '🇯🇵',
+  CAD: '🇨🇦',
+  AUD: '🇦🇺'
+};
+
 export default function CurrencySelector() {
   const { currency, setCurrency, exchangeRatesLoaded } = useCurrency();
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +49,7 @@ export default function CurrencySelector() {
         aria-label="Select currency"
         aria-expanded={isOpen}
       >
-        <span className="text-base">{currentCurrencyInfo.symbol}</span>
+        <span className="text-base">{currencyFlags[currency]}</span>
         <span className="hidden sm:inline">{currency}</span>
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -71,8 +80,8 @@ export default function CurrencySelector() {
                   }`}
                 >
                   <span className="flex items-center gap-3">
-                    <span className="text-base font-medium">{info.symbol}</span>
-                    <span>{curr}</span>
+                    <span className="text-base">{currencyFlags[curr]}</span>
+                    <span>{curr} - {info.name}</span>
                   </span>
                   {curr === currency && (
                     <svg
