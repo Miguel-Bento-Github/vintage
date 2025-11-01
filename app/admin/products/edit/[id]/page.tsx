@@ -11,6 +11,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorState from '@/components/ErrorState';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
 import UnifiedProductContentEditor from '@/components/admin/UnifiedProductContentEditor';
+import DraggableSections from '@/components/admin/DraggableSections';
 import { Timestamp } from 'firebase/firestore';
 
 interface ProductFormData {
@@ -1697,48 +1698,12 @@ export default function EditProductPage() {
 
           {/* Sidebar Links */}
           <nav className="flex-1 mt-6">
-            <ul>
-              {sections.map((section) => {
-                const isComplete = isSectionComplete(section.id);
-                const hasChanges = hasSectionChanges(section.id);
-
-                return (
-                  <li key={section.id}>
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection(section.id)}
-                      className="w-full text-left px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-between"
-                    >
-                      <span>{section.label}</span>
-                      <div className="flex items-center gap-1">
-                        {hasChanges && (
-                          <svg
-                            className="h-4 w-4 text-amber-500"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            aria-label="Unsaved changes"
-                          >
-                            <title>Unsaved changes</title>
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                        {isComplete && !hasChanges && (
-                          <svg
-                            className="h-4 w-4 text-green-500"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            aria-label="Complete"
-                          >
-                            <title>Complete</title>
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </div>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+            <DraggableSections
+              sections={sections}
+              onSectionClick={scrollToSection}
+              isSectionComplete={isSectionComplete}
+              hasSectionChanges={hasSectionChanges}
+            />
           </nav>
 
           {/* Sidebar Footer with Save Button */}
