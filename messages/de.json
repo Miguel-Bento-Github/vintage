@@ -85,9 +85,8 @@
     "returnPolicy": "Rückgaberecht",
     "returnIntro": "Wir möchten, dass Sie Ihr Vintage-Fundstück lieben! Rücksendungen werden innerhalb von 7 Tagen nach Lieferung akzeptiert.",
     "return1": "Der Artikel muss ungetragen und im Originalzustand sein",
-    "return2": "Die Originaletiketten müssen angebracht sein",
-    "return3": "Die Rücksendekosten trägt der Käufer",
-    "return4": "Die Rückerstattung erfolgt innerhalb von 5-7 Werktagen",
+    "return2": "Die Rücksendekosten trägt der Käufer",
+    "return3": "Die Rückerstattung erfolgt innerhalb von 5-7 Werktagen",
     "similarItems": "Ähnliche Artikel"
   },
   "eras": {

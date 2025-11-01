@@ -85,9 +85,8 @@
     "returnPolicy": "Politique de Retour",
     "returnIntro": "Nous voulons que vous aimiez votre trouvaille vintage ! Les retours sont acceptés dans les 7 jours suivant la livraison.",
     "return1": "L'article doit être non porté et dans son état d'origine",
-    "return2": "Les étiquettes d'origine doivent être attachées",
-    "return3": "Les frais de retour sont à la charge de l'acheteur",
-    "return4": "Le remboursement sera effectué sous 5 à 7 jours ouvrables",
+    "return2": "Les frais de retour sont à la charge de l'acheteur",
+    "return3": "Le remboursement sera effectué sous 5 à 7 jours ouvrables",
     "similarItems": "Articles Similaires"
   },
   "eras": {
