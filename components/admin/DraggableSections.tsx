@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { createDraggable, animate } from 'animejs';
+import { createDraggable, animate, spring } from 'animejs';
 
 interface Section {
   id: string;
@@ -26,7 +26,6 @@ export default function DraggableSections({
 }: DraggableSectionsProps) {
   const [sections, setSections] = useState<Section[]>([]);
   const containerRef = useRef<HTMLUListElement>(null);
-  const draggableRef = useRef<ReturnType<typeof createDraggable> | null>(null);
   const itemHeightsRef = useRef<Map<string, number>>(new Map());
   const currentOrderRef = useRef<string[]>([]);
 
@@ -93,16 +92,26 @@ export default function DraggableSections({
 
     // Create individual draggable instances for each item
     const draggables = itemsList.map((item) => {
+      const itemHeight = itemHeightsRef.current.get(item.getAttribute('data-id') || '') || 48;
+
       return createDraggable(item as HTMLElement, {
         y: true,
         x: false,
         container: container,
         trigger: item.querySelector('.drag-handle') as HTMLElement,
+        snap: {
+          y: itemHeight,
+        },
+        releaseStiffness: 150,
+        releaseEase: spring({
+          stiffness: 150,
+          damping: 20,
+        }),
         onGrab: (self) => {
           const target = self.$target;
           draggedId = target.getAttribute('data-id');
           draggedElement = target;
-          lastSwapIndex = -1; // Reset to -1, not current index
+          lastSwapIndex = -1;
 
           target.style.zIndex = '1000';
           target.style.opacity = '0.7';
@@ -115,9 +124,8 @@ export default function DraggableSections({
           const draggedMiddle = draggedRect.top + draggedRect.height / 2;
 
           const currentDraggedIndex = currentOrderRef.current.indexOf(draggedId);
-
-          // Find which item the dragged element is currently over
           let newIndex = currentDraggedIndex;
+          const threshold = 1.5;
 
           for (let i = 0; i < items.length; i++) {
             const item = items[i];
@@ -125,12 +133,19 @@ export default function DraggableSections({
             if (!id || id === draggedId) continue;
 
             const rect = item.getBoundingClientRect();
+            const itemMiddle = rect.top + rect.height / 2;
 
-            // Check if the dragged item's center is within this item's bounds
-            if (draggedMiddle >= rect.top && draggedMiddle <= rect.bottom) {
-              // We found the item we're hovering over
-              newIndex = currentOrderRef.current.indexOf(id);
-              break;
+            if (draggedMiddle < itemMiddle - threshold) {
+              const targetIndex = currentOrderRef.current.indexOf(id);
+              if (targetIndex < currentDraggedIndex) {
+                newIndex = targetIndex;
+                break;
+              }
+            } else if (draggedMiddle > itemMiddle + threshold) {
+              const targetIndex = currentOrderRef.current.indexOf(id);
+              if (targetIndex > currentDraggedIndex) {
+                newIndex = targetIndex;
+              }
             }
           }
 
@@ -168,19 +183,19 @@ export default function DraggableSections({
               const oldVisualPosition = itemPositions.get(itemId) || 0;
               const newVisualPosition = newOrder.indexOf(itemId);
 
-              // Update stored position
-              itemPositions.set(itemId, newVisualPosition);
+              if (oldVisualPosition !== newVisualPosition) {
+                itemPositions.set(itemId, newVisualPosition);
 
-              // Calculate absolute offset from original DOM position
-              const originalDOMPosition = sections.findIndex(s => s.id === itemId);
-              const itemHeight = itemHeightsRef.current.get(itemId) || 48;
-              const absoluteOffset = (newVisualPosition - originalDOMPosition) * itemHeight;
+                const originalDOMPosition = sections.findIndex(s => s.id === itemId);
+                const itemHeight = itemHeightsRef.current.get(itemId) || 48;
+                const absoluteOffset = (newVisualPosition - originalDOMPosition) * itemHeight;
 
-              animate(otherItem as HTMLElement, {
-                translateY: absoluteOffset,
-                duration: 200,
-                ease: 'out(2)',
-              });
+                animate(otherItem as HTMLElement, {
+                  translateY: absoluteOffset,
+                  duration: 150,
+                  ease: 'out(3)',
+                });
+              }
             });
           }
         },
@@ -193,16 +208,12 @@ export default function DraggableSections({
             return;
           }
 
-          // Get final order from our tracking ref
           const finalOrder = currentOrderRef.current;
-
-          // Reorder sections state to match
           const reorderedSections = finalOrder
             .map(id => sections.find(s => s.id === id))
             .filter((s): s is Section => s !== null)
             .map((section, index) => ({ ...section, order: index }));
 
-          // Reset all transforms
           const items = Array.from(container.querySelectorAll('.draggable-section'));
           items.forEach((otherItem) => {
             animate(otherItem as HTMLElement, {
@@ -213,12 +224,7 @@ export default function DraggableSections({
           });
 
           setSections(reorderedSections);
-
-          // Save to localStorage
-          localStorage.setItem(
-            storageKey,
-            JSON.stringify(reorderedSections.map((section) => section.id))
-          );
+          localStorage.setItem(storageKey, JSON.stringify(reorderedSections.map(s => s.id)));
 
           target.style.zIndex = '';
           target.style.opacity = '';
@@ -228,9 +234,6 @@ export default function DraggableSections({
         },
       });
     });
-
-    // Store all draggable instances
-    draggableRef.current = draggables as any;
 
     return () => {
       draggables.forEach((draggable) => {
