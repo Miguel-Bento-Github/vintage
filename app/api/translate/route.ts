@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { translateProductFields } from '@/lib/autoTranslate';
 import type { Locale } from '@/i18n';
 import { locales } from '@/i18n';
+import { verifyAdminAuth } from '@/lib/auth/apiAuth';
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify admin authentication - only admins can translate product content
+    const adminUid = await verifyAdminAuth(request);
+    if (!adminUid) {
+      return NextResponse.json(
+        { error: 'Unauthorized - admin authentication required' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { title, description, conditionNotes, targetLang } = body;
 

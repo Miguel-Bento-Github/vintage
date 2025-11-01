@@ -3,6 +3,7 @@ import { createOrderAdmin } from '@/services/adminOrderService';
 import { CustomerInfo, OrderItem } from '@/types';
 import { sendOrderConfirmationEmail, sendAdminOrderNotification } from '@/lib/email/orderEmails';
 import { toLocale } from '@/i18n';
+import { stripe } from '@/lib/stripe';
 
 interface CreateOrderRequest {
   paymentIntentId: string;
@@ -18,6 +19,57 @@ interface CreateOrderRequest {
 export async function POST(request: NextRequest) {
   try {
     const body: CreateOrderRequest = await request.json();
+
+    // CRITICAL SECURITY: Verify the payment was actually successful
+    // Never trust client-provided payment status
+    if (!body.paymentIntentId || !body.paymentIntentId.startsWith('pi_')) {
+      return NextResponse.json(
+        { error: 'Invalid payment intent ID' },
+        { status: 400 }
+      );
+    }
+
+    // Fetch payment intent from Stripe to verify payment succeeded
+    const paymentIntent = await stripe.paymentIntents.retrieve(body.paymentIntentId);
+
+    if (paymentIntent.status !== 'succeeded') {
+      return NextResponse.json(
+        { error: `Payment not completed. Status: ${paymentIntent.status}` },
+        { status: 400 }
+      );
+    }
+
+    // Verify the payment amount matches (prevent price manipulation)
+    const expectedAmount = Math.round(body.total * 100); // Convert to cents
+    if (Math.abs(paymentIntent.amount - expectedAmount) > 1) { // Allow 1 cent rounding difference
+      console.error('Amount mismatch:', {
+        expected: expectedAmount,
+        actual: paymentIntent.amount,
+        difference: Math.abs(paymentIntent.amount - expectedAmount)
+      });
+      return NextResponse.json(
+        { error: 'Payment amount mismatch' },
+        { status: 400 }
+      );
+    }
+
+    // Check if order already exists for this payment intent (prevent duplicate orders)
+    const { adminDb } = await import('@/lib/firebase-admin');
+    const existingOrders = await adminDb
+      .collection('orders')
+      .where('paymentIntentId', '==', body.paymentIntentId)
+      .limit(1)
+      .get();
+
+    if (!existingOrders.empty) {
+      const existingOrder = existingOrders.docs[0];
+      return NextResponse.json({
+        success: true,
+        orderId: existingOrder.id,
+        orderNumber: existingOrder.data().orderNumber,
+        message: 'Order already exists for this payment',
+      });
+    }
 
     // Get locale from request headers (next-intl sets this)
     const headerLocale = request.headers.get('x-locale') || request.headers.get('accept-language')?.split(',')[0]?.split('-')[0];
