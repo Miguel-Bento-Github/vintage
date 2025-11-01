@@ -9,7 +9,9 @@
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "seed": "tsx scripts/seed-products.ts",
-    "test:security": "tsx scripts/test-firestore-rules.ts"
+    "test:security": "tsx scripts/test-firestore-rules.ts",
+    "set-admin": "tsx scripts/set-admin.ts",
+    "check-admin": "tsx scripts/check-admin.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
