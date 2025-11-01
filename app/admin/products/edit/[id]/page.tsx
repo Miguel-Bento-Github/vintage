@@ -67,7 +67,6 @@ const sections = [
   { id: 'shipping', label: 'Shipping Information' },
   { id: 'images', label: 'Images' },
   { id: 'tags', label: 'Tags & Options' },
-  { id: 'actions', label: 'Form Actions' },
 ];
 
 export default function EditProductPage() {
@@ -119,11 +118,31 @@ export default function EditProductPage() {
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [sectionOrder, setSectionOrder] = useState<string[]>([]);
 
   // Track initial state for change detection
   const [initialFormData, setInitialFormData] = useState<ProductFormData | null>(null);
   const [initialTranslations, setInitialTranslations] = useState<ProductTranslations>({});
   const [initialImages, setInitialImages] = useState<ExistingImage[]>([]);
+
+  // Load section order from localStorage
+  useEffect(() => {
+    const savedOrder = localStorage.getItem('adminEditPageSectionOrder');
+    if (savedOrder) {
+      try {
+        setSectionOrder(JSON.parse(savedOrder));
+      } catch {
+        setSectionOrder(sections.map(s => s.id));
+      }
+    } else {
+      setSectionOrder(sections.map(s => s.id));
+    }
+  }, []);
+
+  // Callback to update section order
+  const handleSectionOrderChange = (newOrder: string[]) => {
+    setSectionOrder(newOrder);
+  };
 
   // Populate form when product loads
   useEffect(() => {
@@ -825,9 +844,9 @@ export default function EditProductPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8" style={{ display: 'flex', flexDirection: 'column' }}>
         {/* Basic Information */}
-        <section id="basic-info" className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="basic-info" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('basic-info') }}>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Basic Information
           </h2>
@@ -948,7 +967,7 @@ export default function EditProductPage() {
         </section>
 
         {/* Product Content (multilingual) */}
-        <section id="content">
+        <section id="content" style={{ order: sectionOrder.indexOf('content') }}>
         <UnifiedProductContentEditor
           baseTitle={formData.title}
           baseDescription={formData.description}
@@ -963,7 +982,7 @@ export default function EditProductPage() {
 
         {/* Specifications */}
         {formData.productType && SPECIFICATION_FIELDS[formData.productType].length > 0 && (
-          <section id="specifications" className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <section id="specifications" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('specifications') }}>
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
               Specifications (Optional)
             </h2>
@@ -1001,7 +1020,7 @@ export default function EditProductPage() {
         )}
 
         {/* Condition & Pricing */}
-        <section id="pricing" className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="pricing" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('pricing') }}>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Condition & Pricing
           </h2>
@@ -1056,7 +1075,7 @@ export default function EditProductPage() {
         </section>
 
         {/* Discount Pricing */}
-        <section id="discount" className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="discount" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('discount') }}>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Discount Pricing (Optional)
           </h2>
@@ -1146,7 +1165,7 @@ export default function EditProductPage() {
         </section>
 
         {/* Shipping Information */}
-        <section id="shipping" className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="shipping" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('shipping') }}>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Shipping Information
           </h2>
@@ -1239,7 +1258,7 @@ export default function EditProductPage() {
         </section>
 
         {/* Images */}
-        <section id="images" className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="images" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('images') }}>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Images <span className="text-red-500">*</span>
           </h2>
@@ -1403,7 +1422,7 @@ export default function EditProductPage() {
         </section>
 
         {/* Tags & Options */}
-        <section id="tags" className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="tags" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('tags') }}>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
             Tags & Options
           </h2>
@@ -1466,7 +1485,7 @@ export default function EditProductPage() {
         </section>
 
         {/* Form Actions */}
-        <section id="actions" className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <section id="actions" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: 9999 }}>
           <div className="space-y-4">
             {/* Quick Actions */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -1703,6 +1722,7 @@ export default function EditProductPage() {
               onSectionClick={scrollToSection}
               isSectionComplete={isSectionComplete}
               hasSectionChanges={hasSectionChanges}
+              onOrderChange={handleSectionOrderChange}
             />
           </nav>
 

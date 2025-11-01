@@ -15,6 +15,7 @@ interface DraggableSectionsProps {
   isSectionComplete: (sectionId: string) => boolean;
   hasSectionChanges: (sectionId: string) => boolean;
   storageKey?: string;
+  onOrderChange?: (newOrder: string[]) => void;
 }
 
 export default function DraggableSections({
@@ -23,6 +24,7 @@ export default function DraggableSections({
   isSectionComplete,
   hasSectionChanges,
   storageKey = 'adminEditPageSectionOrder',
+  onOrderChange,
 }: DraggableSectionsProps) {
   const [sections, setSections] = useState<Section[]>([]);
   const containerRef = useRef<HTMLUListElement>(null);
@@ -224,7 +226,13 @@ export default function DraggableSections({
           });
 
           setSections(reorderedSections);
-          localStorage.setItem(storageKey, JSON.stringify(reorderedSections.map(s => s.id)));
+          const newOrder = reorderedSections.map(s => s.id);
+          localStorage.setItem(storageKey, JSON.stringify(newOrder));
+
+          // Notify parent component of order change
+          if (onOrderChange) {
+            onOrderChange(newOrder);
+          }
 
           target.style.zIndex = '';
           target.style.opacity = '';
