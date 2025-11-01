@@ -14,7 +14,7 @@ const localeNames: Record<Locale, string> = {
 };
 
 const localeFlags: Record<Locale, string> = {
-  en: '🇺🇸',
+  en: '🇬🇧',
   es: '🇪🇸',
   fr: '🇫🇷',
   de: '🇩🇪',
