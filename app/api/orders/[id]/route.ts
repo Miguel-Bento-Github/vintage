@@ -6,7 +6,6 @@ import { OrderStatus, Order, timestampToISO } from '@/types';
 import { sendShippingNotificationEmail, sendDeliveryConfirmationEmail, sendCancellationEmail, getCarrierTrackingUrl } from '@/lib/email/orderEmails';
 import { toLocale } from '@/i18n';
 import { verifyAdminAuth } from '@/lib/auth/apiAuth';
-import { markProductAvailable } from '@/services/productService';
 
 export async function GET(
   request: NextRequest,
@@ -210,21 +209,31 @@ export async function PATCH(
     // Send cancellation email if status changed to 'cancelled'
     if (status === 'cancelled' && order.status !== 'cancelled') {
       // Restore product availability for all items in the order
-      orderForEmail.items.forEach(async (item) => {
+      for (const item of orderForEmail.items) {
         try {
-          await markProductAvailable(item.productId);
+          const productRef = adminDb.collection('products').doc(item.productId);
+          await productRef.update({
+            inStock: true,
+            soldAt: null,
+            updatedAt: Timestamp.now(),
+          });
           console.log(`Restored availability for product ${item.productId} after order cancellation`);
         } catch (error) {
           console.error(`Failed to restore availability for product ${item.productId}:`, error);
           // Don't fail status update if product update fails
         }
-      });
+      }
 
-      // Send email asynchronously (don't wait for it)
-      sendCancellationEmail(orderForEmail, undefined, emailLocale).catch((error) => {
+      // Send cancellation email (await to ensure it completes and logs to email history)
+      try {
+        const emailResult = await sendCancellationEmail(orderForEmail, undefined, emailLocale);
+        if (!emailResult.success) {
+          console.error('Cancellation email failed:', emailResult.error);
+        }
+      } catch (error) {
         console.error('Failed to send cancellation email:', error);
         // Don't fail status update if email fails
-      });
+      }
     }
 
     return NextResponse.json({

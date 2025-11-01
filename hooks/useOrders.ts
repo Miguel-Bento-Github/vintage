@@ -293,11 +293,16 @@ export function useUpdateOrderStatus() {
       console.error('Failed to update order status:', error);
     },
     // Always refetch after error or success
-    onSettled: (data, error, { orderId }) => {
+    onSettled: (data, error, { orderId, status }) => {
       queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) });
       queryClient.invalidateQueries({ queryKey: orderKeys.lists() });
       queryClient.invalidateQueries({ queryKey: orderKeys.stats() });
       queryClient.invalidateQueries({ queryKey: orderKeys.recent() });
+
+      // If order was cancelled, invalidate products (they become available again)
+      if (status === 'cancelled') {
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+      }
     },
   });
 }

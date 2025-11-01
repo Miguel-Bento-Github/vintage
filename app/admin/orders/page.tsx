@@ -479,15 +479,15 @@ export default function OrderManagementPage() {
                 <div className="bg-gray-50 rounded-lg p-4 space-y-4">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium text-gray-700">Current Status:</span>
-                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(selectedOrder.status)}`}>
-                      {selectedOrder.status}
+                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(orders.find(o => o.id === selectedOrder.id)?.status || selectedOrder.status)}`}>
+                      {orders.find(o => o.id === selectedOrder.id)?.status || selectedOrder.status}
                     </span>
                   </div>
 
-                  {selectedOrder.trackingNumber && (
+                  {(orders.find(o => o.id === selectedOrder.id)?.trackingNumber || selectedOrder.trackingNumber) && (
                     <div>
                       <span className="text-sm font-medium text-gray-700">Tracking Number:</span>
-                      <span className="ml-2 text-sm text-gray-900">{selectedOrder.trackingNumber}</span>
+                      <span className="ml-2 text-sm text-gray-900">{orders.find(o => o.id === selectedOrder.id)?.trackingNumber || selectedOrder.trackingNumber}</span>
                     </div>
                   )}
 
