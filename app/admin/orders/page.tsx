@@ -28,28 +28,28 @@ export default function OrderManagementPage() {
   const [carrier, setCarrier] = useState<string>('USPS');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  // Update URL when modal opens/closes
-  useEffect(() => {
-    if (selectedOrder) {
-      router.push(`/admin/orders?orderId=${selectedOrder.id}`, { scroll: false });
-    } else {
-      const orderId = searchParams.get('orderId');
-      if (orderId) {
-        router.push('/admin/orders', { scroll: false });
-      }
-    }
-  }, [selectedOrder, router, searchParams]);
-
-  // Open modal from URL on mount
+  // Sync URL with modal state
   useEffect(() => {
     const orderId = searchParams.get('orderId');
-    if (orderId && orders.length > 0 && !selectedOrder) {
-      const order = orders.find(o => o.id === orderId);
-      if (order) {
-        setSelectedOrder(order);
+
+    if (selectedOrder) {
+      // Modal is open, ensure URL has orderId
+      if (orderId !== selectedOrder.id) {
+        router.replace(`/admin/orders?orderId=${selectedOrder.id}`, { scroll: false });
+      }
+    } else if (orderId) {
+      // Modal is closed but URL has orderId, open the modal
+      if (orders.length > 0) {
+        const order = orders.find(o => o.id === orderId);
+        if (order) {
+          setSelectedOrder(order);
+        } else {
+          // Order not found, clear URL
+          router.replace('/admin/orders', { scroll: false });
+        }
       }
     }
-  }, [searchParams, orders, selectedOrder]);
+  }, [selectedOrder, searchParams, orders, router]);
 
   // Error state from query or mutation
   const error = queryError
@@ -356,7 +356,10 @@ export default function OrderManagementPage() {
                 Order Details - {selectedOrder.orderNumber}
               </h2>
               <button
-                onClick={() => setSelectedOrder(null)}
+                onClick={() => {
+                  setSelectedOrder(null);
+                  router.replace('/admin/orders', { scroll: false });
+                }}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
