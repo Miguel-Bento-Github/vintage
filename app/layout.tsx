@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   title: "Dream Azul - Vintage Clothing, Furniture & Collectibles Online Shop | Utrecht, Netherlands",
@@ -66,5 +67,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return children;
+  return (
+    <>
+      {children}
+      <SpeedInsights />
+    </>
+  );
 }
