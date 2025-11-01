@@ -38,7 +38,6 @@ export default function CurrencySelector() {
   };
 
   const currencies = getSupportedCurrencies();
-  const currentCurrencyInfo = CURRENCIES[currency];
 
   return (
     <div className="relative" ref={dropdownRef}>

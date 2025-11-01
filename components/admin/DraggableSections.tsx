@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { createDraggable, animate, spring } from 'animejs';
+import type { Draggable } from 'animejs';
 
 interface Section {
   id: string;
@@ -97,19 +98,18 @@ export default function DraggableSections({
       const itemHeight = itemHeightsRef.current.get(item.getAttribute('data-id') || '') || 48;
 
       return createDraggable(item as HTMLElement, {
-        y: true,
+        y: {
+          snap: itemHeight,
+        },
         x: false,
         container: container,
         trigger: item.querySelector('.drag-handle') as HTMLElement,
-        snap: {
-          y: itemHeight,
-        },
         releaseStiffness: 150,
         releaseEase: spring({
           stiffness: 150,
           damping: 20,
         }),
-        onGrab: (self) => {
+        onGrab: (self: Draggable) => {
           const target = self.$target;
           draggedId = target.getAttribute('data-id');
           draggedElement = target;
@@ -118,7 +118,7 @@ export default function DraggableSections({
           target.style.zIndex = '1000';
           target.style.opacity = '0.7';
         },
-        onDrag: (self) => {
+        onDrag: () => {
           if (!draggedId || !draggedElement) return;
 
           const items = Array.from(container.querySelectorAll('.draggable-section'));
@@ -201,7 +201,7 @@ export default function DraggableSections({
             });
           }
         },
-        onRelease: (self) => {
+        onRelease: (self: Draggable) => {
           const target = self.$target;
 
           if (!draggedId) {
@@ -250,6 +250,7 @@ export default function DraggableSections({
         }
       });
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sections, storageKey]);
 
   return (
