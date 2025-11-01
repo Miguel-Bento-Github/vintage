@@ -4,7 +4,7 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Use separate build directory to avoid conflicts with dev server
+  // Use separate build directory for dev to avoid conflicts
   distDir: process.env.BUILD_DIR || '.next',
 
   // Image optimization configuration
