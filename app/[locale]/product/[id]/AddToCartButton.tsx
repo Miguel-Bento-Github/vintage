@@ -63,35 +63,84 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
 
   if (!product.inStock) {
     return (
-      <VintageButton
-        type="button"
-        disabled
-        variant="disabled"
-      >
-        {t('soldOut')}
-      </VintageButton>
+      <>
+        <VintageButton
+          type="button"
+          disabled
+          variant="disabled"
+        >
+          {t('soldOut')}
+        </VintageButton>
+        {/* Mobile floating cart button - disabled */}
+        <button
+          type="button"
+          disabled
+          className="md:hidden fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-b from-gray-300 to-gray-400 text-gray-600 border-4 border-gray-500 rounded-full shadow-[0_4px_0_0_rgba(107,114,128,0.3),inset_0_2px_0_0_rgba(255,255,255,0.2)] flex items-center justify-center cursor-not-allowed"
+          aria-label={t('soldOut')}
+        >
+          <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </>
     );
   }
 
   if (isInCart) {
     return (
-      <VintageButton
-        type="button"
-        disabled
-        variant="disabled"
-      >
-        {t('alreadyInCart')}
-      </VintageButton>
+      <>
+        <VintageButton
+          type="button"
+          disabled
+          variant="disabled"
+        >
+          {t('alreadyInCart')}
+        </VintageButton>
+        {/* Mobile floating cart button - already in cart */}
+        <button
+          type="button"
+          disabled
+          className="md:hidden fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-b from-gray-300 to-gray-400 text-gray-600 border-4 border-gray-500 rounded-full shadow-[0_4px_0_0_rgba(107,114,128,0.3),inset_0_2px_0_0_rgba(255,255,255,0.2)] flex items-center justify-center cursor-not-allowed"
+          aria-label={t('alreadyInCart')}
+        >
+          <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          </svg>
+        </button>
+      </>
     );
   }
 
   return (
-    <VintageButton
-      type="button"
-      onClick={handleAddToCart}
-      variant={showAdded ? 'success' : 'primary'}
-    >
-      {showAdded ? `✓ ${t('addedToCart')}` : t('addToCart')}
-    </VintageButton>
+    <>
+      <VintageButton
+        type="button"
+        onClick={handleAddToCart}
+        variant={showAdded ? 'success' : 'primary'}
+      >
+        {showAdded ? `✓ ${t('addedToCart')}` : t('addToCart')}
+      </VintageButton>
+      {/* Mobile floating cart button - active */}
+      <button
+        type="button"
+        onClick={handleAddToCart}
+        className={`md:hidden fixed bottom-6 right-6 z-50 w-16 h-16 border-4 rounded-full flex items-center justify-center transition-all duration-150 cursor-pointer ${
+          showAdded
+            ? 'bg-green-600 text-white border-green-900 shadow-[0_4px_0_0_rgba(20,83,45,0.4),inset_0_2px_0_0_rgba(255,255,255,0.2)] active:shadow-[0_2px_0_0_rgba(20,83,45,0.4),inset_0_2px_0_0_rgba(255,255,255,0.2)] active:translate-y-[2px]'
+            : 'bg-gradient-to-b from-amber-600 to-amber-800 text-white border-amber-900 shadow-[0_4px_0_0_rgba(120,53,15,0.4),inset_0_2px_0_0_rgba(255,255,255,0.2)] active:shadow-[0_2px_0_0_rgba(120,53,15,0.4),inset_0_2px_0_0_rgba(255,255,255,0.2)] active:translate-y-[2px]'
+        }`}
+        aria-label={showAdded ? t('addedToCart') : t('addToCart')}
+      >
+        {showAdded ? (
+          <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          </svg>
+        ) : (
+          <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+          </svg>
+        )}
+      </button>
+    </>
   );
 }

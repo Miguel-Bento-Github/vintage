@@ -17,6 +17,7 @@ export default function Footer() {
           backgroundImage: `url('/patterns/flowers.png')`,
           backgroundRepeat: 'repeat',
         }}
+        aria-hidden="true"
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -166,7 +167,7 @@ export default function Footer() {
               className="text-gray-500 hover:text-gray-300 transition-colors text-2xl"
               aria-label="Admin Login"
             >
-              🎃
+              <span aria-hidden="true">🎃</span>
             </Link>
           </div>
         </div>
