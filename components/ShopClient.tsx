@@ -13,7 +13,6 @@ import {
   Category,
 } from '@/lib/constants';
 import { ProductType } from '@/types';
-import { useLocale } from 'next-intl';
 import { useTranslations } from '@/hooks/useTranslations';
 import VintageProductCard from '@/components/VintageProductCard';
 
@@ -37,9 +36,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const locale = useLocale();
   const t = useTranslations('shop');
-  const tCommon = useTranslations('common');
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [selectedProductTypes, setSelectedProductTypes] = useState<ProductType[]>(
