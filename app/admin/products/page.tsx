@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -26,12 +26,22 @@ export default function ProductsPage() {
   const { data: products, isLoading, error, refetch } = useProducts();
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [eraFilter, setEraFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [stockFilter, setStockFilter] = useState<'all' | 'in-stock' | 'sold'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingStockId, setTogglingStockId] = useState<string | null>(null);
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Filter and search products
   const filteredProducts = useMemo(() => {
@@ -40,9 +50,9 @@ export default function ProductsPage() {
     return products.filter((product) => {
       // Search filter
       const matchesSearch =
-        !searchTerm ||
-        product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.brand.toLowerCase().includes(searchTerm.toLowerCase());
+        !debouncedSearchTerm ||
+        product.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        product.brand.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
 
       // Era filter
       const matchesEra = !eraFilter || product.era === eraFilter;
@@ -58,7 +68,7 @@ export default function ProductsPage() {
 
       return matchesSearch && matchesEra && matchesCategory && matchesStock;
     });
-  }, [products, searchTerm, eraFilter, categoryFilter, stockFilter]);
+  }, [products, debouncedSearchTerm, eraFilter, categoryFilter, stockFilter]);
 
   // Pagination
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
@@ -172,7 +182,7 @@ export default function ProductsPage() {
               type="text"
               id="search"
               value={searchTerm}
-              onChange={(e) => handleFilterChange(() => setSearchTerm(e.target.value))}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Title or brand..."
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
