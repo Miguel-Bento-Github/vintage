@@ -41,14 +41,13 @@ export default function EmailLayout({
           <Section style={styles.header}>
             {/* Logo - Using absolute production URL for email compatibility */}
             <Img
-              src="https://www.dreamazul.com/logo.jpg"
+              src="https://www.dreamazul.com/logo-512.png"
               alt={footer.companyName}
-              width="80"
-              height="80"
+              width="50"
+              height="50"
               style={styles.logo}
             />
             <Text style={styles.brandName}>{footer.companyName}</Text>
-            <Text style={styles.tagline}>Authentic Vintage Items</Text>
           </Section>
 
           {/* Main Content */}
@@ -156,12 +155,12 @@ const styles = {
   },
   header: {
     backgroundColor: '#ffffff',
-    padding: '32px 24px',
+    padding: '20px 24px',
     textAlign: 'center' as const,
     borderBottom: `1px solid ${EMAIL_CONFIG.templates.primaryColor}`,
   },
   logo: {
-    margin: '0 auto',
+    margin: '0 auto 8px',
     display: 'block',
   },
   logoEmoji: {
@@ -171,21 +170,12 @@ const styles = {
     lineHeight: '1',
   },
   brandName: {
-    fontSize: '28px',
+    fontSize: '22px',
     fontWeight: 700,
     color: EMAIL_CONFIG.templates.accentColor,
-    margin: '12px 0 0',
+    margin: '0',
     fontFamily: 'Georgia, serif',
     textAlign: 'center' as const,
-  },
-  tagline: {
-    fontSize: '13px',
-    fontWeight: 400,
-    color: '#666666',
-    margin: '4px 0 0',
-    textAlign: 'center' as const,
-    letterSpacing: '1px',
-    textTransform: 'uppercase' as const,
   },
   content: {
     backgroundColor: '#ffffff',

@@ -14,20 +14,19 @@ export default function Header({
   logoUrl,
   companyName = EMAIL_CONFIG.footer.companyName,
 }: HeaderProps) {
-  const defaultLogoUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://vintage-store-mu.vercel.app'}/logo.jpg`;
+  const defaultLogoUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://vintage-store-mu.vercel.app'}/logo-512.png`;
 
   return (
     <Section style={styles.header}>
-      {/* Logo - JPG format for email compatibility */}
+      {/* Logo - PNG with transparent background */}
       <Img
         src={logoUrl || defaultLogoUrl}
         alt={companyName}
-        width="80"
-        height="80"
+        width="50"
+        height="50"
         style={styles.logo}
       />
       <Text style={styles.brandName}>{companyName}</Text>
-      <Text style={styles.tagline}>Authentic Vintage Items</Text>
     </Section>
   );
 }
@@ -35,12 +34,12 @@ export default function Header({
 const styles = {
   header: {
     backgroundColor: '#ffffff',
-    padding: '32px 24px',
+    padding: '20px 24px',
     textAlign: 'center' as const,
     borderBottom: `1px solid ${EMAIL_CONFIG.templates.primaryColor}`,
   },
   logo: {
-    margin: '0 auto',
+    margin: '0 auto 8px',
     display: 'block',
   },
   logoEmoji: {
@@ -50,10 +49,10 @@ const styles = {
     lineHeight: '1',
   },
   brandName: {
-    fontSize: '28px',
+    fontSize: '22px',
     fontWeight: 700,
     color: EMAIL_CONFIG.templates.accentColor,
-    margin: '12px 0 0',
+    margin: '0',
     fontFamily: 'Georgia, serif',
     textAlign: 'center' as const,
   },

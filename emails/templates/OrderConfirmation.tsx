@@ -51,16 +51,8 @@ export default function OrderConfirmation({
     <EmailLayout preview={t.preview.replace('{orderNumber}', order.orderNumber)}>
       {/* Success Message */}
       <Heading style={styles.heading}>
-        {t.heading} 🎉
+        {t.heading}
       </Heading>
-
-      <Text style={styles.paragraph}>
-        {t.greeting.replace('{name}', order.customerInfo.name)}
-      </Text>
-
-      <Text style={styles.paragraph}>
-        {t.intro}
-      </Text>
 
       {/* Order Number - Prominent */}
       <Section style={styles.orderNumberSection}>
