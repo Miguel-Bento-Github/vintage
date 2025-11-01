@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Order, OrderStatus } from '@/types';
 import { useOrders, useUpdateOrderStatus } from '@/hooks/useOrders';
@@ -10,6 +11,9 @@ import ErrorState from '@/components/ErrorState';
 type StatusFilter = OrderStatus | 'all';
 
 export default function OrderManagementPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   // TanStack Query hooks
   const { data: orders = [], isLoading, error: queryError, refetch } = useOrders();
   const updateStatusMutation = useUpdateOrderStatus();
@@ -23,6 +27,29 @@ export default function OrderManagementPage() {
   const [trackingNumber, setTrackingNumber] = useState<string>('');
   const [carrier, setCarrier] = useState<string>('USPS');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  // Update URL when modal opens/closes
+  useEffect(() => {
+    if (selectedOrder) {
+      router.push(`/admin/orders?orderId=${selectedOrder.id}`, { scroll: false });
+    } else {
+      const orderId = searchParams.get('orderId');
+      if (orderId) {
+        router.push('/admin/orders', { scroll: false });
+      }
+    }
+  }, [selectedOrder, router, searchParams]);
+
+  // Open modal from URL on mount
+  useEffect(() => {
+    const orderId = searchParams.get('orderId');
+    if (orderId && orders.length > 0 && !selectedOrder) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        setSelectedOrder(order);
+      }
+    }
+  }, [searchParams, orders, selectedOrder]);
 
   // Error state from query or mutation
   const error = queryError
@@ -322,7 +349,7 @@ export default function OrderManagementPage() {
 
       {/* Order Details Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900">
@@ -446,7 +473,7 @@ export default function OrderManagementPage() {
                     </label>
                     <div className="flex gap-2">
                       <select
-                        value={selectedOrder.status}
+                        value={orders.find(o => o.id === selectedOrder.id)?.status || selectedOrder.status}
                         onChange={(e) => {
                           handleStatusUpdate(selectedOrder.id, e.target.value as OrderStatus);
                         }}
