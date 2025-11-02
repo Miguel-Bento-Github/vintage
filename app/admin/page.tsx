@@ -219,7 +219,7 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link
-          href="/admin/add-product"
+          href="/admin/products/edit/new"
           className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow"
         >
           <div className="flex items-center">

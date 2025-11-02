@@ -80,6 +80,17 @@ const nextConfig = {
       },
     ];
   },
+
+  // Redirect old routes to new ones
+  async redirects() {
+    return [
+      {
+        source: '/admin/add-product',
+        destination: '/admin/products/edit/new',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

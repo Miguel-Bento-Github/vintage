@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { locales, Locale, defaultLocale } from '@/i18n';
 import type { ProductTranslations } from '@/types';
 import RichTextEditor from '@/components/RichTextEditor';
+import { useTranslateProduct } from '@/hooks/useTranslation';
 
 interface UnifiedProductContentEditorProps {
   // Base content (English)
@@ -46,10 +47,12 @@ export default function UnifiedProductContentEditor({
   onTranslationsChange,
 }: UnifiedProductContentEditorProps) {
   const [selectedLocale, setSelectedLocale] = useState<Locale>(defaultLocale);
-  const [isTranslating, setIsTranslating] = useState(false);
   const [isTranslatingAll, setIsTranslatingAll] = useState(false);
   const [translationError, setTranslationError] = useState<string | null>(null);
   const [translationProgress, setTranslationProgress] = useState<string>('');
+
+  // TanStack Query mutation for translation
+  const translateMutation = useTranslateProduct();
 
   const handleTranslationChange = (
     locale: Locale,
@@ -85,33 +88,22 @@ export default function UnifiedProductContentEditor({
       return;
     }
 
-    setIsTranslating(true);
     setTranslationError(null);
 
     try {
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: baseTitle,
-          description: baseDescription,
-          conditionNotes: baseConditionNotes,
-          targetLang: selectedLocale,
-        }),
+      const result = await translateMutation.mutateAsync({
+        title: baseTitle,
+        description: baseDescription,
+        conditionNotes: baseConditionNotes,
+        targetLang: selectedLocale,
       });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Translation failed');
-      }
 
       // Update translations with the auto-translated content
       const updatedTranslations = { ...translations };
       updatedTranslations[selectedLocale] = {
-        title: data.translation.title,
-        description: data.translation.description,
-        ...(data.translation.conditionNotes && { conditionNotes: data.translation.conditionNotes }),
+        title: result.title,
+        description: result.description,
+        ...(result.conditionNotes && { conditionNotes: result.conditionNotes }),
       };
 
       onTranslationsChange(updatedTranslations);
@@ -122,8 +114,6 @@ export default function UnifiedProductContentEditor({
           ? error.message
           : 'Translation failed. Please check your API configuration.'
       );
-    } finally {
-      setIsTranslating(false);
     }
   };
 
@@ -147,30 +137,19 @@ export default function UnifiedProductContentEditor({
       setTranslationProgress(`Translating to ${localeNames[targetLang]}... (${i + 1}/${targetLocales.length})`);
 
       try {
-        const response = await fetch('/api/translate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: baseTitle,
-            description: baseDescription,
-            conditionNotes: baseConditionNotes,
-            targetLang,
-          }),
+        const result = await translateMutation.mutateAsync({
+          title: baseTitle,
+          description: baseDescription,
+          conditionNotes: baseConditionNotes,
+          targetLang,
         });
 
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          updatedTranslations[targetLang] = {
-            title: data.translation.title,
-            description: data.translation.description,
-            ...(data.translation.conditionNotes && { conditionNotes: data.translation.conditionNotes }),
-          };
-          successCount++;
-        } else {
-          console.error(`Translation failed for ${targetLang}:`, data.error);
-          errorCount++;
-        }
+        updatedTranslations[targetLang] = {
+          title: result.title,
+          description: result.description,
+          ...(result.conditionNotes && { conditionNotes: result.conditionNotes }),
+        };
+        successCount++;
       } catch (error) {
         console.error(`Translation error for ${targetLang}:`, error);
         errorCount++;
@@ -334,10 +313,10 @@ export default function UnifiedProductContentEditor({
               <button
                 type="button"
                 onClick={handleAutoTranslate}
-                disabled={isTranslating || !baseTitle || !baseDescription}
+                disabled={translateMutation.isPending || !baseTitle || !baseDescription}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm font-medium transition-colors"
               >
-                {isTranslating ? (
+                {translateMutation.isPending ? (
                   <>
                     <svg
                       className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"

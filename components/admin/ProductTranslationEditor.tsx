@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { locales, Locale, defaultLocale } from '@/i18n';
 import type { ProductTranslations } from '@/types';
+import { useTranslateProduct } from '@/hooks/useTranslation';
 
 interface ProductTranslationEditorProps {
   translations?: ProductTranslations;
@@ -30,8 +31,10 @@ export default function ProductTranslationEditor({
   const [selectedLocale, setSelectedLocale] = useState<Locale>(
     locales.find((l) => l !== defaultLocale) || 'es'
   );
-  const [isTranslating, setIsTranslating] = useState(false);
   const [translationError, setTranslationError] = useState<string | null>(null);
+
+  // TanStack Query mutation for translation
+  const translateMutation = useTranslateProduct();
 
   // Available locales (excluding default/English)
   const availableLocales = locales.filter((l) => l !== defaultLocale);
@@ -72,33 +75,22 @@ export default function ProductTranslationEditor({
       return;
     }
 
-    setIsTranslating(true);
     setTranslationError(null);
 
     try {
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: baseTitle,
-          description: baseDescription,
-          conditionNotes: baseConditionNotes,
-          targetLang: selectedLocale,
-        }),
+      const result = await translateMutation.mutateAsync({
+        title: baseTitle,
+        description: baseDescription,
+        conditionNotes: baseConditionNotes,
+        targetLang: selectedLocale,
       });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Translation failed');
-      }
 
       // Update translations with the auto-translated content
       const updatedTranslations = { ...translations };
       updatedTranslations[selectedLocale] = {
-        title: data.translation.title,
-        description: data.translation.description,
-        ...(data.translation.conditionNotes && { conditionNotes: data.translation.conditionNotes }),
+        title: result.title,
+        description: result.description,
+        ...(result.conditionNotes && { conditionNotes: result.conditionNotes }),
       };
 
       onChange(updatedTranslations);
@@ -109,8 +101,6 @@ export default function ProductTranslationEditor({
           ? error.message
           : 'Translation failed. Please check your API configuration.'
       );
-    } finally {
-      setIsTranslating(false);
     }
   };
 
@@ -162,10 +152,10 @@ export default function ProductTranslationEditor({
             <button
               type="button"
               onClick={handleAutoTranslate}
-              disabled={isTranslating || !baseTitle || !baseDescription}
+              disabled={translateMutation.isPending || !baseTitle || !baseDescription}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm font-medium transition-colors"
             >
-              {isTranslating ? (
+              {translateMutation.isPending ? (
                 <>
                   <svg
                     className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"

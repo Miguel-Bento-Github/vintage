@@ -208,7 +208,7 @@ export default function AdminLayout({
                   </Link>
 
                   <Link
-                    href="/admin/add-product"
+                    href="/admin/products/edit/new"
                     onClick={() => setSidebarOpen(false)}
                     className="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                   >

@@ -13,6 +13,8 @@ import ProductPreviewModal from '@/components/ProductPreviewModal';
 import UnifiedProductContentEditor from '@/components/admin/UnifiedProductContentEditor';
 import DraggableSections from '@/components/admin/DraggableSections';
 import { Timestamp } from 'firebase/firestore';
+import { useImageDragAndDrop } from '@/hooks/useImageDragAndDrop';
+import { useProductFormValidation } from '@/hooks/useProductFormValidation';
 
 interface ProductFormData {
   productType: ProductType | '';
@@ -73,9 +75,13 @@ export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
   const productId = params?.id as string;
+  const isNewProduct = productId === 'new';
 
-  // TanStack Query hooks
-  const { data: product, isLoading, error: fetchError, refetch } = useProduct(productId);
+  // TanStack Query hooks - only fetch if editing existing product
+  // Pass undefined for new products to prevent fetching
+  const { data: product, isLoading, error: fetchError, refetch } = useProduct(
+    isNewProduct ? undefined : productId
+  );
   const updateProductMutation = useUpdateProduct();
   const deleteProductMutation = useDeleteProduct();
 
@@ -125,6 +131,24 @@ export default function EditProductPage() {
   const [initialTranslations, setInitialTranslations] = useState<ProductTranslations>({});
   const [initialImages, setInitialImages] = useState<ExistingImage[]>([]);
 
+  // Image drag and drop hook
+  const { handleDragStart, handleDragOver, handleDrop } = useImageDragAndDrop({
+    existingImages,
+    setExistingImages,
+    newImages,
+    setNewImages,
+    newImagePreviews,
+    setNewImagePreviews,
+  });
+
+  // Form validation hook
+  const { validateForm } = useProductFormValidation({
+    formData,
+    existingImages,
+    newImages,
+    isNewProduct,
+  });
+
   // Load section order from localStorage
   useEffect(() => {
     const savedOrder = localStorage.getItem('adminEditPageSectionOrder');
@@ -144,9 +168,39 @@ export default function EditProductPage() {
     setSectionOrder(newOrder);
   };
 
-  // Populate form when product loads
+  // Populate form when product loads (edit mode) or set defaults (new mode)
   useEffect(() => {
-    if (product) {
+    if (isNewProduct) {
+      // Set default values for new product
+      const defaultData: ProductFormData = {
+        productType: 'Clothing',
+        title: '',
+        description: '',
+        brand: '',
+        era: '',
+        category: '',
+        sizeLabel: '',
+        specifications: {},
+        condition: '',
+        conditionNotes: '',
+        price: '',
+        tags: '',
+        featured: false,
+        inStock: true,
+        weightGrams: '',
+        lengthCm: '',
+        widthCm: '',
+        heightCm: '',
+        discountPrice: '',
+        discountStartDate: '',
+        discountEndDate: '',
+      };
+      setFormData(defaultData);
+      setInitialFormData(defaultData);
+      setTranslations({});
+      setInitialTranslations({});
+    } else if (product) {
+      // Load existing product data
       const initialData = {
         productType: product.productType,
         title: product.title,
@@ -187,7 +241,7 @@ export default function EditProductPage() {
       setExistingImages(initialImgs);
       setInitialImages(initialImgs);
     }
-  }, [product]);
+  }, [product, isNewProduct]);
 
   // Scroll to top when error or success message appears
   useEffect(() => {
@@ -308,88 +362,14 @@ export default function EditProductPage() {
     });
   };
 
-  const moveExistingImage = (fromIndex: number, toIndex: number) => {
-    setExistingImages((prev) => {
-      const newImages = [...prev];
-      const [movedImage] = newImages.splice(fromIndex, 1);
-      newImages.splice(toIndex, 0, movedImage);
-      return newImages;
-    });
-  };
-
-  const moveNewImage = (fromIndex: number, toIndex: number) => {
-    setNewImages((prev) => {
-      const newImages = [...prev];
-      const [movedImage] = newImages.splice(fromIndex, 1);
-      newImages.splice(toIndex, 0, movedImage);
-      return newImages;
-    });
-    setNewImagePreviews((prev) => {
-      const newPreviews = [...prev];
-      const [movedPreview] = newPreviews.splice(fromIndex, 1);
-      newPreviews.splice(toIndex, 0, movedPreview);
-      return newPreviews;
-    });
-  };
-
-  const handleDragStart = (e: React.DragEvent, index: number, type: 'existing' | 'new') => {
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', JSON.stringify({ index, type }));
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDrop = (e: React.DragEvent, toIndex: number, type: 'existing' | 'new') => {
-    e.preventDefault();
-    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-    const fromIndex = data.index;
-    const fromType = data.type;
-
-    if (fromType === type && fromIndex !== toIndex) {
-      if (type === 'existing') {
-        moveExistingImage(fromIndex, toIndex);
-      } else {
-        moveNewImage(fromIndex, toIndex);
-      }
-    }
-  };
-
-  const validateForm = (): boolean => {
-    if (!formData.title.trim()) {
-      setError('Title is required');
-      return false;
-    }
-    if (!formData.description.trim()) {
-      setError('Description is required');
-      return false;
-    }
-    if (!formData.condition) {
-      setError('Condition is required');
-      return false;
-    }
-    if (!formData.price || parseFloat(formData.price) <= 0) {
-      setError('Valid price is required');
-      return false;
-    }
-
-    const remainingImages = existingImages.filter((img) => !img.markedForDeletion).length;
-    if (remainingImages + newImages.length === 0) {
-      setError('At least one image is required');
-      return false;
-    }
-
-    return true;
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess(false);
 
-    if (!validateForm()) {
+    const validation = validateForm();
+    if (!validation.isValid) {
+      setError(validation.error || 'Validation failed');
       return;
     }
 
@@ -411,31 +391,13 @@ export default function EditProductPage() {
         }
       });
 
-      // Handle new image uploads
-      let uploadedImageUrls: string[] = [];
-      if (newImages.length > 0) {
-        const uploadResult = await uploadProductImages(newImages, productId);
-
-        if (uploadResult.failed.length > 0) {
-          throw new Error(`Failed to upload ${uploadResult.failed.length} image(s)`);
-        }
-
-        uploadedImageUrls = uploadResult.successful.map((result) => result.url);
-      }
-
-      // Combine existing images (not marked for deletion) with new uploads
-      const finalImages = [
-        ...existingImages.filter((img) => !img.markedForDeletion).map((img) => img.url),
-        ...uploadedImageUrls,
-      ];
-
-      // Prepare update data
+      // Prepare product data
       const productType: ProductType = formData.productType;
       const era: Era = formData.era;
       const category: Category = formData.category;
       const condition: Condition = formData.condition;
 
-      const updateData = {
+      const productData = {
         productType,
         title: formData.title.trim(),
         description: formData.description.trim(),
@@ -458,7 +420,6 @@ export default function EditProductPage() {
           .filter((tag) => tag.length > 0),
         featured: formData.featured,
         inStock: formData.inStock,
-        images: finalImages,
         // Include shipping dimensions if provided
         ...(formData.weightGrams && { weightGrams: parseFloat(formData.weightGrams) }),
         ...(formData.lengthCm && { lengthCm: parseFloat(formData.lengthCm) }),
@@ -472,46 +433,92 @@ export default function EditProductPage() {
         ...(Object.keys(translations).length > 0 && { translations }),
       };
 
-      // Update product using mutation
-      await updateProductMutation.mutateAsync({
-        productId,
-        updates: updateData,
-      });
-
-      // Delete removed images from storage (best effort)
-      const imagesToDelete = existingImages
-        .filter((img) => img.markedForDeletion)
-        .map((img) => img.url);
-
-      for (const imageUrl of imagesToDelete) {
-        try {
-          const path = imageUrl.split('/o/')[1]?.split('?')[0];
-          if (path) {
-            await deleteProductImage(decodeURIComponent(path));
-          }
-        } catch (err) {
-          console.warn('Failed to delete image from storage:', err);
+      if (isNewProduct) {
+        // CREATE NEW PRODUCT
+        if (newImages.length === 0) {
+          setError('Please upload at least one image');
+          setIsSubmitting(false);
+          return;
         }
+
+        const result = await addProduct(productData, newImages);
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to create product');
+        }
+
+        // Redirect to products list after creation
+        setTimeout(() => {
+          router.push('/admin/products');
+        }, 1500);
+
+        setSuccess(true);
+      } else {
+        // UPDATE EXISTING PRODUCT
+        // Handle new image uploads
+        let uploadedImageUrls: string[] = [];
+        if (newImages.length > 0) {
+          const uploadResult = await uploadProductImages(newImages, productId);
+
+          if (uploadResult.failed.length > 0) {
+            throw new Error(`Failed to upload ${uploadResult.failed.length} image(s)`);
+          }
+
+          uploadedImageUrls = uploadResult.successful.map((result) => result.url);
+        }
+
+        // Combine existing images (not marked for deletion) with new uploads
+        const finalImages = [
+          ...existingImages.filter((img) => !img.markedForDeletion).map((img) => img.url),
+          ...uploadedImageUrls,
+        ];
+
+        const updateData = {
+          ...productData,
+          images: finalImages,
+        };
+
+        // Update product using mutation
+        await updateProductMutation.mutateAsync({
+          productId,
+          updates: updateData,
+        });
+
+        // Delete removed images from storage (best effort)
+        const imagesToDelete = existingImages
+          .filter((img) => img.markedForDeletion)
+          .map((img) => img.url);
+
+        for (const imageUrl of imagesToDelete) {
+          try {
+            const path = imageUrl.split('/o/')[1]?.split('?')[0];
+            if (path) {
+              await deleteProductImage(decodeURIComponent(path));
+            }
+          } catch (err) {
+            console.warn('Failed to delete image from storage:', err);
+          }
+        }
+
+        setSuccess(true);
+
+        // Clear new images
+        newImagePreviews.forEach((url) => URL.revokeObjectURL(url));
+        setNewImages([]);
+        setNewImagePreviews([]);
+
+        // Update initial state to reflect saved changes
+        setInitialFormData(formData);
+        setInitialTranslations(translations);
+        setInitialImages(existingImages.filter(img => !img.markedForDeletion));
+
+        // Hide success message after 3 seconds
+        setTimeout(() => {
+          setSuccess(false);
+        }, 3000);
       }
-
-      setSuccess(true);
-
-      // Clear new images
-      newImagePreviews.forEach((url) => URL.revokeObjectURL(url));
-      setNewImages([]);
-      setNewImagePreviews([]);
-
-      // Update initial state to reflect saved changes
-      setInitialFormData(formData);
-      setInitialTranslations(translations);
-      setInitialImages(existingImages.filter(img => !img.markedForDeletion));
-
-      // Hide success message after 3 seconds
-      setTimeout(() => {
-        setSuccess(false);
-      }, 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update product');
+      setError(err instanceof Error ? err.message : isNewProduct ? 'Failed to create product' : 'Failed to update product');
     } finally {
       setIsSubmitting(false);
     }
@@ -731,8 +738,8 @@ export default function EditProductPage() {
     return sections.some((section) => hasSectionChanges(section.id));
   };
 
-  // Loading state
-  if (isLoading) {
+  // Loading state (skip for new product)
+  if (!isNewProduct && isLoading) {
     return (
       <div className="max-w-4xl">
         <div className="mb-8">
@@ -750,8 +757,8 @@ export default function EditProductPage() {
     );
   }
 
-  // Error state
-  if (fetchError || !product) {
+  // Error state (skip for new product)
+  if (!isNewProduct && (fetchError || !product)) {
     return (
       <div className="max-w-4xl">
         <ErrorState
@@ -765,7 +772,7 @@ export default function EditProductPage() {
 
   return (
     <div className="flex max-w-full px-4 sm:px-6">
-      <div className={`max-w-4xl w-full ${isSidebarOpen ? 'mr-64' : ''}`}>
+      <div className={`max-w-4xl w-full ${!isNewProduct && isSidebarOpen ? 'mr-64' : ''}`}>
       {/* Header with breadcrumb */}
       <div className="mb-6 sm:mb-8">
         <nav className="text-xs sm:text-sm text-gray-500 mb-2">
@@ -776,13 +783,19 @@ export default function EditProductPage() {
             Products
           </button>
           <span className="mx-2">/</span>
-          <span className="text-gray-900 truncate max-w-[200px] sm:max-w-none inline-block align-bottom">Edit {product.title}</span>
+          <span className="text-gray-900 truncate max-w-[200px] sm:max-w-none inline-block align-bottom">
+            {isNewProduct ? 'New Product' : `Edit ${product?.title}`}
+          </span>
         </nav>
 
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Edit Product</h1>
-            <p className="text-sm sm:text-base text-gray-600 mt-2">Update product information and images</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              {isNewProduct ? 'Add New Product' : 'Edit Product'}
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-2">
+              {isNewProduct ? 'Create a new product listing' : 'Update product information and images'}
+            </p>
           </div>
 
           <button
@@ -798,17 +811,24 @@ export default function EditProductPage() {
       {(error || success) && (
         <div className="sticky top-0 z-40 mb-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md shadow-lg">
+            <div className={`${error.toLowerCase().includes('converting') ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-red-50 border-red-200 text-red-700'} border px-4 py-3 rounded-md shadow-lg`}>
               <div className="flex items-start justify-between">
                 <div className="flex items-start">
-                  <svg className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+                  {error.toLowerCase().includes('converting') ? (
+                    <svg className="animate-spin w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  )}
                   <span>{error}</span>
                 </div>
                 <button
                   onClick={() => setError('')}
-                  className="text-red-700 hover:text-red-900 ml-4"
+                  className={`${error.toLowerCase().includes('converting') ? 'text-blue-700 hover:text-blue-900' : 'text-red-700 hover:text-red-900'} ml-4`}
                   aria-label="Dismiss"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -1520,40 +1540,42 @@ export default function EditProductPage() {
               </button>
             </div>
 
-            {/* Additional Actions */}
-            <div className="border-t border-gray-200 pt-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">
-                Additional Actions
-              </h3>
-              <div className="flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={handleMarkAsSold}
-                  disabled={isSubmitting || !formData.inStock}
-                  className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                >
-                  Mark as Sold
-                </button>
+            {/* Additional Actions - Only show for existing products */}
+            {!isNewProduct && (
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                  Additional Actions
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={handleMarkAsSold}
+                    disabled={isSubmitting || !formData.inStock}
+                    className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  >
+                    Mark as Sold
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setShowDuplicateConfirm(true)}
-                  disabled={isSubmitting}
-                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                >
-                  Duplicate Product
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowDuplicateConfirm(true)}
+                    disabled={isSubmitting}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  >
+                    Duplicate Product
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  disabled={isSubmitting}
-                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                >
-                  Delete Product
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    disabled={isSubmitting}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  >
+                    Delete Product
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
       </form>
@@ -1566,7 +1588,7 @@ export default function EditProductPage() {
               Delete Product?
             </h3>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete &quot;{product.title}&quot;? This action cannot be undone.
+              Are you sure you want to delete &quot;{product?.title}&quot;? This action cannot be undone.
             </p>
             <div className="flex items-center justify-end space-x-3">
               <button
@@ -1623,7 +1645,7 @@ export default function EditProductPage() {
               Duplicate Product?
             </h3>
             <p className="text-gray-600 mb-6">
-              This will create a copy of &quot;{product.title}&quot; with the title &quot;{product.title} (Copy)&quot;.
+              This will create a copy of &quot;{product?.title}&quot; with the title &quot;{product?.title} (Copy)&quot;.
               You can edit the duplicate after creation.
             </p>
             <div className="flex items-center justify-end space-x-3">
@@ -1683,136 +1705,144 @@ export default function EditProductPage() {
       </div>
 
       {/* Collapsible Right Sidebar */}
-      <aside
-        className={`fixed right-0 top-0 h-screen bg-amber-50/80 backdrop-blur-sm border-l-4 border-double border-amber-800/30 shadow-sm transition-transform duration-300 ${
-          isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
-        } w-64 z-40`}
-      >
-        <div className="flex flex-col h-full">
-          {/* Sidebar Header */}
-          <div className="p-6 flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Page Index</h2>
-            </div>
-            {/* Close button */}
-            <button
-              type="button"
-              onClick={() => setIsSidebarOpen(false)}
-              className="text-gray-500 hover:text-gray-700"
-              aria-label="Close sidebar"
-            >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
-          </div>
-
-          {/* Sidebar Links */}
-          <nav className="flex-1 mt-6">
-            <DraggableSections
-              sections={sections}
-              onSectionClick={scrollToSection}
-              isSectionComplete={isSectionComplete}
-              hasSectionChanges={hasSectionChanges}
-              onOrderChange={handleSectionOrderChange}
-            />
-          </nav>
-
-          {/* Sidebar Footer with Save Button */}
-          <div className="mt-auto pt-6 px-6 pb-6">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                const form = document.querySelector('form');
-                if (form) {
-                  form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                }
-              }}
-              disabled={isSubmitting || updateProductMutation.isPending || !hasAnyChanges()}
-              className="w-full px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-semibold shadow-sm"
-            >
-              {isSubmitting || updateProductMutation.isPending ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <svg
-                    className="h-5 w-5 mr-2"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                  Save Changes
-                </>
-              )}
-            </button>
-            {hasAnyChanges() ? (
-              <p className="text-xs text-amber-600 mt-2 text-center">
-                You have unsaved changes
-              </p>
-            ) : (
-              <p className="text-xs text-gray-500 mt-2 text-center">
-                No unsaved changes
-              </p>
-            )}
-          </div>
-        </div>
-      </aside>
-
-      {/* Toggle Button (visible when sidebar is closed) */}
-      {!isSidebarOpen && (
-        <button
-          type="button"
-          onClick={() => setIsSidebarOpen(true)}
-          className="fixed right-0 top-0 h-screen w-8 bg-amber-50/80 backdrop-blur-sm border-l-4 border-double border-amber-800/30 shadow-sm hover:w-12 transition-all duration-300 flex items-center justify-center z-40"
-          aria-label="Open sidebar"
-        >
-          <svg
-            className="h-6 w-6 text-gray-700"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+      {(
+        <>
+          <aside
+            className={`fixed right-0 top-0 h-screen bg-amber-50/80 backdrop-blur-sm border-l-4 border-double border-amber-800/30 shadow-sm transition-transform duration-300 ${
+              isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
+            } w-64 z-40`}
           >
-            <path d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
+            <div className="flex flex-col h-full">
+              {/* Sidebar Header */}
+              <div className="p-6 flex items-start justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Page Index</h2>
+                </div>
+                {/* Close button */}
+                <button
+                  type="button"
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                  aria-label="Close sidebar"
+                >
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+              </div>
+
+              {/* Sidebar Links */}
+              <nav className="flex-1 mt-6">
+                <DraggableSections
+                  sections={sections}
+                  onSectionClick={scrollToSection}
+                  isSectionComplete={isSectionComplete}
+                  hasSectionChanges={hasSectionChanges}
+                  onOrderChange={handleSectionOrderChange}
+                />
+              </nav>
+
+              {/* Sidebar Footer with Save Button */}
+              <div className="mt-auto pt-6 px-6 pb-6">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const form = document.querySelector('form');
+                    if (form) {
+                      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                    }
+                  }}
+                  disabled={isSubmitting || updateProductMutation.isPending || (!isNewProduct && !hasAnyChanges())}
+                  className="w-full px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-semibold shadow-sm"
+                >
+                  {isSubmitting || updateProductMutation.isPending ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      {isNewProduct ? 'Creating...' : 'Saving...'}
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="h-5 w-5 mr-2"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path d={isNewProduct ? "M12 4v16m8-8H4" : "M5 13l4 4L19 7"} />
+                      </svg>
+                      {isNewProduct ? 'Create Product' : 'Save Changes'}
+                    </>
+                  )}
+                </button>
+                {isNewProduct ? (
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    Ready to create new product
+                  </p>
+                ) : hasAnyChanges() ? (
+                  <p className="text-xs text-amber-600 mt-2 text-center">
+                    You have unsaved changes
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    No unsaved changes
+                  </p>
+                )}
+              </div>
+            </div>
+          </aside>
+
+          {/* Toggle Button (visible when sidebar is closed) */}
+          {!isSidebarOpen && (
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(true)}
+              className="fixed right-0 top-0 h-screen w-8 bg-amber-50/80 backdrop-blur-sm border-l-4 border-double border-amber-800/30 shadow-sm hover:w-12 transition-all duration-300 flex items-center justify-center z-40"
+              aria-label="Open sidebar"
+            >
+              <svg
+                className="h-6 w-6 text-gray-700"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+        </>
       )}
     </div>
   );

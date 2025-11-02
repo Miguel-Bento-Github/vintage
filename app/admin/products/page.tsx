@@ -152,7 +152,7 @@ export default function ProductsPage() {
           </p>
         </div>
         <button
-          onClick={() => router.push('/admin/add-product')}
+          onClick={() => router.push('/admin/products/edit/new')}
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
         >
           <svg
