@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Order, OrderStatus } from '@/types';
@@ -28,16 +28,31 @@ export default function OrderManagementPage() {
   const [carrier, setCarrier] = useState<string>('USPS');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
+  // Track if we've already opened modal from URL to prevent reopening after close
+  const hasOpenedFromUrl = useRef(false);
+
   // Open modal from URL on mount/orders load
   useEffect(() => {
     const orderId = searchParams.get('orderId');
-    if (orderId && orders.length > 0 && !selectedOrder) {
+
+    // Only open from URL if:
+    // 1. There's an orderId in the URL
+    // 2. Orders have loaded
+    // 3. No modal is currently open
+    // 4. We haven't already opened this modal from URL
+    if (orderId && orders.length > 0 && !selectedOrder && !hasOpenedFromUrl.current) {
       const order = orders.find(o => o.id === orderId);
       if (order) {
         setSelectedOrder(order);
+        hasOpenedFromUrl.current = true;
       }
     }
-  }, [searchParams, orders]); // Don't include selectedOrder to avoid reopening
+
+    // Reset the flag when URL changes to a different order or no order
+    if (!orderId || (selectedOrder && orderId !== selectedOrder.id)) {
+      hasOpenedFromUrl.current = false;
+    }
+  }, [searchParams, orders, selectedOrder])
 
   // Handle opening modal - updates URL
   const openModal = (order: Order) => {
