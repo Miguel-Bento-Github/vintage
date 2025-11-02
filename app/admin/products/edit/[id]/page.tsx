@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useProduct } from '@/hooks/useProducts';
-import { ERAS, CATEGORIES_BY_TYPE, CONDITIONS, PRODUCT_TYPES } from '@/lib/constants';
-import { Era, Category, Condition, ProductType, ProductTranslations } from '@/types';
+import { ProductType, Era, Category, Condition, ProductTranslations } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorState from '@/components/ErrorState';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
@@ -15,6 +14,12 @@ import { useImageDragAndDrop } from '@/hooks/useImageDragAndDrop';
 import { useProductImages } from '@/hooks/useProductImages';
 import { useProductFormState } from '@/hooks/useProductFormState';
 import { useProductSubmit } from '@/hooks/useProductSubmit';
+import BasicInfoSection from '@/components/admin/product-form/BasicInfoSection';
+import SpecificationsSection from '@/components/admin/product-form/SpecificationsSection';
+import PricingSection from '@/components/admin/product-form/PricingSection';
+import DiscountSection from '@/components/admin/product-form/DiscountSection';
+import ShippingSection from '@/components/admin/product-form/ShippingSection';
+import TagsSection from '@/components/admin/product-form/TagsSection';
 
 interface ProductFormData {
   productType: ProductType | '';
@@ -41,19 +46,6 @@ interface ProductFormData {
   discountStartDate: string;
   discountEndDate: string;
 }
-
-// Specification fields based on product type
-const SPECIFICATION_FIELDS: Record<ProductType, string[]> = {
-  'Clothing': ['chest', 'waist', 'hips', 'length', 'shoulders', 'sleeves'],
-  'Furniture': ['height', 'width', 'depth'],
-  'Jewelry': ['material', 'stone', 'size'],
-  'Vinyl Records': ['format', 'rpm', 'label', 'year'],
-  'Electronics': ['model', 'year', 'condition', 'working'],
-  'Books': ['author', 'publisher', 'year', 'isbn'],
-  'Art': ['artist', 'medium', 'dimensions', 'year'],
-  'Collectibles': ['manufacturer', 'year', 'edition', 'quantity'],
-  'Other': [],
-};
 
 interface ExistingImage {
   url: string;
@@ -446,126 +438,15 @@ export default function EditProductPage() {
       )}
 
       <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-6 sm:space-y-8" style={{ display: 'flex', flexDirection: 'column' }}>
-        {/* Basic Information */}
-        <section id="basic-info" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('basic-info') }}>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-            Basic Information
-          </h2>
-
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="productType"
-                className="block text-sm font-semibold text-gray-900 mb-2"
-              >
-                Product Type <span className="text-red-500">*</span>
-              </label>
-              <select
-                id="productType"
-                name="productType"
-                value={formData.productType}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              >
-                <option value="">Select product type</option>
-                {PRODUCT_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="brand"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Brand
-                </label>
-                <input
-                  type="text"
-                  id="brand"
-                  name="brand"
-                  value={formData.brand}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., Levi's"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="era"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Era
-                </label>
-                <select
-                  id="era"
-                  name="era"
-                  value={formData.era}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select era</option>
-                  {ERAS.map((era) => (
-                    <option key={era} value={era}>
-                      {era}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="category"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Category
-                </label>
-                <select
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  disabled={!formData.productType}
-                >
-                  <option value="">
-                    {formData.productType ? 'Select category' : 'Select product type first'}
-                  </option>
-                  {formData.productType &&
-                    CATEGORIES_BY_TYPE[formData.productType].map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="sizeLabel"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Size Label
-                </label>
-                <input
-                  type="text"
-                  id="sizeLabel"
-                  name="sizeLabel"
-                  value={formData.sizeLabel}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., M, 32x34"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+        <BasicInfoSection
+          productType={formData.productType}
+          brand={formData.brand}
+          era={formData.era}
+          category={formData.category}
+          sizeLabel={formData.sizeLabel}
+          onChange={handleInputChange}
+          sectionOrder={sectionOrder}
+        />
 
         {/* Product Content (multilingual) */}
         <section id="content" style={{ order: sectionOrder.indexOf('content') }}>
@@ -582,281 +463,39 @@ export default function EditProductPage() {
         </section>
 
         {/* Specifications */}
-        {formData.productType && SPECIFICATION_FIELDS[formData.productType].length > 0 && (
-          <section id="specifications" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('specifications') }}>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-              Specifications (Optional)
-            </h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Add relevant details for this {formData.productType.toLowerCase()} item
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {SPECIFICATION_FIELDS[formData.productType].map((field) => {
-                const isMeasurement = ['chest', 'waist', 'hips', 'length', 'shoulders', 'sleeves', 'height', 'width', 'depth', 'dimensions', 'size'].includes(field);
-
-                return (
-                  <div key={field}>
-                    <label
-                      htmlFor={`specifications.${field}`}
-                      className="block text-sm font-medium text-gray-700 mb-2 capitalize"
-                    >
-                      {field}
-                      {isMeasurement && <span className="text-gray-500 text-xs ml-1">(cm)</span>}
-                    </label>
-                    <input
-                      type="text"
-                      id={`specifications.${field}`}
-                      name={`specifications.${field}`}
-                      value={formData.specifications[field] || ''}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder={isMeasurement ? `e.g., 91 (cm)` : `Enter ${field}`}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+        {formData.productType && (
+          <SpecificationsSection
+            productType={formData.productType}
+            specifications={formData.specifications}
+            onChange={handleInputChange}
+            sectionOrder={sectionOrder}
+          />
         )}
 
-        {/* Condition & Pricing */}
-        <section id="pricing" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('pricing') }}>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-            Condition & Pricing
-          </h2>
+        <PricingSection
+          condition={formData.condition}
+          price={formData.price}
+          onChange={handleInputChange}
+          sectionOrder={sectionOrder}
+        />
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="condition"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Condition <span className="text-red-500">*</span>
-                </label>
-                <select
-                  id="condition"
-                  name="condition"
-                  value={formData.condition}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                >
-                  <option value="">Select condition</option>
-                  {CONDITIONS.map((condition) => (
-                    <option key={condition} value={condition}>
-                      {condition}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        <DiscountSection
+          discountPrice={formData.discountPrice}
+          discountStartDate={formData.discountStartDate}
+          discountEndDate={formData.discountEndDate}
+          regularPrice={formData.price}
+          onChange={handleInputChange}
+          sectionOrder={sectionOrder}
+        />
 
-              <div>
-                <label
-                  htmlFor="price"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Price (€) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  id="price"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="99.99"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Discount Pricing */}
-        <section id="discount" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('discount') }}>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-            Discount Pricing (Optional)
-          </h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Set a discounted price with optional start and end dates for sales or promotions.
-          </p>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label
-                  htmlFor="discountPrice"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Discount Price (€)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  id="discountPrice"
-                  name="discountPrice"
-                  value={formData.discountPrice}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., 79.99"
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  Must be lower than regular price (€{formData.price || '0.00'})
-                </p>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="discountStartDate"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Start Date
-                </label>
-                <input
-                  type="datetime-local"
-                  id="discountStartDate"
-                  name="discountStartDate"
-                  value={formData.discountStartDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  When discount becomes active
-                </p>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="discountEndDate"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  End Date
-                </label>
-                <input
-                  type="datetime-local"
-                  id="discountEndDate"
-                  name="discountEndDate"
-                  value={formData.discountEndDate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  When discount expires
-                </p>
-              </div>
-            </div>
-
-            {/* Discount Preview */}
-            {formData.discountPrice && parseFloat(formData.discountPrice) > 0 && parseFloat(formData.discountPrice) < parseFloat(formData.price || '0') && (
-              <div className="bg-green-50 border border-green-200 rounded-md p-3">
-                <p className="text-sm font-medium text-green-900">
-                  Discount Preview:
-                  <span className="ml-2 line-through text-gray-500">€{parseFloat(formData.price || '0').toFixed(2)}</span>
-                  <span className="ml-2 text-green-700 font-bold">€{parseFloat(formData.discountPrice).toFixed(2)}</span>
-                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    -{Math.round(((parseFloat(formData.price || '0') - parseFloat(formData.discountPrice)) / parseFloat(formData.price || '1')) * 100)}%
-                  </span>
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Shipping Information */}
-        <section id="shipping" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('shipping') }}>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-            Shipping Information
-          </h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Add weight and dimensions for accurate shipping cost calculation. Weight is especially important.
-          </p>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="weightGrams"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Weight (grams) <span className="text-amber-600">*recommended</span>
-                </label>
-                <input
-                  type="number"
-                  step="1"
-                  id="weightGrams"
-                  name="weightGrams"
-                  value={formData.weightGrams}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., 500"
-                />
-                <p className="mt-1 text-xs text-gray-500">
-                  Used for shipping cost calculation. Defaults to 500g if not specified.
-                </p>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="lengthCm"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Length (cm)
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  id="lengthCm"
-                  name="lengthCm"
-                  value={formData.lengthCm}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., 30"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="widthCm"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Width (cm)
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  id="widthCm"
-                  name="widthCm"
-                  value={formData.widthCm}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., 25"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="heightCm"
-                  className="block text-sm font-semibold text-gray-900 mb-2"
-                >
-                  Height (cm)
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  id="heightCm"
-                  name="heightCm"
-                  value={formData.heightCm}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., 5"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+        <ShippingSection
+          weightGrams={formData.weightGrams}
+          lengthCm={formData.lengthCm}
+          widthCm={formData.widthCm}
+          heightCm={formData.heightCm}
+          onChange={handleInputChange}
+          sectionOrder={sectionOrder}
+        />
 
         {/* Images */}
         <section id="images" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('images') }}>
@@ -1022,68 +661,13 @@ export default function EditProductPage() {
           </div>
         </section>
 
-        {/* Tags & Options */}
-        <section id="tags" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: sectionOrder.indexOf('tags') }}>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
-            Tags & Options
-          </h2>
-
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="tags"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Tags (comma-separated)
-              </label>
-              <input
-                type="text"
-                id="tags"
-                name="tags"
-                value={formData.tags}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="vintage, denim, americana, workwear"
-              />
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="featured"
-                  name="featured"
-                  checked={formData.featured}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="featured"
-                  className="ml-2 block text-sm text-gray-700"
-                >
-                  Feature this product on homepage
-                </label>
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="inStock"
-                  name="inStock"
-                  checked={formData.inStock}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="inStock"
-                  className="ml-2 block text-sm text-gray-700"
-                >
-                  Product is in stock
-                </label>
-              </div>
-            </div>
-          </div>
-        </section>
+        <TagsSection
+          tags={formData.tags}
+          featured={formData.featured}
+          inStock={formData.inStock}
+          onChange={handleInputChange}
+          sectionOrder={sectionOrder}
+        />
 
         {/* Form Actions */}
         <section id="actions" className="bg-white rounded-lg shadow p-4 sm:p-6" style={{ order: 9999 }}>
