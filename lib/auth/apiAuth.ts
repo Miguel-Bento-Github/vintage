@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { adminAuth } from '@/lib/firebase-admin';
+import { adminAuth, adminDb } from '@/lib/firebase-admin';
 
 /**
  * Verify Firebase ID token from request headers
@@ -24,12 +24,12 @@ export async function verifyAuthToken(request: NextRequest) {
 }
 
 /**
- * Check if user has admin role
+ * Check if user has admin role by checking the admins collection
  */
 export async function isAdmin(uid: string): Promise<boolean> {
   try {
-    const user = await adminAuth.getUser(uid);
-    return user.customClaims?.admin === true;
+    const adminDoc = await adminDb.collection('admins').doc(uid).get();
+    return adminDoc.exists;
   } catch (error) {
     console.error('Failed to check admin status:', error);
     return false;
