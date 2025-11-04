@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { ProductType, Era, Category, Condition } from '@/types';
 import { isDiscountActive, getEffectivePrice } from '@/lib/discount';
 import { Timestamp } from 'firebase/firestore';
-import ProductPrice from './ProductPrice';
+import PreviewPrice from './PreviewPrice';
 
 interface PreviewProduct {
   productType: ProductType;
@@ -183,7 +183,7 @@ export default function ProductPreviewModal({ product, onClose }: ProductPreview
 
               {/* Price */}
               <div>
-                <ProductPrice
+                <PreviewPrice
                   amount={getEffectivePrice(product)}
                   originalAmount={
                     isDiscountActive(product) ? product.price : undefined
