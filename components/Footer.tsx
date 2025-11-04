@@ -27,8 +27,11 @@ export default function Footer() {
             <p className="text-sm mb-4">
               {t('product.authenticVintage')} {t('product.curatedWithCare').toLowerCase()}.
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 mb-2">
               {t('footer.basedIn')}
+            </p>
+            <p className="text-xs text-gray-400">
+              Female-Owned & Ethnic Minority-Run
             </p>
           </div>
 
@@ -74,14 +77,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href={`/${locale}/about`} className="hover:text-white transition-colors">
-                  {t('footer.aboutUs')}
-                </Link>
-              </li>
-              <li>
-                <Link href={`/${locale}/contact`} className="hover:text-white transition-colors">
+                <a href={`mailto:${t('footer.contactEmail')}`} className="hover:text-white transition-colors">
                   {t('footer.contact')}
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
