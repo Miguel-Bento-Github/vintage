@@ -44,7 +44,8 @@ export default function VintageProductCard({ product, showDiscount = false, show
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               loading="lazy"
-              className={`object-cover rounded ${product.inStock === false ? 'opacity-75 grayscale' : ''}`}
+              className={`object-cover rounded ${product.inStock === false ? 'opacity-75' : ''}`}
+              style={product.inStock === false ? { filter: 'grayscale(50%)' } : undefined}
             />
             {product.inStock === false && (
               <div className="absolute top-3 right-3 z-10">
