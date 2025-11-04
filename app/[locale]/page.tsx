@@ -43,6 +43,9 @@ const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
       condition: data.condition,
       conditionNotes: data.conditionNotes,
       price: data.price,
+      discountPrice: data.discountPrice,
+      discountStartDate: data.discountStartDate ? timestampToISO(data.discountStartDate) : undefined,
+      discountEndDate: data.discountEndDate ? timestampToISO(data.discountEndDate) : undefined,
       images: data.images,
       inStock: data.inStock,
       featured: data.featured,
@@ -129,7 +132,7 @@ export default async function HomePage({
           {featuredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {featuredProducts.map((product) => (
-                <VintageProductCard key={product.id} product={product} />
+                <VintageProductCard key={product.id} product={product} showDiscount={true} />
               ))}
             </div>
           ) : (
