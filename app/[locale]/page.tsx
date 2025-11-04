@@ -115,6 +115,15 @@ export default async function HomePage({
             </Link>
           </div>
         </div>
+
+        {/* Badge - Bottom Right */}
+        <div className="absolute bottom-6 right-6 z-10">
+          <div className="px-4 py-2 bg-white/60 backdrop-blur-sm rounded-md shadow-sm border" style={{ borderColor: 'var(--vintage-tan)' }}>
+            <span className="text-xs" style={{ fontFamily: 'Bergman, sans-serif', fontWeight: 700, color: 'var(--vintage-charcoal)' }}>
+              Female-Owned & Ethnic Minority-Run
+            </span>
+          </div>
+        </div>
       </section>
 
       {/* Featured Products Section */}

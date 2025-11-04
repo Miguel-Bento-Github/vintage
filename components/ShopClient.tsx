@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Fragment } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Dialog, Transition } from "@headlessui/react";
 import { SerializedProduct } from "@/types";
 import {
   ERAS,
@@ -659,55 +660,81 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
             </div>
           </aside>
 
-          {showFilters && (
-            <div
-              className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-50"
-              onClick={() => setShowFilters(false)}
-            >
-              <div
-                className="absolute right-0 top-0 bottom-0 w-80 max-w-full bg-white overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
+          <Transition.Root show={showFilters} as={Fragment}>
+            <Dialog as="div" className="relative z-50 lg:hidden" onClose={setShowFilters}>
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-150"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="ease-out duration-150"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
               >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold">{t("filters")}</h2>
-                    <button
-                      type="button"
-                      onClick={() => setShowFilters(false)}
-                      aria-label="Close filters"
-                      className="text-gray-500 hover:text-gray-700"
+                <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm" />
+              </Transition.Child>
+
+              <div className="fixed inset-0 overflow-hidden">
+                <div className="absolute inset-0 overflow-hidden">
+                  <div className="pointer-events-none fixed inset-y-0 left-0 flex max-w-full pr-10">
+                    <Transition.Child
+                      as={Fragment}
+                      enter="transform transition ease-out duration-150"
+                      enterFrom="-translate-x-full"
+                      enterTo="translate-x-0"
+                      leave="transform transition ease-out duration-150"
+                      leaveFrom="translate-x-0"
+                      leaveTo="-translate-x-full"
                     >
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <FiltersContent />
-                  <div className="mt-6 pt-6 border-t">
-                    <button
-                      type="button"
-                      onClick={() => setShowFilters(false)}
-                      className="w-full px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors font-semibold"
-                    >
-                      {t("showProducts", {
-                        count: filteredAndSortedProducts.length,
-                      })}
-                    </button>
+                      <Dialog.Panel className="pointer-events-auto w-80">
+                        <div className="flex h-full flex-col bg-white shadow-2xl">
+                          <div className="p-6">
+                            <div className="flex items-center justify-between mb-6">
+                              <h2 className="text-xl font-bold">{t("filters")}</h2>
+                              <button
+                                type="button"
+                                onClick={() => setShowFilters(false)}
+                                aria-label="Close filters"
+                                className="text-gray-500 hover:text-gray-700"
+                              >
+                                <svg
+                                  className="w-6 h-6"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                            <div className="overflow-y-auto flex-1">
+                              <FiltersContent />
+                            </div>
+                            <div className="mt-6 pt-6 border-t">
+                              <button
+                                type="button"
+                                onClick={() => setShowFilters(false)}
+                                className="w-full px-6 py-3 bg-amber-700 text-white rounded-lg hover:bg-amber-800 transition-colors font-semibold"
+                              >
+                                {t("showProducts", {
+                                  count: filteredAndSortedProducts.length,
+                                })}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </Dialog.Panel>
+                    </Transition.Child>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            </Dialog>
+          </Transition.Root>
 
           <main className="flex-1">
             <div className="mb-4 text-sm text-gray-600">

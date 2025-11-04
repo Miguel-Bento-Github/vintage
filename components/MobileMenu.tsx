@@ -29,10 +29,10 @@ export default function MobileMenu() {
         <Dialog as="div" className="relative z-50 md:hidden" onClose={setIsOpen}>
           <Transition.Child
             as={Fragment}
-            enter="ease-in-out duration-300"
+            enter="ease-out duration-150"
             enterFrom="opacity-0"
             enterTo="opacity-100"
-            leave="ease-in-out duration-300"
+            leave="ease-out duration-150"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
@@ -44,10 +44,10 @@ export default function MobileMenu() {
               <div className="pointer-events-none fixed inset-x-0 bottom-0 flex justify-end max-w-full px-4 pb-4">
                 <Transition.Child
                   as={Fragment}
-                  enter="transform transition ease-out duration-300"
+                  enter="transform transition ease-out duration-150"
                   enterFrom="translate-y-full opacity-0 scale-95"
                   enterTo="translate-y-0 opacity-100 scale-100"
-                  leave="transform transition ease-in duration-200"
+                  leave="transform transition ease-out duration-150"
                   leaveFrom="translate-y-0 opacity-100 scale-100"
                   leaveTo="translate-y-full opacity-0 scale-95"
                 >
