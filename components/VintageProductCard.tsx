@@ -35,20 +35,45 @@ export default function VintageProductCard({ product, showDiscount = false, show
       className="group block bg-white p-4 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.12),0_12px_32px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-1"
     >
       {/* Photo */}
-      <div className="relative aspect-[3/4] bg-gray-100 mb-4 border border-gray-200 rounded">
-        {product.inStock === false ? (
-          <div className="absolute inset-0 bg-gray-900 flex items-center justify-center rounded">
-            <span className="text-white text-2xl font-bold">{tCommon('sold')}</span>
-          </div>
-        ) : product.images && product.images.length > 0 && product.images[0] ? (
-          <Image
-            src={product.images[0]}
-            alt={`${product.brand} ${product.title} - ${product.era} vintage ${product.category}`}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            loading="lazy"
-            className="object-cover rounded"
-          />
+      <div className="relative aspect-[3/4] bg-gray-100 mb-4 border border-gray-200 rounded overflow-hidden">
+        {product.images && product.images.length > 0 && product.images[0] ? (
+          <>
+            <Image
+              src={product.images[0]}
+              alt={`${product.brand} ${product.title} - ${product.era} vintage ${product.category}`}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              loading="lazy"
+              className={`object-cover rounded ${product.inStock === false ? 'opacity-75 grayscale' : ''}`}
+            />
+            {product.inStock === false && (
+              <div className="absolute top-3 right-3 z-10">
+                {/* Vintage sticker style */}
+                <div className="relative transform rotate-12">
+                  {/* Outer tan border */}
+                  <div className="p-[2px] rounded-lg shadow-[0_3px_10px_rgba(0,0,0,0.4)]" style={{ backgroundColor: 'var(--vintage-tan)' }}>
+                    {/* Inner charcoal border */}
+                    <div className="p-[2px] rounded-md" style={{ backgroundColor: 'var(--vintage-charcoal)' }}>
+                      {/* Rust background */}
+                      <div className="px-3 py-1.5 rounded-sm" style={{ backgroundColor: 'var(--vintage-rust)' }}>
+                        <span
+                          className="text-2xl uppercase tracking-wide"
+                          style={{
+                            fontFamily: 'Bergman, sans-serif',
+                            fontWeight: 800,
+                            color: 'var(--vintage-tan)',
+                            textShadow: '2px 2px 0px var(--vintage-charcoal)'
+                          }}
+                        >
+                          {tCommon('sold')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div className="absolute inset-0 bg-gray-200 flex items-center justify-center rounded">
             <span className="text-gray-400 text-sm">{tCommon('noImage')}</span>
