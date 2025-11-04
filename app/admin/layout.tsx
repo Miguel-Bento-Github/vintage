@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/hooks/useAuth';
-import QueryProvider from '@/providers/QueryProvider';
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import QueryProvider from "@/providers/QueryProvider";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 
@@ -29,12 +29,12 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Skip auth check for login page
-  const isLoginPage = pathname === '/admin/login';
+  const isLoginPage = pathname === "/admin/login";
 
   // Redirect to login if not authenticated or not admin
   useEffect(() => {
     if (!isLoginPage && !loading && (!user || !isAdmin)) {
-      router.push('/admin/login');
+      router.push("/admin/login");
     }
   }, [isLoginPage, user, isAdmin, loading, router]);
 
@@ -42,7 +42,9 @@ export default function AdminLayout({
   if (isLoginPage) {
     return (
       <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
           <QueryProvider>{children}</QueryProvider>
         </body>
       </html>
@@ -53,7 +55,9 @@ export default function AdminLayout({
   if (loading) {
     return (
       <html lang="en" suppressHydrationWarning>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
           <QueryProvider>
             <div className="flex items-center justify-center min-h-screen">
               <div className="text-center">
@@ -74,19 +78,16 @@ export default function AdminLayout({
 
   const handleSignOut = async () => {
     await signOut();
-    router.push('/admin/login');
+    router.push("/admin/login");
   };
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <QueryProvider>
-          <div className="flex h-screen relative" style={{
-            backgroundImage: `url('/patterns/flowers.png')`,
-            backgroundRepeat: 'repeat',
-            backgroundSize: '200px 200px',
-            opacity: 0.97,
-          }}>
+          <div className="flex h-screen relative">
             {/* Mobile overlay */}
             {sidebarOpen && (
               <div
@@ -101,14 +102,16 @@ export default function AdminLayout({
                 fixed lg:static inset-y-0 left-0 z-50
                 w-64 bg-amber-50/80 backdrop-blur-sm shadow-sm border-r-4 border-double border-amber-800/30
                 transform transition-transform duration-300 ease-in-out
-                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
               `}
             >
               <div className="h-full flex flex-col">
                 {/* Header */}
                 <div className="p-6 flex items-start justify-between">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      Admin Panel
+                    </h1>
                     <p className="text-sm text-gray-600 mt-1">{user.email}</p>
                   </div>
                   {/* Close button for mobile */}
@@ -291,16 +294,16 @@ export default function AdminLayout({
                       <path d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                   </button>
-                  <h2 className="text-lg font-semibold text-gray-900">Admin Panel</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Admin Panel
+                  </h2>
                   <div className="w-6" /> {/* Spacer for alignment */}
                 </div>
               </header>
 
               {/* Main content area */}
               <main className="flex-1 overflow-y-auto">
-                <div className="p-4 sm:p-6 lg:p-8">
-                  {children}
-                </div>
+                <div className="p-4 sm:p-6 lg:p-8">{children}</div>
               </main>
             </div>
           </div>
