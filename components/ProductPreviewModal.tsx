@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { ProductType, Era, Category, Condition } from '@/types';
+import { isDiscountActive, getEffectivePrice } from '@/lib/discount';
+import { Timestamp } from 'firebase/firestore';
+import ProductPrice from './ProductPrice';
 
 interface PreviewProduct {
   productType: ProductType;
@@ -16,6 +19,9 @@ interface PreviewProduct {
   condition: Condition;
   conditionNotes?: string;
   price: number;
+  discountPrice?: number;
+  discountStartDate?: Timestamp;
+  discountEndDate?: Timestamp;
   tags?: string[];
   featured?: boolean;
   inStock?: boolean;
@@ -177,9 +183,13 @@ export default function ProductPreviewModal({ product, onClose }: ProductPreview
 
               {/* Price */}
               <div>
-                <p className="text-3xl font-bold text-gray-900">
-                  €{product.price.toFixed(2)}
-                </p>
+                <ProductPrice
+                  amount={getEffectivePrice(product)}
+                  originalAmount={
+                    isDiscountActive(product) ? product.price : undefined
+                  }
+                  className="text-3xl font-bold"
+                />
               </div>
 
               {/* Quick Info */}
