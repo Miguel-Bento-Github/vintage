@@ -87,7 +87,12 @@
     "return1": "商品は未使用で元の状態である必要があります",
     "return2": "返送料はお客様のご負担となります",
     "return3": "返金は5〜7営業日以内に処理されます",
-    "similarItems": "類似商品"
+    "similarItems": "類似商品",
+    "dimensions": "寸法",
+    "weight": "重量",
+    "length": "長さ",
+    "width": "幅",
+    "height": "高さ"
   },
   "eras": {
     "1950s": "1950年代",

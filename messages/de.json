@@ -87,7 +87,12 @@
     "return1": "Der Artikel muss ungetragen und im Originalzustand sein",
     "return2": "Die Rücksendekosten trägt der Käufer",
     "return3": "Die Rückerstattung erfolgt innerhalb von 5-7 Werktagen",
-    "similarItems": "Ähnliche Artikel"
+    "similarItems": "Ähnliche Artikel",
+    "dimensions": "Abmessungen",
+    "weight": "Gewicht",
+    "length": "Länge",
+    "width": "Breite",
+    "height": "Höhe"
   },
   "eras": {
     "1950s": "1950er",

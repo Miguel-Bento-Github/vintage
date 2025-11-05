@@ -454,6 +454,53 @@ export default async function ProductPage({ params }: PageProps) {
                   </div>
                 )}
 
+              {/* Dimensions */}
+              {(product.weightGrams || product.lengthCm || product.widthCm || product.heightCm) && (
+                <div className="mb-6">
+                  <h3 className="font-semibold text-gray-900 mb-3">
+                    {t("dimensions")}
+                  </h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <table className="w-full text-sm">
+                      <tbody className="divide-y divide-gray-200">
+                        {product.weightGrams && (
+                          <tr>
+                            <td className="py-2 text-gray-600">{t("weight")}</td>
+                            <td className="py-2 text-gray-900 font-medium text-right">
+                              {product.weightGrams}g
+                            </td>
+                          </tr>
+                        )}
+                        {product.lengthCm && (
+                          <tr>
+                            <td className="py-2 text-gray-600">{t("length")}</td>
+                            <td className="py-2 text-gray-900 font-medium text-right">
+                              {product.lengthCm} cm
+                            </td>
+                          </tr>
+                        )}
+                        {product.widthCm && (
+                          <tr>
+                            <td className="py-2 text-gray-600">{t("width")}</td>
+                            <td className="py-2 text-gray-900 font-medium text-right">
+                              {product.widthCm} cm
+                            </td>
+                          </tr>
+                        )}
+                        {product.heightCm && (
+                          <tr>
+                            <td className="py-2 text-gray-600">{t("height")}</td>
+                            <td className="py-2 text-gray-900 font-medium text-right">
+                              {product.heightCm} cm
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
               {/* Condition */}
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-900 mb-2">

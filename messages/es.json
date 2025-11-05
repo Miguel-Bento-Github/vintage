@@ -87,7 +87,12 @@
     "return1": "El artículo debe estar sin usar y en condiciones originales",
     "return2": "El envío de devolución es responsabilidad del comprador",
     "return3": "El reembolso se procesará dentro de 5-7 días hábiles",
-    "similarItems": "Artículos Similares"
+    "similarItems": "Artículos Similares",
+    "dimensions": "Dimensiones",
+    "weight": "Peso",
+    "length": "Largo",
+    "width": "Ancho",
+    "height": "Alto"
   },
   "eras": {
     "1950s": "Años 50",

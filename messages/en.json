@@ -87,7 +87,12 @@
     "return1": "Item must be unworn and in original condition",
     "return2": "Return shipping is the responsibility of the buyer",
     "return3": "Refund will be issued within 5-7 business days",
-    "similarItems": "Similar Items"
+    "similarItems": "Similar Items",
+    "dimensions": "Dimensions",
+    "weight": "Weight",
+    "length": "Length",
+    "width": "Width",
+    "height": "Height"
   },
   "eras": {
     "1950s": "1950s",

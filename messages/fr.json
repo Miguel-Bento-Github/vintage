@@ -87,7 +87,12 @@
     "return1": "L'article doit être non porté et dans son état d'origine",
     "return2": "Les frais de retour sont à la charge de l'acheteur",
     "return3": "Le remboursement sera effectué sous 5 à 7 jours ouvrables",
-    "similarItems": "Articles Similaires"
+    "similarItems": "Articles Similaires",
+    "dimensions": "Dimensions",
+    "weight": "Poids",
+    "length": "Longueur",
+    "width": "Largeur",
+    "height": "Hauteur"
   },
   "eras": {
     "1950s": "Années 50",
