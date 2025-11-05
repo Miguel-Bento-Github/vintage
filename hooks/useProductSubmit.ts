@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp, deleteField } from 'firebase/firestore';
 import { useUpdateProduct, useDeleteProduct } from '@/hooks/useProducts';
 import { uploadProductImages, deleteProductImage, addProduct } from '@/services/productService';
 import { ProductType, Era, Category, Condition, ProductTranslations, Product } from '@/types';
@@ -129,9 +129,9 @@ export function useProductSubmit({
       ...(formData.lengthCm && { lengthCm: parseFloat(formData.lengthCm) }),
       ...(formData.widthCm && { widthCm: parseFloat(formData.widthCm) }),
       ...(formData.heightCm && { heightCm: parseFloat(formData.heightCm) }),
-      ...(formData.discountPrice && { discountPrice: parseFloat(formData.discountPrice) }),
-      ...(formData.discountStartDate && { discountStartDate: Timestamp.fromDate(new Date(formData.discountStartDate)) }),
-      ...(formData.discountEndDate && { discountEndDate: Timestamp.fromDate(new Date(formData.discountEndDate)) }),
+      discountPrice: formData.discountPrice ? parseFloat(formData.discountPrice) : deleteField(),
+      discountStartDate: formData.discountStartDate ? Timestamp.fromDate(new Date(formData.discountStartDate)) : deleteField(),
+      discountEndDate: formData.discountEndDate ? Timestamp.fromDate(new Date(formData.discountEndDate)) : deleteField(),
       ...(Object.keys(translations).length > 0 && { translations }),
     };
   }, [formData, translations]);
