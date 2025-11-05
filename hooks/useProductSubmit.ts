@@ -85,8 +85,9 @@ export function useProductSubmit({
 
   /**
    * Prepare product data from form data
+   * @param isUpdate - Whether this is for an update operation (uses deleteField) or create (omits fields)
    */
-  const prepareProductData = useCallback(() => {
+  const prepareProductData = useCallback((isUpdate = false): any => {
     // Prepare specifications
     const specifications: Record<string, string | number> = {};
     Object.entries(formData.specifications).forEach(([key, value]) => {
@@ -102,7 +103,7 @@ export function useProductSubmit({
     const category: Category = formData.category as Category;
     const condition: Condition = formData.condition as Condition;
 
-    return {
+    const baseData = {
       productType,
       title: formData.title.trim(),
       description: formData.description.trim(),
@@ -129,11 +130,27 @@ export function useProductSubmit({
       ...(formData.lengthCm && { lengthCm: parseFloat(formData.lengthCm) }),
       ...(formData.widthCm && { widthCm: parseFloat(formData.widthCm) }),
       ...(formData.heightCm && { heightCm: parseFloat(formData.heightCm) }),
-      discountPrice: formData.discountPrice ? parseFloat(formData.discountPrice) : deleteField(),
-      discountStartDate: formData.discountStartDate ? Timestamp.fromDate(new Date(formData.discountStartDate)) : deleteField(),
-      discountEndDate: formData.discountEndDate ? Timestamp.fromDate(new Date(formData.discountEndDate)) : deleteField(),
       ...(Object.keys(translations).length > 0 && { translations }),
     };
+
+    // Handle discount fields differently for create vs update
+    if (isUpdate) {
+      // For updates, use deleteField() to explicitly remove empty fields
+      return {
+        ...baseData,
+        discountPrice: formData.discountPrice ? parseFloat(formData.discountPrice) : deleteField(),
+        discountStartDate: formData.discountStartDate ? Timestamp.fromDate(new Date(formData.discountStartDate)) : deleteField(),
+        discountEndDate: formData.discountEndDate ? Timestamp.fromDate(new Date(formData.discountEndDate)) : deleteField(),
+      };
+    } else {
+      // For creates, use conditional spread to omit empty fields
+      return {
+        ...baseData,
+        ...(formData.discountPrice && { discountPrice: parseFloat(formData.discountPrice) }),
+        ...(formData.discountStartDate && { discountStartDate: Timestamp.fromDate(new Date(formData.discountStartDate)) }),
+        ...(formData.discountEndDate && { discountEndDate: Timestamp.fromDate(new Date(formData.discountEndDate)) }),
+      };
+    }
   }, [formData, translations]);
 
   /**
@@ -182,7 +199,7 @@ export function useProductSubmit({
       ...uploadedImageUrls,
     ];
 
-    const productData = prepareProductData();
+    const productData = prepareProductData(true);
     const updateData = {
       ...productData,
       images: finalImages,

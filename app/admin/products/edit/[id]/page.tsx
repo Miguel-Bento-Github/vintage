@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
+import { Timestamp } from 'firebase/firestore';
 import { useProduct } from '@/hooks/useProducts';
 import { ProductType, Era, Category, Condition, ProductTranslations } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -301,6 +302,10 @@ export default function EditProductPage() {
       brand: productData.brand || 'Brand Name',
       price: productData.price || 0,
       images: previewImages,
+      // Override discount fields for preview - convert FieldValue to actual values
+      discountPrice: formData.discountPrice ? parseFloat(formData.discountPrice) : undefined,
+      discountStartDate: formData.discountStartDate ? Timestamp.fromDate(new Date(formData.discountStartDate)) : undefined,
+      discountEndDate: formData.discountEndDate ? Timestamp.fromDate(new Date(formData.discountEndDate)) : undefined,
     };
   };
 
