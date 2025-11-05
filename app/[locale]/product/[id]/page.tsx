@@ -361,7 +361,7 @@ export default async function ProductPage({ params }: PageProps) {
           {/* Main Product Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
             {/* Left: Image Gallery */}
-            <div>
+            <div className="lg:sticky lg:top-24 lg:self-start">
               <ProductGallery
                 images={translatedProduct.images}
                 title={translatedProduct.title}
@@ -454,13 +454,30 @@ export default async function ProductPage({ params }: PageProps) {
                   </div>
                 )}
 
+              {/* Condition */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  {t("condition")}
+                </h3>
+                <p className="text-gray-700 mb-1">
+                  <span className="font-medium">
+                    {translatedProduct.condition}
+                  </span>
+                </p>
+                {translatedProduct.conditionNotes && (
+                  <p className="text-sm text-gray-600 italic">
+                    {translatedProduct.conditionNotes}
+                  </p>
+                )}
+              </div>
+
               {/* Dimensions */}
               {(product.weightGrams || product.lengthCm || product.widthCm || product.heightCm) && (
-                <div className="mb-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">
+                <details className="mb-6 bg-gray-50 rounded-lg" open>
+                  <summary className="font-semibold text-gray-900 p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors">
                     {t("dimensions")}
-                  </h3>
-                  <div className="bg-gray-50 rounded-lg p-4">
+                  </summary>
+                  <div className="px-4 pb-4">
                     <table className="w-full text-sm">
                       <tbody className="divide-y divide-gray-200">
                         {product.weightGrams && (
@@ -498,25 +515,8 @@ export default async function ProductPage({ params }: PageProps) {
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </details>
               )}
-
-              {/* Condition */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-gray-900 mb-2">
-                  {t("condition")}
-                </h3>
-                <p className="text-gray-700 mb-1">
-                  <span className="font-medium">
-                    {translatedProduct.condition}
-                  </span>
-                </p>
-                {translatedProduct.conditionNotes && (
-                  <p className="text-sm text-gray-600 italic">
-                    {translatedProduct.conditionNotes}
-                  </p>
-                )}
-              </div>
 
               {/* Tags */}
               {translatedProduct.tags && translatedProduct.tags.length > 0 && (
