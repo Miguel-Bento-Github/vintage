@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { cache } from "react";
@@ -73,6 +74,31 @@ const CATEGORY_IMAGES: Record<string, string> = {
   Accessories:
     "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=800&h=600&fit=crop",
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app";
+
+  return {
+    title: "Dream Azul - Curated Vintage Clothing, Furniture & Collectibles | Utrecht",
+    description: "Discover unique vintage pieces from the 1950s-2000s. Authentic vintage clothing, furniture, vinyl records, and jewelry. Female-owned, ethnic minority-run shop in Utrecht, Netherlands.",
+    alternates: {
+      canonical: `${baseUrl}/${locale}`,
+      languages: {
+        'x-default': `${baseUrl}/en`,
+        'en': `${baseUrl}/en`,
+        'es': `${baseUrl}/es`,
+        'fr': `${baseUrl}/fr`,
+        'de': `${baseUrl}/de`,
+        'ja': `${baseUrl}/ja`,
+      },
+    },
+  };
+}
 
 export default async function HomePage({
   params,

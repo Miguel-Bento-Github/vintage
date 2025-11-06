@@ -8,28 +8,48 @@ import { Metadata } from 'next';
 
 export const revalidate = 180;
 
-export const metadata: Metadata = {
-  title: 'Shop Vintage Clothing, Furniture & Collectibles | Dream Azul Utrecht',
-  description: 'Browse our curated collection of vintage clothing, furniture, vinyl records, jewelry and collectibles. Authentic pieces from 1950s-2000s. Based in Utrecht, Netherlands. Worldwide shipping available.',
-  keywords: [
-    'buy vintage clothing online',
-    'vintage furniture shop',
-    'vintage shop Netherlands',
-    'second hand clothing',
-    'retro furniture',
-    'vintage vinyl records',
-    'vintage jewelry online',
-    'mid-century modern furniture',
-    'vintage collectibles',
-    'vintage shop Utrecht',
-    'vintage online store',
-  ],
-  openGraph: {
-    title: 'Shop Vintage Items | Dream Azul',
-    description: 'Curated vintage clothing, furniture, records & collectibles. Utrecht, Netherlands.',
-    type: 'website',
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app";
+
+  return {
+    title: 'Shop Vintage Clothing, Furniture & Collectibles | Dream Azul Utrecht',
+    description: 'Browse our curated collection of vintage clothing, furniture, vinyl records, jewelry and collectibles. Authentic pieces from 1950s-2000s. Based in Utrecht, Netherlands. Worldwide shipping available.',
+    keywords: [
+      'buy vintage clothing online',
+      'vintage furniture shop',
+      'vintage shop Netherlands',
+      'second hand clothing',
+      'retro furniture',
+      'vintage vinyl records',
+      'vintage jewelry online',
+      'mid-century modern furniture',
+      'vintage collectibles',
+      'vintage shop Utrecht',
+      'vintage online store',
+    ],
+    openGraph: {
+      title: 'Shop Vintage Items | Dream Azul',
+      description: 'Curated vintage clothing, furniture, records & collectibles. Utrecht, Netherlands.',
+      type: 'website',
+    },
+    alternates: {
+      canonical: `${baseUrl}/${locale}/shop`,
+      languages: {
+        'x-default': `${baseUrl}/en/shop`,
+        'en': `${baseUrl}/en/shop`,
+        'es': `${baseUrl}/es/shop`,
+        'fr': `${baseUrl}/fr/shop`,
+        'de': `${baseUrl}/de/shop`,
+        'ja': `${baseUrl}/ja/shop`,
+      },
+    },
+  };
+}
 
 const getProducts = cache(async (): Promise<SerializedProduct[]> => {
   const productsRef = collection(db, 'products');

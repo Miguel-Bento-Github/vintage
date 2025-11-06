@@ -1,5 +1,31 @@
+import { Metadata } from 'next';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app";
+
+  return {
+    title: 'Import Taxes & Customs Duties Policy | Dream Azul',
+    description: 'Understand import taxes and customs duties when ordering from Dream Azul. Information for EU, UK, US, Canada, Australia and worldwide customers.',
+    alternates: {
+      canonical: `${baseUrl}/${locale}/tax-policy`,
+      languages: {
+        'x-default': `${baseUrl}/en/tax-policy`,
+        'en': `${baseUrl}/en/tax-policy`,
+        'es': `${baseUrl}/es/tax-policy`,
+        'fr': `${baseUrl}/fr/tax-policy`,
+        'de': `${baseUrl}/de/tax-policy`,
+        'ja': `${baseUrl}/ja/tax-policy`,
+      },
+    },
+  };
+}
 
 export default function TaxPolicyPage() {
   const t = useTranslations('taxPolicy');

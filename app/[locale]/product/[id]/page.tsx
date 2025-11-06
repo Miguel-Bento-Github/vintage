@@ -157,7 +157,15 @@ export async function generateMetadata({
       images: imageUrl ? [imageUrl] : [],
     },
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app"}/product/${id}`,
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app"}/${localeParam}/product/${id}`,
+      languages: {
+        'x-default': `${process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app"}/en/product/${id}`,
+        'en': `${process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app"}/en/product/${id}`,
+        'es': `${process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app"}/es/product/${id}`,
+        'fr': `${process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app"}/fr/product/${id}`,
+        'de': `${process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app"}/de/product/${id}`,
+        'ja': `${process.env.NEXT_PUBLIC_SITE_URL || "https://vintage-store.vercel.app"}/ja/product/${id}`,
+      },
     },
   };
 }
