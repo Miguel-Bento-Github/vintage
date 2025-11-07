@@ -140,17 +140,17 @@ export function useProductSubmit({
       // For updates, use deleteField() to explicitly remove empty fields
       return {
         ...baseData,
-        discountPrice: formData.discountPrice ? parseFloat(formData.discountPrice) : deleteField(),
-        discountStartDate: formData.discountStartDate ? Timestamp.fromDate(new Date(formData.discountStartDate)) : deleteField(),
-        discountEndDate: formData.discountEndDate ? Timestamp.fromDate(new Date(formData.discountEndDate)) : deleteField(),
+        discountPrice: formData.discountPrice && formData.discountPrice.trim() ? parseFloat(formData.discountPrice) : deleteField(),
+        discountStartDate: formData.discountStartDate && formData.discountStartDate.trim() ? Timestamp.fromDate(new Date(formData.discountStartDate)) : deleteField(),
+        discountEndDate: formData.discountEndDate && formData.discountEndDate.trim() ? Timestamp.fromDate(new Date(formData.discountEndDate)) : deleteField(),
       };
     } else {
       // For creates, use conditional spread to omit empty fields
       return {
         ...baseData,
-        ...(formData.discountPrice && { discountPrice: parseFloat(formData.discountPrice) }),
-        ...(formData.discountStartDate && { discountStartDate: Timestamp.fromDate(new Date(formData.discountStartDate)) }),
-        ...(formData.discountEndDate && { discountEndDate: Timestamp.fromDate(new Date(formData.discountEndDate)) }),
+        ...(formData.discountPrice && formData.discountPrice.trim() && { discountPrice: parseFloat(formData.discountPrice) }),
+        ...(formData.discountStartDate && formData.discountStartDate.trim() && { discountStartDate: Timestamp.fromDate(new Date(formData.discountStartDate)) }),
+        ...(formData.discountEndDate && formData.discountEndDate.trim() && { discountEndDate: Timestamp.fromDate(new Date(formData.discountEndDate)) }),
       };
     }
   }, [formData, translations]);
