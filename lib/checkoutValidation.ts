@@ -47,16 +47,28 @@ export function validateCustomerInfo(formData: CheckoutFormData): CheckoutFormEr
  * Calculate checkout totals based on cart total and destination country
  * @param cartTotal - Cart subtotal
  * @param countryCode - ISO 3166-1 alpha-2 country code (optional)
+ * @param cartItems - Cart items to check for free shipping (optional)
  * @returns Subtotal, shipping cost, and total
  */
-export function calculateCheckoutTotals(cartTotal: number, countryCode?: string) {
+export function calculateCheckoutTotals(
+  cartTotal: number,
+  countryCode?: string,
+  cartItems?: Array<{ freeShipping?: boolean }>
+) {
   const subtotal = cartTotal;
 
-  // Calculate shipping based on destination country
-  // Default to domestic (ES) if no country provided
-  const shipping = countryCode
-    ? calculateShipping(countryCode)
-    : calculateShipping('ES');
+  // Check if all items in cart have free shipping
+  const allItemsFreeShipping = cartItems && cartItems.length > 0
+    ? cartItems.every(item => item.freeShipping === true)
+    : false;
+
+  // If all items have free shipping, shipping cost is 0
+  // Otherwise calculate shipping based on destination country
+  const shipping = allItemsFreeShipping
+    ? 0
+    : countryCode
+      ? calculateShipping(countryCode)
+      : calculateShipping('ES');
 
   // Tax is $0.00 for second-hand vintage goods
   // See /lib/taxCalculation.ts for explanation

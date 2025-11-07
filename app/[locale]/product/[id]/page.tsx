@@ -556,6 +556,7 @@ export default async function ProductPage({ params }: PageProps) {
                     imageUrl: translatedProduct.images[0] || "",
                     inStock: translatedProduct.inStock,
                     weightGrams: translatedProduct.weightGrams,
+                    freeShipping: translatedProduct.freeShipping,
                     discountPrice: translatedProduct.discountPrice,
                     discountStartDate: translatedProduct.discountStartDate
                       ? translatedProduct.discountStartDate

@@ -20,6 +20,7 @@ interface AddToCartButtonProps {
     imageUrl: string;
     inStock: boolean;
     weightGrams?: number;
+    freeShipping?: boolean;
     discountPrice?: number;
     discountStartDate?: string;
     discountEndDate?: string;
@@ -52,6 +53,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       imageUrl: product.imageUrl,
       inStock: product.inStock,
       weightGrams: product.weightGrams,
+      freeShipping: product.freeShipping,
     });
 
     // Track analytics with effective price

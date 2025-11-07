@@ -269,6 +269,7 @@ export interface CartItem {
   inStock: boolean;
   isDeleted?: boolean; // Flag for deleted products
   weightGrams?: number;               // Weight for shipping calculation
+  freeShipping?: boolean;             // If true, shipping is free for this product
 }
 
 export interface Cart {

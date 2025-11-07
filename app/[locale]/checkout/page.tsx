@@ -94,7 +94,7 @@ export default function CheckoutPage() {
   }, [formData, step, locale, router, isInitialized]);
 
   // Calculate totals dynamically based on selected country (tax is $0.00 for second-hand goods)
-  const { subtotal, shipping, total } = calculateCheckoutTotals(getCartTotal(), formData.country || undefined);
+  const { subtotal, shipping, total } = calculateCheckoutTotals(getCartTotal(), formData.country || undefined, items);
 
   // Redirect if cart is empty (but only after initialization to avoid flickering)
   useEffect(() => {
