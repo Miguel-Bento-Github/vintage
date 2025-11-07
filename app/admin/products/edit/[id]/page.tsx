@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Timestamp } from 'firebase/firestore';
 import { useProduct } from '@/hooks/useProducts';
-import { ProductType, Era, Category, Condition, ProductTranslations } from '@/types';
+import { ProductType, Era, Category, Condition, ProductTranslations, timestampToISO } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorState from '@/components/ErrorState';
 import ProductPreviewModal from '@/components/ProductPreviewModal';
@@ -260,8 +260,8 @@ export default function EditProductPage() {
         heightCm: product.heightCm?.toString() || '',
         freeShipping: product.freeShipping || false,
         discountPrice: product.discountPrice?.toString() || '',
-        discountStartDate: product.discountStartDate ? product.discountStartDate.toDate().toISOString().slice(0, 16) : '',
-        discountEndDate: product.discountEndDate ? product.discountEndDate.toDate().toISOString().slice(0, 16) : '',
+        discountStartDate: product.discountStartDate ? (timestampToISO(product.discountStartDate) || '').slice(0, 16) : '',
+        discountEndDate: product.discountEndDate ? (timestampToISO(product.discountEndDate) || '').slice(0, 16) : '',
       };
 
       const initialTrans = product.translations || {};
