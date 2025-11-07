@@ -42,6 +42,7 @@ interface ProductFormData {
   lengthCm: string;
   widthCm: string;
   heightCm: string;
+  freeShipping: boolean;
   // Discount fields
   discountPrice: string;
   discountStartDate: string;
@@ -96,6 +97,7 @@ export default function EditProductPage() {
     lengthCm: '',
     widthCm: '',
     heightCm: '',
+    freeShipping: false,
     discountPrice: '',
     discountStartDate: '',
     discountEndDate: '',
@@ -222,6 +224,7 @@ export default function EditProductPage() {
         lengthCm: '',
         widthCm: '',
         heightCm: '',
+        freeShipping: false,
         discountPrice: '',
         discountStartDate: '',
         discountEndDate: '',
@@ -255,6 +258,7 @@ export default function EditProductPage() {
         lengthCm: product.lengthCm?.toString() || '',
         widthCm: product.widthCm?.toString() || '',
         heightCm: product.heightCm?.toString() || '',
+        freeShipping: product.freeShipping || false,
         discountPrice: product.discountPrice?.toString() || '',
         discountStartDate: product.discountStartDate ? product.discountStartDate.toDate().toISOString().slice(0, 16) : '',
         discountEndDate: product.discountEndDate ? product.discountEndDate.toDate().toISOString().slice(0, 16) : '',
@@ -498,6 +502,7 @@ export default function EditProductPage() {
           lengthCm={formData.lengthCm}
           widthCm={formData.widthCm}
           heightCm={formData.heightCm}
+          freeShipping={formData.freeShipping}
           onChange={handleInputChange}
           sectionOrder={sectionOrder}
         />

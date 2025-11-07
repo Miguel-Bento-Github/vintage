@@ -29,6 +29,7 @@ interface ProductFormData {
   lengthCm: string;
   widthCm: string;
   heightCm: string;
+  freeShipping: boolean;
   discountPrice: string;
   discountStartDate: string;
   discountEndDate: string;
@@ -130,6 +131,7 @@ export function useProductSubmit({
       ...(formData.lengthCm && { lengthCm: parseFloat(formData.lengthCm) }),
       ...(formData.widthCm && { widthCm: parseFloat(formData.widthCm) }),
       ...(formData.heightCm && { heightCm: parseFloat(formData.heightCm) }),
+      freeShipping: formData.freeShipping,
       ...(Object.keys(translations).length > 0 && { translations }),
     };
 

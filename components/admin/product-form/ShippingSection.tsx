@@ -5,6 +5,7 @@ interface ShippingSectionProps {
   lengthCm: string;
   widthCm: string;
   heightCm: string;
+  freeShipping: boolean;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   sectionOrder: string[];
 }
@@ -18,6 +19,7 @@ export default function ShippingSection({
   lengthCm,
   widthCm,
   heightCm,
+  freeShipping,
   onChange,
   sectionOrder,
 }: ShippingSectionProps) {
@@ -33,6 +35,26 @@ export default function ShippingSection({
       <p className="text-sm text-gray-600 mb-4">
         Add weight and dimensions for accurate shipping cost calculation. Weight is especially important.
       </p>
+
+      {/* Free Shipping Checkbox */}
+      <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <label className="flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            id="freeShipping"
+            name="freeShipping"
+            checked={freeShipping}
+            onChange={onChange}
+            className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-2 focus:ring-green-500"
+          />
+          <span className="ml-3 text-sm font-semibold text-gray-900">
+            🎁 Free Shipping
+          </span>
+        </label>
+        <p className="mt-2 ml-8 text-xs text-gray-600">
+          Check this box to offer free shipping for this product. Customers will not be charged for shipping.
+        </p>
+      </div>
 
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

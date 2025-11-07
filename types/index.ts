@@ -134,6 +134,7 @@ export interface Product {
   lengthCm?: number;                  // Length in cm (optional for volumetric weight)
   widthCm?: number;                   // Width in cm (optional for volumetric weight)
   heightCm?: number;                  // Height in cm (optional for volumetric weight)
+  freeShipping?: boolean;             // If true, shipping is free for this product
   // Discount pricing
   discountPrice?: number;             // Optional discounted price
   discountStartDate?: Timestamp;      // When discount becomes active
