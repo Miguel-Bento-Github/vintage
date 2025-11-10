@@ -59,12 +59,12 @@ export async function POST(request: NextRequest) {
     // Calculate shipping based on destination country and weight
     // Default to Netherlands (NL) if no country specified
     const destinationCountry = shippingCountry || 'NL';
-    const shippingCostInEUR = calculateShipping(destinationCountry, totalWeightGrams);
-    const shippingCost = convertPrice(shippingCostInEUR, currency, exchangeRates);
 
-    // Free shipping threshold: €100 or equivalent
-    const shippingThreshold = convertPrice(100, currency, exchangeRates);
-    const shipping = subtotal >= shippingThreshold ? 0 : shippingCost;
+    // Check if all items have free shipping
+    const allItemsFreeShipping = items.every(item => item.freeShipping === true);
+
+    const shippingCostInEUR = allItemsFreeShipping ? 0 : calculateShipping(destinationCountry, totalWeightGrams);
+    const shipping = convertPrice(shippingCostInEUR, currency, exchangeRates);
     const total = subtotal + shipping;
 
     // Validate minimum amount for Stripe
