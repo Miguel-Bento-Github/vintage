@@ -578,11 +578,27 @@ export default async function ProductPage({ params }: PageProps) {
                 </p>
               </div>
 
-              {/* Shipping Calculator */}
-              <ShippingCalculator
-                productWeight={translatedProduct.weightGrams}
-                className="mb-6"
-              />
+              {/* Shipping Calculator or Free Shipping Badge */}
+              {translatedProduct.freeShipping ? (
+                <div className="mb-6 p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-lg font-semibold text-green-800">
+                      🎁 Free Shipping
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-green-700">
+                    This item ships free worldwide!
+                  </p>
+                </div>
+              ) : (
+                <ShippingCalculator
+                  productWeight={translatedProduct.weightGrams}
+                  className="mb-6"
+                />
+              )}
             </div>
           </div>
 

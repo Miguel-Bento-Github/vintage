@@ -13,6 +13,7 @@ interface CustomerInfoFormProps {
   onFormDataChange: (data: CheckoutFormData) => void;
   onNext: () => void;
   onBack: () => void;
+  cartItems?: Array<{ freeShipping?: boolean }>;
 }
 
 export default function CustomerInfoForm({
@@ -21,12 +22,16 @@ export default function CustomerInfoForm({
   onFormDataChange,
   onNext,
   onBack,
+  cartItems = [],
 }: CustomerInfoFormProps) {
   const t = useTranslations('checkout');
   const tCommon = useTranslations('common');
   const { currency } = useCurrency();
 
-  // Fetch real-time shipping quote with TanStack Query
+  // Check if all items in cart have free shipping
+  const allItemsFreeShipping = cartItems.length > 0 && cartItems.every(item => item.freeShipping === true);
+
+  // Fetch real-time shipping quote with TanStack Query (only if not all items have free shipping)
   const { data: shippingQuote, isLoading: isLoadingQuote } = useShippingQuote(
     formData.country,
     formData.postalCode || undefined
@@ -177,7 +182,23 @@ export default function CustomerInfoForm({
           />
 
           {/* Shipping Estimate */}
-          {isLoadingQuote && formData.country && (
+          {allItemsFreeShipping && formData.country && (
+            <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-md">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <p className="text-sm font-semibold text-green-800">
+                  🎁 Free Shipping
+                </p>
+              </div>
+              <p className="text-xs text-green-700 mt-1 ml-7">
+                All items in your cart ship free!
+              </p>
+            </div>
+          )}
+
+          {!allItemsFreeShipping && isLoadingQuote && formData.country && (
             <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
               <div className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-700"></div>
@@ -186,7 +207,7 @@ export default function CustomerInfoForm({
             </div>
           )}
 
-          {!isLoadingQuote && shippingQuote && (() => {
+          {!allItemsFreeShipping && !isLoadingQuote && shippingQuote && (() => {
             // Convert shipping cost to user's selected currency
             const rates = getExchangeRates();
             let costInEUR = shippingQuote.cost;

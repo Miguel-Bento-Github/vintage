@@ -214,6 +214,7 @@ export default function CheckoutPage() {
                 onFormDataChange={setFormData}
                 onNext={handleNextStep}
                 onBack={handlePreviousStep}
+                cartItems={items}
               />
             </div>
           )}
