@@ -22,8 +22,9 @@ export default function CartPage() {
   const displayItems = validatedItems;
 
   const subtotal = getCartTotal();
-  const shipping = subtotal > 0 ? (subtotal >= 100 ? 0 : 10) : 0; // Free shipping over €100
-  // Tax/VAT calculated by Stripe at checkout based on customer location
+  // Note: Actual shipping is calculated at checkout based on destination country
+  // and whether products have the freeShipping flag. This is just a placeholder.
+  const shipping = 0; // Calculated at checkout
   const total = subtotal + shipping;
 
   // Show loading while validating
@@ -264,19 +265,8 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-gray-700">
                   <span>{t('shipping')}</span>
-                  <span className="font-medium">
-                    {shipping === 0 ? (
-                      <span className="text-green-600">{t('free')}</span>
-                    ) : (
-                      <Price amount={shipping} />
-                    )}
-                  </span>
+                  <span className="font-medium text-sm">{t('calculatedAtCheckout')}</span>
                 </div>
-                {shipping > 0 && (
-                  <p className="text-xs text-gray-500">
-                    {t('freeShippingNote')}
-                  </p>
-                )}
                 <div className="flex justify-between text-gray-700">
                   <span>{t('tax')}</span>
                   <span className="font-medium text-sm">{t('calculatedAtCheckout')}</span>

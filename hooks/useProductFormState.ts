@@ -21,6 +21,7 @@ interface UseProductFormStateProps<
     lengthCm: string;
     widthCm: string;
     heightCm: string;
+    freeShipping: boolean;
     discountPrice: string;
     discountStartDate: string;
     discountEndDate: string;
@@ -63,6 +64,7 @@ export function useProductFormState<
     lengthCm: string;
     widthCm: string;
     heightCm: string;
+    freeShipping: boolean;
     discountPrice: string;
     discountStartDate: string;
     discountEndDate: string;
@@ -184,7 +186,8 @@ export function useProductFormState<
           formData.weightGrams !== initialFormData.weightGrams ||
           formData.lengthCm !== initialFormData.lengthCm ||
           formData.widthCm !== initialFormData.widthCm ||
-          formData.heightCm !== initialFormData.heightCm
+          formData.heightCm !== initialFormData.heightCm ||
+          formData.freeShipping !== initialFormData.freeShipping
         );
       case 'images':
         const imagesChanged = JSON.stringify(existingImages) !== JSON.stringify(initialImages);
