@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -155,8 +156,8 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
         )}
       </div>
 
-      {/* Lightbox Modal */}
-      {isLightboxOpen && (
+      {/* Lightbox Modal - rendered as portal to escape stacking context */}
+      {isLightboxOpen && createPortal(
         <div
           className={`fixed inset-0 z-50 backdrop-blur-md bg-amber-50/40 p-4 md:p-12 transition-opacity duration-150 ease-in-out ${
             isVisible ? 'opacity-100' : 'opacity-0'
@@ -166,7 +167,7 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
           {/* Close button */}
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 z-10 text-amber-900 bg-amber-100/90 rounded-lg p-2"
+            className="absolute top-4 right-4 z-10 text-white bg-gray-900/80 hover:bg-gray-900 rounded-full p-3 shadow-lg transition-colors"
             aria-label="Close lightbox"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -244,7 +245,8 @@ export default function ProductGallery({ images, title }: ProductGalleryProps) {
               ))}
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
