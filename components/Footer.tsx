@@ -160,13 +160,23 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
             <p>&copy; {new Date().getFullYear()} Dream Azul. {t('footer.rightsReserved')}.</p>
-            <Link
-              href="/admin"
-              className="text-gray-500 hover:text-gray-300 transition-colors text-2xl"
-              aria-label="Admin Login"
-            >
-              <span aria-hidden="true">🎃</span>
-            </Link>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://dev24.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                Created by dev24.net
+              </a>
+              <Link
+                href="/admin"
+                className="text-gray-500 hover:text-gray-300 transition-colors text-2xl"
+                aria-label="Admin Login"
+              >
+                <span aria-hidden="true">🎃</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
