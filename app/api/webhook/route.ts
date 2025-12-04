@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
 import Stripe from 'stripe';
-import { db } from '@/lib/firebase';
-import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import { adminDb } from '@/lib/firebase-admin';
+import { Timestamp } from 'firebase-admin/firestore';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -47,7 +47,20 @@ export async function POST(request: NextRequest) {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         console.log('💰 Payment succeeded:', paymentIntent.id);
 
-        // Create order in Firebase
+        // Check if order already exists (frontend may have already created it)
+        const existingOrders = await adminDb
+          .collection('orders')
+          .where('paymentIntentId', '==', paymentIntent.id)
+          .limit(1)
+          .get();
+
+        if (!existingOrders.empty) {
+          console.log('📋 Order already exists for payment:', paymentIntent.id);
+          break;
+        }
+
+        // Fallback order creation (if frontend didn't create it)
+        // This can happen if user closes browser before frontend completes
         const items = JSON.parse(paymentIntent.metadata.items || '[]');
 
         const orderData = {
@@ -58,17 +71,14 @@ export async function POST(request: NextRequest) {
           shipping: parseFloat(paymentIntent.metadata.shipping || '0'),
           tax: parseFloat(paymentIntent.metadata.tax || '0'),
           total: parseFloat(paymentIntent.metadata.total || '0'),
-          customerEmail: paymentIntent.receipt_email || '',
+          customerEmail: paymentIntent.receipt_email || paymentIntent.metadata.customerEmail || '',
           createdAt: Timestamp.now(),
           updatedAt: Timestamp.now(),
+          createdVia: 'webhook-fallback',
         };
 
-        const ordersRef = collection(db, 'orders');
-        const orderDoc = await addDoc(ordersRef, orderData);
-        console.log('✅ Order created:', orderDoc.id);
-
-        // TODO: Mark products as sold in Firebase
-        // TODO: Send confirmation email
+        const orderDoc = await adminDb.collection('orders').add(orderData);
+        console.log('✅ Order created via webhook fallback:', orderDoc.id);
 
         break;
       }
