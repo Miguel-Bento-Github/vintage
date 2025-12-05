@@ -5,6 +5,8 @@ import ProductPrice from './ProductPrice';
 import Price from './Price';
 import { useTranslations } from '@/hooks/useTranslations';
 import { isDiscountActive, getEffectivePrice, formatDiscountPercentage } from '@/lib/discount';
+import { toLocale } from '@/i18n';
+import type { ProductTranslations } from '@/types';
 
 interface VintageProductCardProps {
   product: {
@@ -20,6 +22,7 @@ interface VintageProductCardProps {
     discountPrice?: number;
     discountStartDate?: string;
     discountEndDate?: string;
+    translations?: ProductTranslations;
   };
   showDiscount?: boolean;
   showSize?: boolean;
@@ -28,6 +31,10 @@ interface VintageProductCardProps {
 export default function VintageProductCard({ product, showDiscount = false, showSize = false }: VintageProductCardProps) {
   const locale = useLocale();
   const tCommon = useTranslations('common');
+
+  // Get translated title
+  const typedLocale = toLocale(locale);
+  const translatedTitle = product.translations?.[typedLocale]?.title || product.title;
 
   return (
     <Link
@@ -40,7 +47,7 @@ export default function VintageProductCard({ product, showDiscount = false, show
           <>
             <Image
               src={product.images[0]}
-              alt={`${product.brand} ${product.title} - ${product.era} vintage ${product.category}`}
+              alt={`${product.brand} ${translatedTitle} - ${product.era} vintage ${product.category}`}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               loading="lazy"
@@ -87,7 +94,7 @@ export default function VintageProductCard({ product, showDiscount = false, show
           {product.era}
         </p>
         <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">
-          {product.title}
+          {translatedTitle}
         </h3>
         {showDiscount && isDiscountActive(product) ? (
           <div className="flex items-center gap-2 flex-wrap">

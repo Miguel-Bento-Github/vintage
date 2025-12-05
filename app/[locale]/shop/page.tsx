@@ -81,6 +81,7 @@ const getProducts = cache(async (): Promise<SerializedProduct[]> => {
       featured: data.featured,
       tags: data.tags,
       specifications: data.specifications,
+      translations: data.translations,
       createdAt: timestampToISO(data.createdAt) || '',
       updatedAt: timestampToISO(data.updatedAt) || '',
       soldAt: data.soldAt ? timestampToISO(data.soldAt) : undefined,

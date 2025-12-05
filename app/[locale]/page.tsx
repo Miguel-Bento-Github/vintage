@@ -7,6 +7,8 @@ import { db } from "@/lib/firebase";
 import { SerializedProduct, timestampToISO } from "@/types";
 import { getTranslations } from "next-intl/server";
 import VintageProductCard from "@/components/VintageProductCard";
+import { getTranslatedProduct } from "@/lib/productTranslations";
+import { toLocale } from "@/i18n";
 
 // Generate static pages for all locales at build time
 export function generateStaticParams() {
@@ -52,6 +54,7 @@ const getFeaturedProducts = cache(async (): Promise<SerializedProduct[]> => {
       featured: data.featured,
       tags: data.tags,
       specifications: data.specifications,
+      translations: data.translations,
       createdAt: timestampToISO(data.createdAt) || "",
       updatedAt: timestampToISO(data.updatedAt) || "",
       soldAt: data.soldAt ? timestampToISO(data.soldAt) : undefined,
@@ -109,6 +112,11 @@ export default async function HomePage({
   const featuredProducts = await getFeaturedProducts();
   const t = await getTranslations();
 
+  // Translate products for current locale
+  const translatedProducts = featuredProducts.map((product) =>
+    getTranslatedProduct(product, toLocale(locale))
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -155,9 +163,9 @@ export default async function HomePage({
             </p>
           </div>
 
-          {featuredProducts.length > 0 ? (
+          {translatedProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {featuredProducts.map((product) => (
+              {translatedProducts.map((product) => (
                 <VintageProductCard key={product.id} product={product} showDiscount={true} />
               ))}
             </div>
