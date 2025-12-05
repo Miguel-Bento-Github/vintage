@@ -519,5 +519,21 @@
     "buyerProtection": "Protección al Comprador",
     "worldwideShipping": "Envío Mundial",
     "rightsReserved": "Todos los derechos reservados"
+  },
+  "shippingCalculator": {
+    "calculateShipping": "Calcular Envío",
+    "shipTo": "Enviar a:",
+    "typeCountry": "Escriba el nombre del país...",
+    "countrySelected": "País seleccionado",
+    "autoDetecting": "Detectando su ubicación...",
+    "loadingRates": "Cargando tarifas de envío...",
+    "shippingCost": "Costo de Envío:",
+    "liveRate": "Tarifa actual",
+    "estimate": "Estimación",
+    "delivery": "Entrega:",
+    "domesticShipping": "Envío nacional dentro de Países Bajos",
+    "europeanShipping": "Envío europeo",
+    "internationalShipping": "Envío internacional",
+    "startTyping": "Escriba el nombre de su país para ver el costo y tiempo de envío"
   }
 }

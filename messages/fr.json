@@ -519,5 +519,21 @@
     "buyerProtection": "Protection de l'Acheteur",
     "worldwideShipping": "Livraison Mondiale",
     "rightsReserved": "Tous droits réservés"
+  },
+  "shippingCalculator": {
+    "calculateShipping": "Calculer les Frais de Port",
+    "shipTo": "Livrer à :",
+    "typeCountry": "Entrez le nom du pays...",
+    "countrySelected": "Pays sélectionné",
+    "autoDetecting": "Détection de votre localisation...",
+    "loadingRates": "Chargement des tarifs d'expédition...",
+    "shippingCost": "Frais de Port :",
+    "liveRate": "Tarif en direct",
+    "estimate": "Estimation",
+    "delivery": "Livraison :",
+    "domesticShipping": "Livraison nationale aux Pays-Bas",
+    "europeanShipping": "Livraison européenne",
+    "internationalShipping": "Livraison internationale",
+    "startTyping": "Entrez le nom de votre pays pour voir les frais et délais de livraison"
   }
 }

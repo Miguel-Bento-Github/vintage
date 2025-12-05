@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { formatShippingCost } from '@/lib/shipping';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useShippingQuote } from '@/hooks/useShipping';
+import { useTranslations } from '@/hooks/useTranslations';
 import CountryCombobox from './CountryCombobox';
 
 interface ShippingCalculatorProps {
@@ -15,6 +16,7 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
   const [selectedCountry, setSelectedCountry] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const { currency } = useCurrency();
+  const t = useTranslations('shippingCalculator');
 
   // Fetch real-time shipping quote with TanStack Query
   const { data: shippingQuote, isLoading: isLoadingQuote } = useShippingQuote(
@@ -44,7 +46,7 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
               d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
             />
           </svg>
-          <span className="font-medium text-gray-900">Calculate Shipping</span>
+          <span className="font-medium text-gray-900">{t('calculateShipping')}</span>
         </div>
         <svg
           className={`w-5 h-5 text-gray-400 transition-transform ${
@@ -62,16 +64,16 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
         <div className="px-4 pb-4 space-y-3">
           <div>
             <label htmlFor="shipping-country" className="block text-sm font-medium text-gray-700 mb-1">
-              Ship to:
+              {t('shipTo')}
             </label>
             <CountryCombobox
               value={selectedCountry}
               onChange={setSelectedCountry}
-              placeholder="Type country name..."
+              placeholder={t('typeCountry')}
               autoDetect={true}
             />
             <p className="text-xs text-gray-500 mt-1">
-              {selectedCountry ? '✓ Country selected' : '🌍 Auto-detecting your location...'}
+              {selectedCountry ? `✓ ${t('countrySelected')}` : `🌍 ${t('autoDetecting')}`}
             </p>
           </div>
 
@@ -79,7 +81,7 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
             <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
               <div className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-700"></div>
-                <p className="text-sm text-gray-600">Loading shipping rates...</p>
+                <p className="text-sm text-gray-600">{t('loadingRates')}</p>
               </div>
             </div>
           )}
@@ -89,7 +91,7 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-gray-900">Shipping Cost:</span>
+                    <span className="text-sm font-medium text-gray-900">{t('shippingCost')}</span>
                     <span className="text-sm font-bold text-gray-900">
                       {formatShippingCost(shippingQuote.cost, currency)}
                     </span>
@@ -98,12 +100,12 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
                     <span>via {shippingQuote.carrier}</span>
                     {shippingQuote.source === 'api' && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-amber-700 text-white font-medium">
-                        ✓ Live rate
+                        ✓ {t('liveRate')}
                       </span>
                     )}
                     {shippingQuote.source === 'static' && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-200 text-gray-700">
-                        Estimate
+                        {t('estimate')}
                       </span>
                     )}
                   </div>
@@ -111,14 +113,14 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
               </div>
               <div className="pt-2 border-t border-amber-200">
                 <p className="text-xs text-gray-700">
-                  📦 Delivery: {shippingQuote.estimatedDays}
+                  📦 {t('delivery')} {shippingQuote.estimatedDays}
                 </p>
                 <p className="text-xs text-gray-700 mt-1">
                   {shippingQuote.zone === 'domestic'
-                    ? 'Domestic shipping within Netherlands'
+                    ? t('domesticShipping')
                     : shippingQuote.zone === 'europe'
-                    ? 'European shipping'
-                    : 'International shipping'}
+                    ? t('europeanShipping')
+                    : t('internationalShipping')}
                 </p>
               </div>
             </div>
@@ -126,7 +128,7 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
 
           {!selectedCountry && !isLoadingQuote && (
             <p className="text-xs text-gray-500 italic">
-              Start typing your country name to see shipping cost and delivery time
+              {t('startTyping')}
             </p>
           )}
         </div>

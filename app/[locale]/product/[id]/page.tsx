@@ -189,6 +189,18 @@ export default async function ProductPage({ params }: PageProps) {
 
   const t = await getTranslations("product");
   const tCommon = await getTranslations("common");
+  const tConditions = await getTranslations("conditions");
+
+  // Map condition values to translation keys
+  const getConditionKey = (condition: string): string => {
+    const keyMap: Record<string, string> = {
+      'Excellent': 'excellent',
+      'Good': 'good',
+      'Fair': 'fair',
+      'As-Is': 'asIs',
+    };
+    return keyMap[condition] || condition.toLowerCase();
+  };
 
   // Schema.org Product structured data with enhanced details
   const baseUrl =
@@ -469,7 +481,7 @@ export default async function ProductPage({ params }: PageProps) {
                 </h3>
                 <p className="text-gray-700 mb-1">
                   <span className="font-medium">
-                    {translatedProduct.condition}
+                    {tConditions(getConditionKey(translatedProduct.condition))}
                   </span>
                 </p>
                 {translatedProduct.conditionNotes && (

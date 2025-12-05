@@ -519,5 +519,21 @@
     "buyerProtection": "Buyer Protection",
     "worldwideShipping": "Worldwide Shipping",
     "rightsReserved": "All rights reserved"
+  },
+  "shippingCalculator": {
+    "calculateShipping": "Calculate Shipping",
+    "shipTo": "Ship to:",
+    "typeCountry": "Type country name...",
+    "countrySelected": "Country selected",
+    "autoDetecting": "Auto-detecting your location...",
+    "loadingRates": "Loading shipping rates...",
+    "shippingCost": "Shipping Cost:",
+    "liveRate": "Live rate",
+    "estimate": "Estimate",
+    "delivery": "Delivery:",
+    "domesticShipping": "Domestic shipping within Netherlands",
+    "europeanShipping": "European shipping",
+    "internationalShipping": "International shipping",
+    "startTyping": "Start typing your country name to see shipping cost and delivery time"
   }
 }

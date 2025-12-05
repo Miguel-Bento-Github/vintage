@@ -519,5 +519,21 @@
     "buyerProtection": "Käuferschutz",
     "worldwideShipping": "Weltweiter Versand",
     "rightsReserved": "Alle Rechte vorbehalten"
+  },
+  "shippingCalculator": {
+    "calculateShipping": "Versandkosten Berechnen",
+    "shipTo": "Versand nach:",
+    "typeCountry": "Ländernamen eingeben...",
+    "countrySelected": "Land ausgewählt",
+    "autoDetecting": "Standort wird erkannt...",
+    "loadingRates": "Versandtarife werden geladen...",
+    "shippingCost": "Versandkosten:",
+    "liveRate": "Aktueller Tarif",
+    "estimate": "Schätzung",
+    "delivery": "Lieferung:",
+    "domesticShipping": "Inlandsversand in den Niederlanden",
+    "europeanShipping": "Europäischer Versand",
+    "internationalShipping": "Internationaler Versand",
+    "startTyping": "Geben Sie Ihren Ländernamen ein, um Versandkosten und Lieferzeit zu sehen"
   }
 }

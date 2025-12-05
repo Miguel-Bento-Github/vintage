@@ -48,6 +48,18 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("shop");
+  const tConditions = useTranslations("conditions");
+
+  // Map condition values to translation keys
+  const getConditionKey = (condition: Condition): string => {
+    const keyMap: Record<Condition, string> = {
+      'Excellent': 'excellent',
+      'Good': 'good',
+      'Fair': 'fair',
+      'As-Is': 'asIs',
+    };
+    return keyMap[condition] || condition.toLowerCase();
+  };
 
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || ""
@@ -598,7 +610,7 @@ export default function ShopClient({ initialProducts }: ShopClientProps) {
                   onChange={() => toggleCondition(condition)}
                   className="w-4 h-4 text-amber-700 border-gray-300 rounded focus:ring-amber-500"
                 />
-                <span className="text-sm text-gray-700">{condition}</span>
+                <span className="text-sm text-gray-700">{tConditions(getConditionKey(condition))}</span>
               </label>
             ))}
           </div>
