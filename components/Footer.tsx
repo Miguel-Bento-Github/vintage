@@ -167,7 +167,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="text-gray-500 hover:text-gray-300 transition-colors"
               >
-                Created by dev24.net
+                {t('footer.createdBy')} dev24.net
               </a>
               <Link
                 href="/admin"

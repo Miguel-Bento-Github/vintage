@@ -519,7 +519,8 @@
     "sslEncryption": "Secure SSL Encryption",
     "buyerProtection": "Buyer Protection",
     "worldwideShipping": "Worldwide Shipping",
-    "rightsReserved": "All rights reserved"
+    "rightsReserved": "All rights reserved",
+    "createdBy": "Created by"
   },
   "shippingCalculator": {
     "calculateShipping": "Calculate Shipping",

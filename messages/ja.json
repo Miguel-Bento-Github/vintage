@@ -519,7 +519,8 @@
     "sslEncryption": "安全なSSL暗号化",
     "buyerProtection": "購入者保護",
     "worldwideShipping": "世界中に配送",
-    "rightsReserved": "全著作権所有"
+    "rightsReserved": "全著作権所有",
+    "createdBy": "制作"
   },
   "shippingCalculator": {
     "calculateShipping": "送料を計算",

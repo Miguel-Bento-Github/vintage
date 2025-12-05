@@ -519,7 +519,8 @@
     "sslEncryption": "Sichere SSL-Verschlüsselung",
     "buyerProtection": "Käuferschutz",
     "worldwideShipping": "Weltweiter Versand",
-    "rightsReserved": "Alle Rechte vorbehalten"
+    "rightsReserved": "Alle Rechte vorbehalten",
+    "createdBy": "Erstellt von"
   },
   "shippingCalculator": {
     "calculateShipping": "Versandkosten Berechnen",
