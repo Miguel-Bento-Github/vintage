@@ -31,7 +31,7 @@ export default function Footer() {
               {t('footer.basedIn')}
             </p>
             <p className="text-xs text-gray-400">
-              Female-Owned & Ethnic Minority-Run
+              {t('footer.femaleOwned')}
             </p>
           </div>
 
