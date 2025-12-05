@@ -18,6 +18,15 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
   const { currency } = useCurrency();
   const t = useTranslations('shippingCalculator');
 
+  // Extract days from "X-Y business days" and translate
+  const translateDeliveryDays = (estimatedDays: string): string => {
+    const match = estimatedDays.match(/^([\d-]+)/);
+    if (match) {
+      return t('businessDays', { days: match[1] });
+    }
+    return estimatedDays;
+  };
+
   // Fetch real-time shipping quote with TanStack Query
   const { data: shippingQuote, isLoading: isLoadingQuote } = useShippingQuote(
     selectedCountry,
@@ -97,7 +106,7 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-xs text-gray-700">
-                    <span>via {shippingQuote.carrier}</span>
+                    <span>{t('viaCarrier', { carrier: shippingQuote.carrier })}</span>
                     {shippingQuote.source === 'api' && (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-amber-700 text-white font-medium">
                         ✓ {t('liveRate')}
@@ -113,7 +122,7 @@ export default function ShippingCalculator({ productWeight, className = '' }: Sh
               </div>
               <div className="pt-2 border-t border-amber-200">
                 <p className="text-xs text-gray-700">
-                  📦 {t('delivery')} {shippingQuote.estimatedDays}
+                  📦 {t('delivery')} {translateDeliveryDays(shippingQuote.estimatedDays)}
                 </p>
                 <p className="text-xs text-gray-700 mt-1">
                   {shippingQuote.zone === 'domestic'
