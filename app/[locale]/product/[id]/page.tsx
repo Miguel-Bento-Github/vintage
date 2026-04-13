@@ -217,6 +217,7 @@ export default async function ProductPage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: `${translatedProduct.brand} ${translatedProduct.title}`,
+    url: `${baseUrl}/product/${id}`,
     description: stripHtml(translatedProduct.description),
     sku: product.id,
     brand: {
@@ -249,7 +250,7 @@ export default async function ProductPage({ params }: PageProps) {
     offers: {
       "@type": "Offer",
       url: `${baseUrl}/product/${id}`,
-      price: product.price.toFixed(2),
+      price: getEffectivePrice(product).toFixed(2),
       priceCurrency: "EUR",
       availability: product.inStock
         ? "https://schema.org/InStock"
